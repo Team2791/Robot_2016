@@ -5,14 +5,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 /**
  *
  */
-public class DriveTrain implements Subsystems{
-    
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
+public class Shooter implements Subsystems {
+
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		//instantiated speed controller here 
+		//instantiate shooter motors here
 	}
 
 	@Override
@@ -56,5 +54,8 @@ public class DriveTrain implements Subsystems{
 		// TODO Auto-generated method stub
 		
 	}
+    
+   
+
 }
 
