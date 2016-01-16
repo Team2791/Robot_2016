@@ -1,57 +1,74 @@
 package subsystems;
 
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import util.Configuration;
 
 /**
  *
  */
-public class DriveTrain implements Subsystems{
+public class DriveTrain{
     
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-	@Override
+
 	public void init() {
 		// TODO Auto-generated method stub
 		//instantiated speed controller here 
+		Talon leftDriveA = new Talon(Configuration.leftDrivePortA);
+		Talon leftDriveB = new Talon(Configuration.leftDrivePortB);
+		Talon rightDriveA = new Talon(Configuration.rightDrivePortA);
+		Talon rightDriveB = new Talon(Configuration.rightDrivePortB);
 	}
 
-	@Override
+
 	public void initTeleop() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void initDisabled() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void initAutonomous() {
+
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void shift_up(){
+		
+	}
+	
+	public void shift_down(){
+		
+	}
+	
 
-	@Override
 	public void runTeleop() {
 		// TODO Auto-generated method stub
-		
+//		switch(Configuration.drive_state)
+//		case AUTO:
+//		
 	}
 
-	@Override
+
 	public void runDisabled() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void runAutonomous() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void reset() {
 		// TODO Auto-generated method stub
 		
