@@ -3,31 +3,36 @@ package subsystems;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
-import util.Configuration;
+import shakerJoystick.ShakerJoystick;
+import Configuration.*;
 import util.AnalyzeCamera;
 import subsystems.DriveTrainAutonHelper;
-
 /**
  *
  */
 public class DriveTrain implements Subsystems {
-	public static Talon leftTalonA;
-	public static Talon leftTalonB;
-	public static Talon rightTalonA;
-	public static Talon rightTalonB;
-	public static AxisCamera cam;
-	public static DriveTrainAutonHelper DTAH;
+	private static Talon leftTalonA;
+	private static Talon leftTalonB;
+	private static Talon rightTalonA;
+	private static Talon rightTalonB;
+	private static shakerJoystick.Driver DriverJoystick;
+	private static shakerJoystick.Operator OperatorJoystick;
+	private static AxisCamera cam;
+	private static DriveTrainAutonHelper DTAH;
 
-	@Override
-	public void init() {
+	public void init(){}
+	
+	
+	public void init(shakerJoystick.Driver driveJoy, shakerJoystick.Operator opJoy) {
 		// TODO Auto-generated method stub
 		// instantiated speed controller here
-		leftTalonA = new Talon(Configuration.leftTalonPortA);
-		leftTalonB = new Talon(Configuration.leftTalonPortA);
-		rightTalonA = new Talon(Configuration.leftTalonPortA);
-		rightTalonB = new Talon(Configuration.leftTalonPortA);
+		DriverJoystick = driveJoy;
+		OperatorJoystick = opJoy;
+		leftTalonA = new Talon(Ports.leftTalonPortA);
+		leftTalonB = new Talon(Ports.leftTalonPortB);
+		rightTalonA = new Talon(Ports.rightTalonPortA);
+		rightTalonB = new Talon(Ports.rightTalonPortB);
 	}
-
 	@Override
 	public void initTeleop() {
 		// TODO Auto-generated method stub
@@ -42,7 +47,7 @@ public class DriveTrain implements Subsystems {
 
 	@Override
 	public void initAutonomous() {
-		cam = new AxisCamera(Configuration.cameraPort);
+		cam = new AxisCamera(Camera.cameraPort);
 		DTAH = new DriveTrainAutonHelper(cam);
 	}
 
@@ -69,4 +74,6 @@ public class DriveTrain implements Subsystems {
 		// TODO Auto-generated method stub
 
 	}
+
+	
 }

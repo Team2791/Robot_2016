@@ -1,5 +1,9 @@
 package subsystems;
 
+import shakerJoystick.Driver;
+import shakerJoystick.Operator;
+import shakerJoystick.ShakerJoystick;
+
 public interface Subsystems {
 	
 	  void init();
@@ -17,6 +21,5 @@ public interface Subsystems {
 	  void runAutonomous();
 
 	  void reset();
-
 
 }

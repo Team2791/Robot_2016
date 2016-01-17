@@ -1,18 +1,17 @@
 package util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 /*
  * This class is designed to take in images and determine if the image is in the frame of view
  */
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.ParticleFilterCriteria2;
-
+import java.io.IOException;
+import java.util.ArrayList;
 import edu.wpi.first.wpilibj.image.BinaryImage;
 import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
+import Configuration.Camera;
 
 public class AnalyzeCamera {
 	private static ColorImage frame;
@@ -24,8 +23,8 @@ public class AnalyzeCamera {
 
 	public static ArrayList<ParticleAnalysisReport> determineTargets(ColorImage image) {
 		try {
-			criteria[0] = new ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA, Configuration.minArea,
-					Configuration.maxArea, Configuration.calibrated, Configuration.exclude);
+			criteria[0] = new ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA, Camera.minArea,
+					Camera.maxArea, Camera.calibrated, Camera.exclude);
 
 			// create the criteria for the particle filter
 			numberOfTargets = 0;
@@ -47,11 +46,11 @@ public class AnalyzeCamera {
 				double WToHRat = report.boundingRectWidth / report.boundingRectHeight;
 				// the target is roughly 10 : 7 ratio
 				// skip particles that have a ratio of less than 21:20 ~= 1:1
-				if (WToHRat < Configuration.minWidHighRat)
+				if (WToHRat < Camera.minWidHighRat)
 					continue;
 				// make sure the target is at least a certain number of pixels
 				// wide
-				if (report.boundingRectWidth > Configuration.minWidth) {
+				if (report.boundingRectWidth > Camera.minWidth) {
 					// found target that meets criteria
 					targets.add(report);
 				}
@@ -79,8 +78,8 @@ public class AnalyzeCamera {
 	private static BinaryImage getThresholdImage(ColorImage image) {
 
 		try {
-			return image.thresholdRGB(Configuration.redLow, Configuration.redHigh, Configuration.greenLow,
-					Configuration.greenHigh, Configuration.blueHigh, Configuration.blueHigh);
+			return image.thresholdRGB(Camera.redLow, Camera.redHigh, Camera.greenLow,
+					Camera.greenHigh, Camera.blueHigh, Camera.blueHigh);
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
