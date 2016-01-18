@@ -68,13 +68,14 @@ public class DriveTrain implements Subsystems {
 	@Override
 	public void runAutonomous() {
 		// get onto courtyard first
-		switch (DTAH.run) {//dir robot should move
-		case "Robot:center":
+		switch (DTAH.run()) {//dir robot should move
+		case "Robot:center":break;
 			// keep driving straight
-		case "Robot:right":
+		case "Robot:right":break;
 			//robot move to the right
-		case "Robot:left":
+		case "Robot:left":break;
 			//robot move to the left
+		default:break;
 		}
 	}
 

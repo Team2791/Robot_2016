@@ -25,14 +25,15 @@ public class DriveTrainAutonHelper {
 		cam = camera;
 	}
 
-	public void run() {
+	public String run() {
 		try {
 			AnalyzeCamera.determineTargets(cam.getImage());
-			deepAnalyze(targets, AnalyzeCamera.getImageWidth());
+			return deepAnalyze(targets, AnalyzeCamera.getImageWidth());
 
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
 	}
 
