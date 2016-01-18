@@ -1,4 +1,4 @@
-package Configuration;
+package configuration;
 
 public class Ports {
 	public static final int leftTalonPortA = 0;

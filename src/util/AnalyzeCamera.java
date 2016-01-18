@@ -5,13 +5,15 @@ package util;
  */
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.ParticleFilterCriteria2;
+
+import configuration.Camera;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.image.BinaryImage;
 import edu.wpi.first.wpilibj.image.ColorImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
-import Configuration.Camera;
 
 public class AnalyzeCamera {
 	private static ColorImage frame;
@@ -19,6 +21,7 @@ public class AnalyzeCamera {
 	private static BinaryImage finalImage;
 	private static ParticleFilterCriteria2[] criteria;
 	private static int numberOfTargets = 0;
+	private static int imageWidth;
 	private static ArrayList<ParticleAnalysisReport> targets = new ArrayList<ParticleAnalysisReport>();
 
 	public static ArrayList<ParticleAnalysisReport> determineTargets(ColorImage image) {
@@ -31,7 +34,7 @@ public class AnalyzeCamera {
 			frame = image;
 			finalImage = getFinalImage(frame);
 			filterImage.free();
-
+			imageWidth = finalImage.getWidth();
 			if (finalImage == null)
 				return null;
 			numberOfTargets = getNumberParticles(finalImage);
@@ -116,6 +119,9 @@ public class AnalyzeCamera {
 			ex.printStackTrace();
 			return 0;
 		}
+	}
+	public static int getImageWidth(){
+		return imageWidth;
 	}
 
 }

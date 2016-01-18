@@ -3,7 +3,7 @@ package shakerJoystick;
 public class Driver {
 	ShakerJoystick driverJoystick;
 	public Driver(){
-		driverJoystick = new ShakerJoystick(Configuration.Joystick.DriverPort);
+		driverJoystick = new ShakerJoystick(configuration.Joystick.DriverPort);
 	}
 	//place driver button layout here
 }

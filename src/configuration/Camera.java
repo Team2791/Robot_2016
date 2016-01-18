@@ -1,4 +1,4 @@
-package Configuration;
+package configuration;
 
 public class Camera {
 	//////////////////
@@ -30,4 +30,5 @@ public class Camera {
 	public static final int minWidth = 80;// min width of targets
 	public static final int calibrated = 0;
 	public static final int exclude = 0;
+	public static final int centeringDeadzone = 10;//number of pixels wide that the center should be within
 }

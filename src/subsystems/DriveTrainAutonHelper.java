@@ -10,12 +10,12 @@ import java.util.ArrayList;
 
 import javax.security.auth.login.ConfigurationSpi;
 
+import configuration.*;
 import edu.wpi.first.wpilibj.image.HSLImage;
 import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 import util.AnalyzeCamera;
-import Configuration.*;
 
 public class DriveTrainAutonHelper {
 	private static AxisCamera cam;
@@ -28,7 +28,7 @@ public class DriveTrainAutonHelper {
 	public void run() {
 		try {
 			AnalyzeCamera.determineTargets(cam.getImage());
-			deepAnalyze(targets);
+			deepAnalyze(targets, AnalyzeCamera.getImageWidth());
 
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
@@ -36,21 +36,41 @@ public class DriveTrainAutonHelper {
 		}
 	}
 
-	private void deepAnalyze(ArrayList<ParticleAnalysisReport> targets2) {
+	private String deepAnalyze(ArrayList<ParticleAnalysisReport> targets2, int imageWidth) {
+		int counter = 0;
+		int maxLoc = -1;
+		double max = 0.0;
 		if (targets2.size() > 1) {
-			int counter = 0;
-			double max = 0.0;
 			for (ParticleAnalysisReport report : targets2) {
 				double area = report.boundingRectWidth * report.boundingRectHeight;
 				if (max < area && area < Camera.maxArea) {
 					max = area;
+					maxLoc = counter;
 				}
 				counter++;
 			}
-		} else {
-
 		}
+		if (targets2.size() == 1) {
+			return findRelationToCenterOfCamera(targets2.get(1), imageWidth);
+		}
+		if (maxLoc != -1)
+			return findRelationToCenterOfCamera(targets2.get(maxLoc), imageWidth);
+		return null;
+	}
 
+	private String findRelationToCenterOfCamera(ParticleAnalysisReport par, int ImageWidth) {//returns direction robot should move
+		int center = ImageWidth / 2;
+		int centerMin = center - configuration.Camera.centeringDeadzone;
+		int centerMax = center + configuration.Camera.centeringDeadzone;
+		int locOfParticle = par.center_mass_x;
+		if (locOfParticle > centerMax) {
+			return "Robot:left";
+		} else if (locOfParticle < centerMin) {
+			return "Robot:right";
+		} else if (locOfParticle > centerMin && locOfParticle < centerMax) {
+			return "Robot:center";
+		} else
+			return null;
 	}
 
 }

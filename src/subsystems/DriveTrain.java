@@ -1,12 +1,13 @@
 package subsystems;
 
+import configuration.*;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 import shakerJoystick.ShakerJoystick;
-import Configuration.*;
 import util.AnalyzeCamera;
 import subsystems.DriveTrainAutonHelper;
+
 /**
  *
  */
@@ -20,9 +21,9 @@ public class DriveTrain implements Subsystems {
 	private static AxisCamera cam;
 	private static DriveTrainAutonHelper DTAH;
 
-	public void init(){}
-	
-	
+	public void init() {
+	}
+
 	public void init(shakerJoystick.Driver driveJoy, shakerJoystick.Operator opJoy) {
 		// TODO Auto-generated method stub
 		// instantiated speed controller here
@@ -33,6 +34,7 @@ public class DriveTrain implements Subsystems {
 		rightTalonA = new Talon(Ports.rightTalonPortA);
 		rightTalonB = new Talon(Ports.rightTalonPortB);
 	}
+
 	@Override
 	public void initTeleop() {
 		// TODO Auto-generated method stub
@@ -66,7 +68,14 @@ public class DriveTrain implements Subsystems {
 	@Override
 	public void runAutonomous() {
 		// get onto courtyard first
-		DTAH.run();
+		switch (DTAH.run) {//dir robot should move
+		case "Robot:center":
+			// keep driving straight
+		case "Robot:right":
+			//robot move to the right
+		case "Robot:left":
+			//robot move to the left
+		}
 	}
 
 	@Override
@@ -75,5 +84,4 @@ public class DriveTrain implements Subsystems {
 
 	}
 
-	
 }

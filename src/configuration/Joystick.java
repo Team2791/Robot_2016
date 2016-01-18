@@ -1,4 +1,4 @@
-package Configuration;
+package configuration;
 
 public class Joystick {
 	public static final int DriverPort = 0;

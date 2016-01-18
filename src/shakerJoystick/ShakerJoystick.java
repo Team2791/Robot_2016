@@ -1,6 +1,6 @@
 package shakerJoystick;
 
-import Configuration.States.JoystickType;
+import configuration.States.JoystickType;
 import edu.wpi.first.wpilibj.Joystick;
 import util.Util;
 
@@ -10,11 +10,11 @@ public class ShakerJoystick extends Joystick {
 	}
 	
 	 public double getXVal() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getX(), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getX(), 1.0);
 	 }
 
 	  public double getYVal() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getY(), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getY(), 1.0);
 	  }
 
 	  public boolean getDpadUp() {
@@ -90,27 +90,27 @@ public class ShakerJoystick extends Joystick {
 	  }
 
 	  public double getAxisLeftX() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(0), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(0), 1.0);
 	  }
 
 	  public double getAxisLeftY() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(1), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(1), 1.0);
 	  }
 
 	  public double getAxisLT() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(2), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(2), 1.0);
 	  }
 
 	  public double getAxisRT() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(3), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(3), 1.0);
 	  }
 
 	  public double getAxisRightX() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(4), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(4), 1.0);
 	  }
 
 	  public double getAxisRightY() {
-	    return Util.deadzone(Configuration.Joystick.DeadZone, super.getRawAxis(5), 1.0);
+	    return Util.deadzone(configuration.Joystick.DeadZone, super.getRawAxis(5), 1.0);
 	  }
 	}
 
