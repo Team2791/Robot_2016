@@ -1,9 +1,10 @@
 package shakerJoystick;
 
-public class Driver {
-	ShakerJoystick driverJoystick;
-	public Driver(){
-		driverJoystick = new ShakerJoystick(configuration.Joystick.DriverPort);
+public class Driver extends ShakerJoystick {
+
+	public Driver(int port) {
+		super(port);
+		// TODO Auto-generated constructor stub
 	}
-	//place driver button layout here
+// place driver button layout here
 }

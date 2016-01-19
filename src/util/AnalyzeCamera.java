@@ -73,7 +73,6 @@ public class AnalyzeCamera {
 					Camera.greenHigh, Camera.blueHigh, Camera.blueHigh);
 			finalImage.convexHull(true);
 			finalImage.particleFilter(criteria);
-			
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

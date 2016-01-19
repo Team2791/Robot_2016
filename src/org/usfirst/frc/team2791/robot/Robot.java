@@ -1,95 +1,116 @@
 
 package org.usfirst.frc.team2791.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import configuration.Camera;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
+import util.DriveTrainAutonHelper;
+import util.Logger;
+import util.RoboClock;
+import util.RoboException;
 
-/**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
- */
 public class Robot extends IterativeRobot {
-    RobotDrive myRobot;
-    Joystick stick;
-    final String defaultAuto = "Default";
-    final String customAuto = "My Auto";
-    SendableChooser chooser;
 
-    public Robot() {
-        myRobot = new RobotDrive(0, 1);
-        myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
-    }
-    
-    public void robotInit() {
-        chooser = new SendableChooser();
-        chooser.addDefault("Default Auto", defaultAuto);
-        chooser.addObject("My Auto", customAuto);
-        SmartDashboard.putData("Auto modes", chooser);
-    }
+	public enum GamePeriod {
+		AUTONOMOUS, TELEOP, DISABLED
+	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
-	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
-	 * Dashboard, remove all of the chooser code and uncomment the getString line to get the auto name from the text box
-	 * below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the if-else structure below with additional strings.
-	 * If using the SendableChooser make sure to add them to the chooser code above as well.
-	 */
-    public void autonomous() {
-    	
-    	String autoSelected = (String) chooser.getSelected();
-//		String autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
-    	
-    	switch(autoSelected) {
-    	case customAuto:
-            myRobot.setSafetyEnabled(false);
-            myRobot.drive(-0.5, 1.0);	// spin at half speed
-            Timer.delay(2.0);		//    for 2 seconds
-            myRobot.drive(0.0, 0.0);	// stop robot
-            break;
-    	case defaultAuto:
-    	default:
-            myRobot.setSafetyEnabled(false);
-            myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-            Timer.delay(2.0);		//    for 2 seconds
-            myRobot.drive(0.0, 0.0);	// stop robot
-            break;
-    	}
-    }
+	public enum SafetyMode {
+		SAFETY, FULL_CONTROL
+	}
+	
+	private static DriveTrainAutonHelper DTAH;
+	private static AxisCamera cam;
+	private static RoboClock disabledTimer;
+	private static RoboClock autonTimer;
+	private static RoboClock teleopTimer;
+	private static RoboClock powerTimer;
 
-    /**
-     * Runs the motors with arcade steering.
-     */
-    public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
-        while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
-            Timer.delay(0.005);		// wait for a motor update time
-        }
-    }
+	private static GamePeriod gamePeriod;
+	private static SafetyMode safetyMode;
 
-    /**
-     * Runs during test mode
-     */
-    public void test() {
-    }
+	public void robotInit() {
+		disabledTimer = new RoboClock();
+		disabledTimer.setName("Disabled Timer");
+
+		teleopTimer = new RoboClock();
+		teleopTimer.setName("Teleop Timer");
+
+		autonTimer = new RoboClock();
+		autonTimer.setName("Auton Timer");
+
+		powerTimer = new RoboClock();
+		powerTimer.setName("Power timer");
+
+		gamePeriod = GamePeriod.DISABLED;
+
+		cam = new AxisCamera(Camera.cameraPort);
+
+	}
+
+	public void disabledInit() {
+		gamePeriod = GamePeriod.DISABLED;
+	}
+
+	public void autonomousInit() {
+		gamePeriod = GamePeriod.AUTONOMOUS;
+		DTAH = new DriveTrainAutonHelper(cam);
+	}
+
+	public void teleopInit() {
+		gamePeriod = GamePeriod.TELEOP;
+		if (DriverStation.getInstance().isFMSAttached()) {
+			safetyMode = SafetyMode.FULL_CONTROL;
+		}
+	}
+
+	public void disabledPeriodic() {
+		super.disabledPeriodic();
+	}
+
+	public void autonomousPeriodic() {
+		super.autonomousPeriodic();
+	}
+
+	public void teleopPeriodic() {
+		super.teleopPeriodic();
+	}
+
+	public static GamePeriod getGamePeriod() {
+		return gamePeriod;
+	}
+
+	public static SafetyMode getSafetyMode() {
+		return safetyMode;
+	}
+
+	public static RoboClock getCurrentModeTimer() {
+		switch (gamePeriod) {
+		case AUTONOMOUS:
+			return autonTimer;
+		case TELEOP:
+			return teleopTimer;
+		case DISABLED:
+			return disabledTimer;
+		default:
+			Logger.exception(new RoboException("no current mode timer"));
+			return new RoboClock();
+		}
+	}
+
+	public static RoboClock getPowerTimer() {
+		return powerTimer;
+	}
+
+	public static RoboClock getTeleopTimer() {
+		return teleopTimer;
+	}
+
+	public static RoboClock getAutonTimer() {
+		return autonTimer;
+	}
+
+	public static RoboClock getDisabledTimer() {
+		return disabledTimer;
+	}
 }
