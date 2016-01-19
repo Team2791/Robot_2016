@@ -1,8 +1,7 @@
 
 package org.usfirst.frc.team2791.robot;
 
-
-import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * don't. Unless you know what you are doing, complex code will be much more difficult under
  * this system. Use IterativeRobot or Command-Based instead if you're new.
  */
-public class Robot extends SampleRobot {
+public class Robot extends IterativeRobot {
     RobotDrive myRobot;
     Joystick stick;
     final String defaultAuto = "Default";

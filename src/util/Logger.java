@@ -38,7 +38,7 @@
 //    RoboClock mode = Robot.getCurrentModeTimer();
 //    String line = "";
 //
-//    if (power.getRuntime() - lastLogTime >= Constants.CODE_EXECUTION_PERIOD) {
+//    if (power.getRuntime() - lastLogTime >= .CODE_EXECUTION_PERIOD) {
 //      line += power.getTotalTime() + " (";
 //      line += mode == null ? "null" : "" + mode.getRuntime();
 //      line += ")";
