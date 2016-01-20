@@ -71,7 +71,7 @@ public class AnalyzeCamera {
 		try {
 			finalImage = image.thresholdRGB(Camera.redLow, Camera.redHigh, Camera.greenLow,
 					Camera.greenHigh, Camera.blueHigh, Camera.blueHigh);
-			finalImage.convexHull(true);
+			finalImage.convexHull(true);//I have no clue what this does but set to TRUE YOLO
 			finalImage.particleFilter(criteria);
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
