@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.image.ParticleAnalysisReport;
 
 public class AnalyzeCamera {
 	private static ColorImage frame;
-	private static BinaryImage filterImage;
 	private static BinaryImage finalImage;
 	private static ParticleFilterCriteria2[] criteria;
 	private static int numberOfTargets = 0;
@@ -32,12 +31,11 @@ public class AnalyzeCamera {
 			// create the criteria for the particle filter
 			numberOfTargets = 0;
 			frame = image;
-			finalImage = getFinalImage(frame);
-			filterImage.free();
+			getFinalImage(frame);
 			imageWidth = finalImage.getWidth();
 			if (finalImage == null)
 				return null;
-			numberOfTargets = getNumberParticles(finalImage);
+			numberOfTargets = finalImage.getNumberParticles();
 
 			if (numberOfTargets == 0)
 				return null;
@@ -69,59 +67,27 @@ public class AnalyzeCamera {
 		}
 	}
 
-	private static BinaryImage getFinalImage(ColorImage image) throws NIVisionException {
-		BinaryImage threshImage = getThresholdImage(image);
-		BinaryImage hullImage = getConvexHullImage(threshImage);
-		filterImage = getFilteredImage(hullImage);
-		threshImage.free();
-		hullImage.free();
-		return filterImage;
-	}
-
-	private static BinaryImage getThresholdImage(ColorImage image) {
-
+	private static void getFinalImage(ColorImage image) throws NIVisionException {
 		try {
-			return image.thresholdRGB(Camera.redLow, Camera.redHigh, Camera.greenLow,
+			finalImage = image.thresholdRGB(Camera.redLow, Camera.redHigh, Camera.greenLow,
 					Camera.greenHigh, Camera.blueHigh, Camera.blueHigh);
-		} catch (NIVisionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
-	private static BinaryImage getFilteredImage(BinaryImage image) {
-		try {
-			// filter out unwanted particles
-			return image.particleFilter(criteria);
-		} catch (NIVisionException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
-	private static BinaryImage getConvexHullImage(BinaryImage image) {
-		try {
-			image.convexHull(true);// Boolean value was connectivity8 had no
-									// clue what it meant - left as true?
+			finalImage.convexHull(true);//I have no clue what this does but set to TRUE YOLO
+			finalImage.particleFilter(criteria);
 		} catch (NIVisionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 	}
-
-	private static int getNumberParticles(BinaryImage image) {
-		try {
-			return image.getNumberParticles();
-		} catch (NIVisionException ex) {
-			ex.printStackTrace();
-			return 0;
-		}
-	}
+	
 	public static int getImageWidth(){
 		return imageWidth;
+	}
+	
+	public static int getDistanceRobotToGoal(){return 0;
+		
+	}
+	public static int getDistanceRobotToTarget(){
+		return 0;
 	}
 
 }

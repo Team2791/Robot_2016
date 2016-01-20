@@ -21,5 +21,7 @@ public interface Subsystems {
 	  void runAutonomous();
 
 	  void reset();
+	  
+	  void setName(String name);
 
 }
