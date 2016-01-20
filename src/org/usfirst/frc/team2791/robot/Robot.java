@@ -1,51 +1,116 @@
 
 package org.usfirst.frc.team2791.robot;
 
+import configuration.Camera;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
+import subsystems.DriveTrainAutonHelper;
+import util.Logger;
+import util.RoboClock;
+import util.RoboException;
 
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+public class Robot extends IterativeRobot {
 
-public class Robot extends SampleRobot {
-    RobotDrive myRobot;
-    Joystick stick;
-    final String defaultAuto = "Default";
-    final String customAuto = "My Auto";
-    SendableChooser chooser;
+	public enum GamePeriod {
+		AUTONOMOUS, TELEOP, DISABLED
+	}
 
-    public Robot() {
-        myRobot = new RobotDrive(0, 1);
-        myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
-    }
-    
-    public void robotInit() {
-        chooser = new SendableChooser();
-        chooser.addDefault("Default Auto", defaultAuto);
-        chooser.addObject("My Auto", customAuto);
-        SmartDashboard.putData("Auto modes", chooser);
-    }
+	public enum SafetyMode {
+		SAFETY, FULL_CONTROL
+	}
+	
+	private static DriveTrainAutonHelper DTAH;
+	private static AxisCamera cam;
+	private static RoboClock disabledTimer;
+	private static RoboClock autonTimer;
+	private static RoboClock teleopTimer;
+	private static RoboClock powerTimer;
 
+	private static GamePeriod gamePeriod;
+	private static SafetyMode safetyMode;
 
-    public void autonomous() {}
+	public void robotInit() {
+		disabledTimer = new RoboClock();
+		disabledTimer.setName("Disabled Timer");
 
-    /**
-     * Runs the motors with arcade steering.
-     */
-    public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
-        while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
-            Timer.delay(0.005);		// wait for a motor update time
-        }
-    }
+		teleopTimer = new RoboClock();
+		teleopTimer.setName("Teleop Timer");
 
-    /**
-     * Runs during test mode
-     */
-    public void test() {
-    }
+		autonTimer = new RoboClock();
+		autonTimer.setName("Auton Timer");
+
+		powerTimer = new RoboClock();
+		powerTimer.setName("Power timer");
+
+		gamePeriod = GamePeriod.DISABLED;
+
+		cam = new AxisCamera(Camera.cameraPort);
+
+	}
+
+	public void disabledInit() {
+		gamePeriod = GamePeriod.DISABLED;
+	}
+
+	public void autonomousInit() {
+		gamePeriod = GamePeriod.AUTONOMOUS;
+		DTAH = new DriveTrainAutonHelper(cam);
+	}
+
+	public void teleopInit() {
+		gamePeriod = GamePeriod.TELEOP;
+		if (DriverStation.getInstance().isFMSAttached()) {
+			safetyMode = SafetyMode.FULL_CONTROL;
+		}
+	}
+
+	public void disabledPeriodic() {
+		super.disabledPeriodic();
+	}
+
+	public void autonomousPeriodic() {
+		super.autonomousPeriodic();
+	}
+
+	public void teleopPeriodic() {
+		super.teleopPeriodic();
+	}
+
+	public static GamePeriod getGamePeriod() {
+		return gamePeriod;
+	}
+
+	public static SafetyMode getSafetyMode() {
+		return safetyMode;
+	}
+
+	public static RoboClock getCurrentModeTimer() {
+		switch (gamePeriod) {
+		case AUTONOMOUS:
+			return autonTimer;
+		case TELEOP:
+			return teleopTimer;
+		case DISABLED:
+			return disabledTimer;
+		default:
+			Logger.exception(new RoboException("no current mode timer"));
+			return new RoboClock();
+		}
+	}
+
+	public static RoboClock getPowerTimer() {
+		return powerTimer;
+	}
+
+	public static RoboClock getTeleopTimer() {
+		return teleopTimer;
+	}
+
+	public static RoboClock getAutonTimer() {
+		return autonTimer;
+	}
+
+	public static RoboClock getDisabledTimer() {
+		return disabledTimer;
+	}
 }
