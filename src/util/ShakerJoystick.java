@@ -1,13 +1,14 @@
 package util;
 
 import edu.wpi.first.wpilibj.Joystick;
+import configuration.Constants;
 
 public class ShakerJoystick extends Joystick {
    
-	private static double JOYSTICK_SCALE  =  Configuration.joystick_scale;
-	private static double JOYSTICK_DEADZONE = Configuration.joystick_deadzone;
-	private static double AXIS_SCALE = Configuration.axis_scale;
-	private static double AXIS_DEADZONE = Configuration.axis_deadzone;
+	private static double JOYSTICK_SCALE  = Constants.AXIS_SCALE;
+	private static double JOYSTICK_DEADZONE = Constants.DEADZONE;
+	private static double AXIS_SCALE = Constants.AXIS_SCALE;
+	private static double AXIS_DEADZONE = Constants.DEADZONE;
 	
     public ShakerJoystick(final int port){
         super(port);
