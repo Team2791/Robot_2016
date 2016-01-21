@@ -26,11 +26,12 @@ public class Logger {
   }
 
   private File findFileHome() {
+	  //logs are stored in "/home/lvuser/logs"
     SimpleDateFormat sdf = new SimpleDateFormat("EEE_MMM-dd_hh-mm-ss");
     Date runtime = new Date(System.currentTimeMillis());
     String fName = "robolog_" + sdf.format(runtime) + ".txt";
     String fDir = System.getProperty("user.home");
-    return new File(fDir + "/" + fName);
+    return new File(fDir + "/logs/" + fName);
   }
 
   private static String getLogTimerString() {

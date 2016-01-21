@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 import shakerJoystick.ShakerJoystick;
 import util.AnalyzeCamera;
-import subsystems.DriveTrainAutonHelper;
+import util.DriveTrainAutonHelper;
 
 /**
  *
@@ -70,15 +70,18 @@ public class DriveTrain implements Subsystems {
 		// get onto courtyard first
 		switch (DTAH.run()) {// dir robot should move
 		case "Robot:center":
+			System.out.println("Center");
 			break;
 		// keep driving straight
 		case "Robot:right":
+			System.out.println("move right");
 			break;
 		// robot move to the right
 		case "Robot:left":
+			System.out.println("move left");
 			break;
 		// robot move to the left
-		default:
+		default:	
 			break;
 		}
 	}

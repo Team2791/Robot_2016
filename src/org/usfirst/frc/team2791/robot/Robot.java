@@ -3,8 +3,10 @@ package org.usfirst.frc.team2791.robot;
 
 import configuration.Camera;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.image.NIVisionException;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
-import subsystems.DriveTrainAutonHelper;
+import util.AnalyzeCamera;
+import util.DriveTrainAutonHelper;
 import util.Logger;
 import util.RoboClock;
 import util.RoboException;
@@ -70,6 +72,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousPeriodic() {
 		super.autonomousPeriodic();
+		
 	}
 
 	public void teleopPeriodic() {
