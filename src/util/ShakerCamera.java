@@ -7,13 +7,13 @@ import com.ni.vision.NIVision.ShapeMode;
 import edu.wpi.first.wpilibj.CameraServer;
 
 public class ShakerCamera {
+    private static final int Y_IMAGE_RES = 240;//add to config area after test
     private static int session;
     private static Image frame;
-    private static final int Y_IMAGE_RES=240;
     private static NIVision.Rect rect;
 
     public ShakerCamera(int sessionNumber) {
-        this.session = sessionNumber;
+        session = sessionNumber;
         session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
         rect = new NIVision.Rect(10, 10, 100, 100);
         NIVision.IMAQdxStartAcquisition(session);
