@@ -1,94 +1,97 @@
 package subsystems;
 
-import configuration.*;
+import configuration.Camera;
+import configuration.Ports;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
-import shakerJoystick.ShakerJoystick;
-import util.AnalyzeCamera;
-import util.DriveTrainAutonHelper;
+import org.usfirst.frc.team2791.robot.Robot;
+import shakerJoystick.Driver;
+import shakerJoystick.Operator;
 
 /**
  *
  */
 public class DriveTrain implements Subsystems {
-	private static Talon leftTalonA;
-	private static Talon leftTalonB;
-	private static Talon rightTalonA;
-	private static Talon rightTalonB;
-	private static shakerJoystick.Driver DriverJoystick;
-	private static shakerJoystick.Operator OperatorJoystick;
-	private static AxisCamera cam;
-	private static DriveTrainAutonHelper DTAH;
+    private Talon leftTalonA;
+    private Talon leftTalonB;
+    private Talon rightTalonA;
+    private Talon rightTalonB;
+    private Driver driverJoystick;
+    private Operator operatorJoystick;
+    private AxisCamera cam;
+    private RobotDrive roboDrive;
+    private Robot.SafetyMode safeMode;
+    private driveType driveMode;
 
-	public void init() {
-	}
+    public void init() {
+    }
 
-	public void init(shakerJoystick.Driver driveJoy, shakerJoystick.Operator opJoy) {
-		// TODO Auto-generated method stub
-		// instantiated speed controller here
-		DriverJoystick = driveJoy;
-		OperatorJoystick = opJoy;
-		leftTalonA = new Talon(Ports.leftTalonPortA);
-		leftTalonB = new Talon(Ports.leftTalonPortB);
-		rightTalonA = new Talon(Ports.rightTalonPortA);
-		rightTalonB = new Talon(Ports.rightTalonPortB);
-	}
+    public void init(shakerJoystick.Driver driveJoy, shakerJoystick.Operator opJoy, driveType drt) {
+        // TODO Auto-generated method stub
+        // instantiated speed controller here
+        this.driverJoystick = driveJoy;
+        this.operatorJoystick = opJoy;
+        this.leftTalonA = new Talon(Ports.leftTalonPortA);
+        this.leftTalonB = new Talon(Ports.leftTalonPortB);
+        this.rightTalonA = new Talon(Ports.rightTalonPortA);
+        this.rightTalonB = new Talon(Ports.rightTalonPortB);
+        this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
+        this.driveMode = drt;
+    }
 
-	public void initTeleop() {
-		// TODO Auto-generated method stub
+    public void initTeleop() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void initDisabled() {
-		// TODO Auto-generated method stub
+    public void initDisabled() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void initAutonomous() {
-		cam = new AxisCamera(Camera.cameraPort);
-		DTAH = new DriveTrainAutonHelper(cam);
-	}
+    public void runTeleop() {
 
-	public void shift_up() {
+        roboDrive.arcadeDrive(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
+    }
 
-	}
+    public void initAutonomous() {
+        cam = new AxisCamera(Camera.cameraPort);
+    }
 
-	public void shift_down() {
+    public void runDisabled() {
 
-	}
+    }
 
-	public void runTeleop() {
-	}
+    public void runAutonomous() {
 
-	public void runDisabled() {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    public void reset() {
 
-	public void runAutonomous() {
-		// get onto courtyard first
-		switch (DTAH.run()) {// dir robot should move
-		case "Robot:center":
-			System.out.println("Center");
-			break;
-		// keep driving straight
-		case "Robot:right":
-			System.out.println("move right");
-			break;
-		// robot move to the right
-		case "Robot:left":
-			System.out.println("move left");
-			break;
-		// robot move to the left
-		default:	
-			break;
-		}
-	}
+    }
 
-	public void reset() {
-		// TODO Auto-generated method stub
+    private void shift_up() {
 
-	}
+    }
 
+    private void shift_down() {
+
+    }
+
+    public void setSafetyMode(Robot.SafetyMode safetyMode) {
+        this.safeMode = safetyMode;
+    }
+
+    public void setDriveMode(driveType drt) {
+        this.driveMode = drt;
+    }
+
+    public enum driveType {
+        TANK, ARCADE
+    }
+
+    private enum gear {
+        HIGH, LOW
+    }
 }

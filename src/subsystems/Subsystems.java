@@ -1,25 +1,21 @@
 package subsystems;
 
-import shakerJoystick.Driver;
-import shakerJoystick.Operator;
-import shakerJoystick.ShakerJoystick;
-
 public interface Subsystems {
-	
-	  void init();
 
-	  void initTeleop();
+    void init();
 
-	  void initDisabled();
+    void initTeleop();
 
-	  void initAutonomous();
+    void initDisabled();
 
-	  void runTeleop();
+    void initAutonomous();
 
-	  void runDisabled();
+    void runTeleop();
 
-	  void runAutonomous();
+    void runDisabled();
 
-	  void reset();
+    void runAutonomous();
+
+    void reset();
 
 }
