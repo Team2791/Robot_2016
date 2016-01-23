@@ -1,14 +1,25 @@
 package shakerJoystick;
 
 import configuration.Constants;
-import subsystems.DriveTrain;
 
 public class Driver extends OverriddenJoystick {
-    private DriveTrain.driveType driveMode;
-
-    public Driver(DriveTrain.driveType drt) {
+    public Driver() {
         super(Constants.JOYSTICK_DRIVER_PORT);
-        this.driveMode = drt;
+    }
+
+    public double getGtaDriveLeft() {
+        double combined = super.getAxisRightX() + super.getAxisRT() - super.getAxisLT();
+        if (combined > 1.0) return 1.0;
+        else if (combined < -1.0) return -1.0;
+        return combined;
+
+    }
+
+    public double getGtaDriveRight() {
+        double combined = -super.getAxisRightX() + super.getAxisRT() - super.getAxisLT();
+        if (combined > 1.0) return 1.0;
+        else if (combined < -1.0) return -1.0;
+        return combined;
     }
 
 

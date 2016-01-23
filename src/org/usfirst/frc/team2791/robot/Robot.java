@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.vision.AxisCamera;
 import shakerJoystick.Driver;
 import shakerJoystick.Operator;
 import subsystems.DriveTrain;
-import subsystems.DriveTrain.driveType;
 import util.RoboClock;
 
 public class Robot extends IterativeRobot {
@@ -56,10 +55,9 @@ public class Robot extends IterativeRobot {
         gamePeriod = GamePeriod.DISABLED;
 
         cam = new AxisCamera(Camera.cameraPort);
-        driverJoystick = new Driver(driveType.ARCADE);
+        driverJoystick = new Driver();
         operatorJoystick = new Operator();
-
-        driveTrain.init();
+        driveTrain.init(driverJoystick, operatorJoystick, DriveTrain.driveType.TANK);
 
     }
 
@@ -74,9 +72,11 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         gamePeriod = GamePeriod.TELEOP;
         if (DriverStation.getInstance().isFMSAttached()) {
-            safetyMode = SafetyMode.FULL_CONTROL;
+            driveTrain.setSafetyMode(SafetyMode.FULL_CONTROL);
+        } else {
+            driveTrain.setSafetyMode(SafetyMode.SAFETY);
         }
-        driveTrain.setSafetyMode(safetyMode);
+
     }
 
     public void disabledPeriodic() {
