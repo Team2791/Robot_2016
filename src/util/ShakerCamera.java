@@ -50,6 +50,7 @@ public class ShakerCamera extends AxisCamera {
         imaqColorThreshold(frame, frame, 1, ColorMode.HSL, hue, sat, val);
         imaqParticleFilter3(frame, frame, criteria, 5, options, roi);
         imaqConvexHull(frame, frame, 4);//int is unknown and never will be known
+        
         camServer.setImage(frame);
 
         // BinaryImage thresholdImage = frame.thresholdHSV(105, 137, 230, 255, 133, 183);C
