@@ -7,39 +7,100 @@ import edu.wpi.first.wpilibj.vision.AxisCamera;
 import shakerJoystick.Driver;
 import shakerJoystick.Operator;
 import subsystems.DriveTrain;
+import subsystems.Shooter;
 import util.RoboClock;
 
 public class Robot extends IterativeRobot {
 
-    private AxisCamera cam;
-    private static RoboClock disabledTimer;
-    private static RoboClock autonTimer;
-    private static RoboClock teleopTimer;
-    private static RoboClock powerTimer;
-    private static GamePeriod gamePeriod;
-    private SafetyMode safetyMode;
-    private Driver driverJoystick;
-    private Operator operatorJoystick;
-    private DriveTrain driveTrain;
+	private AxisCamera cam;
+	private static RoboClock disabledTimer;
+	private static RoboClock autonTimer;
+	private static RoboClock teleopTimer;
+	private static RoboClock powerTimer;
+	private static GamePeriod gamePeriod;
+	private SafetyMode safetyMode;
+	private Driver driverJoystick;
+	private Operator operatorJoystick;
+	private DriveTrain driveTrain;
+	private Shooter shooter;
 
+	public void robotInit() {
+		disabledTimer = new RoboClock();
+		disabledTimer.setName("Disabled Timer");
 
-    public static RoboClock getPowerTimer() {
-        return powerTimer;
-    }
+		teleopTimer = new RoboClock();
+		teleopTimer.setName("Teleop Timer");
 
-    public RoboClock getTeleopTimer() {
-        return teleopTimer;
-    }
+		autonTimer = new RoboClock();
+		autonTimer.setName("Auton Timer");
 
-    public RoboClock getAutonTimer() {
-        return autonTimer;
-    }
+		powerTimer = new RoboClock();
+		powerTimer.setName("Power timer");
 
-    public RoboClock getDisabledTimer() {
-        return disabledTimer;
-    }
-    public static RoboClock getCurrentModeTimer(){
-    	switch (gamePeriod) {
+		gamePeriod = GamePeriod.DISABLED;
+
+		cam = new AxisCamera(Camera.cameraPort);
+		driverJoystick = new Driver();
+		operatorJoystick = new Operator();
+		driveTrain.init(driverJoystick, operatorJoystick, DriveTrain.driveType.TANK);
+
+	}
+
+	public void disabledInit() {
+		gamePeriod = GamePeriod.DISABLED;
+		driveTrain.initDisabled();
+
+	}
+
+	public void autonomousInit() {
+		gamePeriod = GamePeriod.AUTONOMOUS;
+		driveTrain.initAutonomous();
+	}
+
+	public void teleopInit() {
+		gamePeriod = GamePeriod.TELEOP;
+		if (DriverStation.getInstance().isFMSAttached()) {
+			driveTrain.setSafetyMode(SafetyMode.FULL_CONTROL);
+		} else {
+			driveTrain.setSafetyMode(SafetyMode.SAFETY);
+		}
+		driveTrain.initTeleop();
+	}
+
+	public void disabledPeriodic() {
+		super.disabledPeriodic();
+		driveTrain.runDisabled();
+	}
+
+	public void autonomousPeriodic() {
+		super.autonomousPeriodic();
+		driveTrain.runAutonomous();
+
+	}
+
+	public void teleopPeriodic() {
+		super.teleopPeriodic();
+		driveTrain.runTeleop();
+	}
+
+	public static RoboClock getPowerTimer() {
+		return powerTimer;
+	}
+
+	public RoboClock getTeleopTimer() {
+		return teleopTimer;
+	}
+
+	public RoboClock getAutonTimer() {
+		return autonTimer;
+	}
+
+	public RoboClock getDisabledTimer() {
+		return disabledTimer;
+	}
+
+	public static RoboClock getCurrentModeTimer() {
+		switch (gamePeriod) {
 		case AUTONOMOUS:
 			return autonTimer;
 		case TELEOP:
@@ -49,69 +110,14 @@ public class Robot extends IterativeRobot {
 		default:
 			return null;
 		}
-    }
-    
-    public void robotInit() {
-        disabledTimer = new RoboClock();
-        disabledTimer.setName("Disabled Timer");
+	}
 
-        teleopTimer = new RoboClock();
-        teleopTimer.setName("Teleop Timer");
+	public enum GamePeriod {
+		AUTONOMOUS, TELEOP, DISABLED
+	}
 
-        autonTimer = new RoboClock();
-        autonTimer.setName("Auton Timer");
-
-        powerTimer = new RoboClock();
-        powerTimer.setName("Power timer");
-
-        gamePeriod = GamePeriod.DISABLED;
-
-        cam = new AxisCamera(Camera.cameraPort);
-        driverJoystick = new Driver();
-        operatorJoystick = new Operator();
-        driveTrain.init(driverJoystick, operatorJoystick, DriveTrain.driveType.TANK);
-
-    }
-
-    public void disabledInit() {
-        gamePeriod = GamePeriod.DISABLED;
-    }
-
-    public void autonomousInit() {
-        gamePeriod = GamePeriod.AUTONOMOUS;
-    }
-
-    public void teleopInit() {
-        gamePeriod = GamePeriod.TELEOP;
-        if (DriverStation.getInstance().isFMSAttached()) {
-            driveTrain.setSafetyMode(SafetyMode.FULL_CONTROL);
-        } else {
-            driveTrain.setSafetyMode(SafetyMode.SAFETY);
-        }
-
-    }
-
-    public void disabledPeriodic() {
-        super.disabledPeriodic();
-    }
-
-    public void autonomousPeriodic() {
-        super.autonomousPeriodic();
-
-    }
-
-    public void teleopPeriodic() {
-        super.teleopPeriodic();
-        driveTrain.runTeleop();
-    }
-
-    public enum GamePeriod {
-        AUTONOMOUS, TELEOP, DISABLED
-    }
-
-    public enum SafetyMode {
-        SAFETY, FULL_CONTROL
-    }
-
+	public enum SafetyMode {
+		SAFETY, FULL_CONTROL
+	}
 
 }
