@@ -12,18 +12,18 @@ import util.RoboClock;
 public class Robot extends IterativeRobot {
 
     private AxisCamera cam;
-    private RoboClock disabledTimer;
-    private RoboClock autonTimer;
-    private RoboClock teleopTimer;
-    private RoboClock powerTimer;
-    private GamePeriod gamePeriod;
+    private static RoboClock disabledTimer;
+    private static RoboClock autonTimer;
+    private static RoboClock teleopTimer;
+    private static RoboClock powerTimer;
+    private static GamePeriod gamePeriod;
     private SafetyMode safetyMode;
     private Driver driverJoystick;
     private Operator operatorJoystick;
     private DriveTrain driveTrain;
 
 
-    public RoboClock getPowerTimer() {
+    public static RoboClock getPowerTimer() {
         return powerTimer;
     }
 
@@ -38,7 +38,19 @@ public class Robot extends IterativeRobot {
     public RoboClock getDisabledTimer() {
         return disabledTimer;
     }
-
+    public static RoboClock getCurrentModeTimer(){
+    	switch (gamePeriod) {
+		case AUTONOMOUS:
+			return autonTimer;
+		case TELEOP:
+			return teleopTimer;
+		case DISABLED:
+			return disabledTimer;
+		default:
+			return null;
+		}
+    }
+    
     public void robotInit() {
         disabledTimer = new RoboClock();
         disabledTimer.setName("Disabled Timer");
