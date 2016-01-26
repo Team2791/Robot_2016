@@ -5,6 +5,11 @@ import configuration.Ports;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team2791.robot.Robot;
 import org.usfirst.frc.team2791.robot.Robot.DriveType;
 import org.usfirst.frc.team2791.robot.Robot.SafetyMode;
 
@@ -22,13 +27,15 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	private SafetyMode safeMode;
 	private Solenoid leftDriveSolenoid;
 	private Solenoid rightDriveSolenoid;
+	Command driveCommand;
+	SendableChooser driveTypeChooser;
 
-	public ShakerDriveTrain(DriveType driverInputType) {
+	public ShakerDriveTrain() {
 		init();
-		this.setDriveType(driveType);
+
 	}
 
-	public void init() {
+	protected void init() {
 		this.leftTalonA = new Talon(Ports.LEFT_TALON_PORT_A);
 		this.leftTalonB = new Talon(Ports.LEFT_TALON_PORT_B);
 		this.rightTalonA = new Talon(Ports.RIGHT_TALON_PORT_A);
@@ -37,6 +44,11 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		this.disable();
 		this.leftDriveSolenoid = new Solenoid(Ports.LEFT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
 		this.rightDriveSolenoid = new Solenoid(Ports.RIGHT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
+		driveTypeChooser = new SendableChooser();
+		driveTypeChooser.addObject("Arcade Drive", DriveType.ARCADE);
+		driveTypeChooser.addObject("GTA Drive", DriveType.GTA);
+		driveTypeChooser.addDefault("Tank Drive", DriveType.TANK);
+		this.setDriveType((DriveType) driveTypeChooser.getSelected());
 	}
 
 	public void run() {
@@ -44,14 +56,15 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void reset() {
-		disable();
-		setLowGear();
-		setDriveType(DriveType.TANK);
+		this.disable();
+		this.setLowGear();
+		this.setDriveType((DriveType) driveTypeChooser.getSelected());
 
 	}
 
-	public void update() {
 
+	public void update() {
+		SmartDashboard.putNumber("Gear : ",isHighGear()?2:1 );
 	}
 
 	public void disable() {
@@ -59,6 +72,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
+		this.setDriveType((DriveType) driveTypeChooser.getSelected());
 		switch (safeMode) {
 		case SAFETY:
 			left *= Constants.FULL_SPEED_SAFETY_MODE;

@@ -1,14 +1,13 @@
 package subsystems;
 
-
 public abstract class ShakerSubsystem {
 
-    abstract public void run();
+	abstract protected void init();
 
-    abstract public void init();
+	abstract public void run();
 
-    abstract public void update();
+	abstract public void update();
 
-    abstract public void reset();
+	abstract public void reset();
 
 }

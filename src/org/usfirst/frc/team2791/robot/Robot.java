@@ -2,6 +2,7 @@ package org.usfirst.frc.team2791.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import shakerJoystick.Driver;
 import shakerJoystick.Operator;
 import subsystems.ShakerDriveTrain;
@@ -22,7 +23,9 @@ public class Robot extends IterativeRobot {
 	// modes
 	private SafetyMode safetyMode;
 	private DriveType driveMode;
-
+	//SmartDashboard
+	public static SmartDashboard smartDash;
+	
 	public void robotInit() {
 		// Timer inits
 		disabledTimer = new RoboClock();
@@ -41,7 +44,7 @@ public class Robot extends IterativeRobot {
 
 		driverJoystick = new Driver();
 		operatorJoystick = new Operator();
-		driveTrain = new ShakerDriveTrain(DriveType.TANK);
+		driveTrain = new ShakerDriveTrain();
 	}
 
 	public void disabledInit() {

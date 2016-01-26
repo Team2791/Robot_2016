@@ -69,6 +69,7 @@ public class Logger {
                 BufferedWriter loggerWriter = new BufferedWriter(new FileWriter(logFile.getAbsoluteFile(), true));
                 PrintWriter pw = new PrintWriter(loggerWriter, true);
                 pw.append(getLogTimerString()).append(event.toString()).append(Util.newline);
+                pw.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 stopLogger();
