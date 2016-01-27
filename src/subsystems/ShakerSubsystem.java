@@ -10,4 +10,5 @@ public abstract class ShakerSubsystem {
 
 	abstract public void reset();
 
+	abstract public void disable();
 }
