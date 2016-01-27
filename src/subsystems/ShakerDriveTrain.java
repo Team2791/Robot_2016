@@ -27,8 +27,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	private SafetyMode safeMode;
 	private Solenoid leftDriveSolenoid;
 	private Solenoid rightDriveSolenoid;
-	Command driveCommand;
-	SendableChooser driveTypeChooser;
+	private Command driveCommand;
+	private SendableChooser driveTypeChooser;
 
 	public ShakerDriveTrain() {
 		init();
@@ -45,10 +45,11 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		this.leftDriveSolenoid = new Solenoid(Ports.LEFT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
 		this.rightDriveSolenoid = new Solenoid(Ports.RIGHT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
 		driveTypeChooser = new SendableChooser();
-		driveTypeChooser.addObject("Arcade Drive", DriveType.ARCADE);
-		driveTypeChooser.addObject("GTA Drive", DriveType.GTA);
-		driveTypeChooser.addDefault("Tank Drive", DriveType.TANK);
-		this.setDriveType((DriveType) driveTypeChooser.getSelected());
+		SmartDashboard.putData("Sync Chooser" , driveTypeChooser);
+		driveTypeChooser.addDefault("Tank Drive", "TANK");
+		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
+		driveTypeChooser.addObject("GTA Drive", "GTA");
+		setDriveType((String) driveTypeChooser.getSelected());
 	}
 
 	public void run() {
@@ -58,13 +59,12 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	public void reset() {
 		this.disable();
 		this.setLowGear();
-		this.setDriveType((DriveType) driveTypeChooser.getSelected());
-
+		// this.setDriveType((DriveType) driveTypeChooser.getSelected());
+		this.setDriveType(driveType.TANK);
 	}
 
-
 	public void update() {
-		SmartDashboard.putNumber("Gear : ",isHighGear()?2:1 );
+		SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
 	}
 
 	public void disable() {
@@ -72,7 +72,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
-		this.setDriveType((DriveType) driveTypeChooser.getSelected());
+		// this.setDriveType((DriveType) driveTypeChooser.getSelected());
+		this.setDriveType(driveType.TANK);
 		switch (safeMode) {
 		case SAFETY:
 			left *= Constants.FULL_SPEED_SAFETY_MODE;
@@ -93,9 +94,22 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 			roboDrive.arcadeDrive(left, right);
 		}
 	}
-
+	
+	public void setDriveType(String driverInputType){
+		switch (driverInputType) {
+		case "TANK":
+			driveType = DriveType.TANK;
+			break;
+		case "GTA":
+			driveType = DriveType.GTA;
+			break;
+		case "ARCADE":
+			driveType = DriveType.ARCADE;
+		}
+	}	
+	
 	public void setDriveType(DriveType driverInputType) {
-		this.driveType = driverInputType;
+		driveType = driverInputType;
 	}
 
 	public void setSafeMode(SafetyMode safety) {

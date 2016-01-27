@@ -23,9 +23,9 @@ public class Robot extends IterativeRobot {
 	// modes
 	private SafetyMode safetyMode;
 	private DriveType driveMode;
-	//SmartDashboard
+	// SmartDashboard
 	public static SmartDashboard smartDash;
-	
+
 	public void robotInit() {
 		// Timer inits
 		disabledTimer = new RoboClock();
@@ -85,15 +85,14 @@ public class Robot extends IterativeRobot {
 		}
 		if (driverJoystick.getButtonA()) {
 			driveTrain.setHighGear();
-		}
-		else if(driverJoystick.getButtonB()){
+		} else if (driverJoystick.getButtonB()) {
 			driveTrain.setLowGear();
 		}
 	}
 
 	public void disabledPeriodic() {
 		super.disabledPeriodic();
-		driveTrain.disable();
+		// driveTrain.disable();
 	}
 
 	// RoboClock stuff
