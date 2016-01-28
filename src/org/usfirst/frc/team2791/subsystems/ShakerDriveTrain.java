@@ -1,14 +1,13 @@
-package subsystems;
+package org.usfirst.frc.team2791.subsystems;
 
-import configuration.Constants;
-import configuration.Ports;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.robot.Robot.DriveType;
+import org.usfirst.frc.team2791.configuration.Constants;
+import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.robot.Robot.SafetyMode;
 
 public class ShakerDriveTrain extends ShakerSubsystem {
@@ -20,8 +19,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     private DriveType driveType;
     private gear gearState;
     private SafetyMode safeMode;
-    private Solenoid leftDriveSolenoid;
-    private Solenoid rightDriveSolenoid;
+    private DoubleSolenoid leftDriveSolenoid;
+    private DoubleSolenoid rightDriveSolenoid;
     private Command driveCommand;
     private SendableChooser driveTypeChooser;
 
@@ -31,14 +30,14 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     }
 
     protected void init() {
-        this.leftTalonA = new Talon(Ports.LEFT_TALON_PORT_A);
-        this.leftTalonB = new Talon(Ports.LEFT_TALON_PORT_B);
-        this.rightTalonA = new Talon(Ports.RIGHT_TALON_PORT_A);
-        this.rightTalonB = new Talon(Ports.RIGHT_TALON_PORT_B);
+        this.leftTalonA = new Talon(Ports.DRIVE_TALON_LEFT_PORT_FRONT);
+        this.leftTalonB = new Talon(Ports.DRIVE_TALON_LEFT_PORT_BACK);
+        this.rightTalonA = new Talon(Ports.DRIVE_TALON_RIGHT_PORT_FRONT);
+        this.rightTalonB = new Talon(Ports.DRIVE_TALON_RIGHT_PORT_BACK);
         this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
         this.disable();
-        this.leftDriveSolenoid = new Solenoid(Ports.LEFT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
-        this.rightDriveSolenoid = new Solenoid(Ports.RIGHT_DRIVE_PISTON_CHANNEL, Ports.PCM_MODULE);
+        this.leftDriveSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_LEFT_FORWARD, Ports.DRIVE_PISTON_LEFT_REVERSE);
+        this.rightDriveSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_RIGHT_FORWARD, Ports.DRIVE_PISTON_RIGHT_REVERSE);
         driveTypeChooser = new SendableChooser();
         SmartDashboard.putData("Sync Chooser", driveTypeChooser);
         driveTypeChooser.addDefault("Tank Drive", "TANK");
@@ -90,21 +89,13 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     }
 
     public void setDriveType(String driverInputType) {
-        switch (driverInputType) {
-            default:
-            case "TANK":
-                driveType = DriveType.TANK;
-                break;
-            case "GTA":
-                driveType = DriveType.GTA;
-                break;
-            case "ARCADE":
-                driveType = DriveType.ARCADE;
+        if (driverInputType.equals("GTA")) {
+            driveType = DriveType.GTA;
+        } else if (driverInputType.equals("ARCADE")) {
+            driveType = DriveType.ARCADE;
+        } else if (driverInputType.equals("TANK")) {
+            driveType = DriveType.TANK;
         }
-    }
-
-    public void setDriveType(DriveType driverInputType) {
-        driveType = driverInputType;
     }
 
     public void setSafeMode(SafetyMode safety) {
@@ -150,7 +141,19 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         }
     }
 
+    public DriveType getDriveType() {
+        return driveType;
+    }
+
+    public void setDriveType(DriveType driverInputType) {
+        driveType = driverInputType;
+    }
+
     private enum gear {
         HIGH, LOW
+    }
+
+    public enum DriveType {
+        TANK, ARCADE, GTA
     }
 }

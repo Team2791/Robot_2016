@@ -1,7 +1,7 @@
-//package util;
+//package org.usfirst.frc.team2791.util;
 //
 //import com.ni.vision.NIVision;
-//import configuration.Camera;
+//import Camera;
 //import edu.wpi.first.wpilibj.CameraServer;
 //import edu.wpi.first.wpilibj.vision.AxisCamera;
 //

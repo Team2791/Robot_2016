@@ -1,6 +1,6 @@
-package util;
+package org.usfirst.frc.team2791.util;
 
-import configuration.Constants;
+import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.robot.Robot;
 
 import java.io.*;

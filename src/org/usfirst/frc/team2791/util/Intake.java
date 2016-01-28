@@ -1,4 +1,4 @@
-package util;
+package org.usfirst.frc.team2791.util;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Intake extends Subsystem {
-    
+
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
