@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
         }
     }
 
+    //MAIN ROBOT CODE
     public void robotInit() {
         // Timer inits
         disabledTimer = new RoboClock();
