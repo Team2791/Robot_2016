@@ -1,0 +1,17 @@
+Solenoids:
+	Shooter:Two Single Solenoid
+			one for level one 
+			one for level two
+			
+	Intake: One Double Solenoid
+			Controls both left and right
+	Shifters:
+			Double solenoid that controls both left and right
+			
+Motors:
+	Drive: Two motors on each side 
+	Intake: two motors one will be inverted
+	Shooter:
+		one servo that pushes ball out
+		two motors: one will be inverted and will be controlled via srx
+		

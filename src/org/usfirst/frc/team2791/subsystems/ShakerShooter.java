@@ -9,8 +9,8 @@ import org.usfirst.frc.team2791.configuration.Ports;
 public class ShakerShooter extends ShakerSubsystem {
     private Talon leftShooterTalon;
     private Talon rightShooterTalon;
-    private Solenoid leftShooterPiston;
-    private Solenoid rightShooterPiston;
+    private Solenoid firstLevelPiston;
+    private Solenoid secondLevelPiston;
     private boolean robotHasBall;
 
     public ShakerShooter() {
@@ -45,7 +45,7 @@ public class ShakerShooter extends ShakerSubsystem {
 
     public void reset() {
         stopMotors();
-        setShooterRetracted();
+//        setShooterRetracted();
     }
 
     public void update() {
@@ -53,19 +53,19 @@ public class ShakerShooter extends ShakerSubsystem {
     }
 
     //helpers methods
-    public boolean isShooterHigh() {
-        return rightShooterPiston.get() && leftShooterPiston.get();
-    }
+//    public boolean isShooterHigh() {
+//        return rightShooterPiston.get() && leftShooterPiston.get();
+//    }
 
-    public void setShooterExtended(boolean highState) {
-        leftShooterPiston.set(Constants.SHOOTER_HIGH_STATE);
-        rightShooterPiston.set(Constants.SHOOTER_HIGH_STATE);
-    }
-
-    public void setShooterRetracted() {
-        leftShooterPiston.set(Constants.SHOOTER_LOW_STATE);
-        rightShooterPiston.set(Constants.SHOOTER_LOW_STATE);
-    }
+//    public void setShooterExtended(boolean highState) {
+//        leftShooterPiston.set(Constants.SHOOTER_HIGH_STATE);
+//        rightShooterPiston.set(Constants.SHOOTER_HIGH_STATE);
+//    }
+//
+//    public void setShooterRetracted() {
+//        leftShooterPiston.set(Constants.SHOOTER_LOW_STATE);
+//        rightShooterPiston.set(Constants.SHOOTER_LOW_STATE);
+//    }
 
     public boolean hasBall() {
         return robotHasBall;
@@ -79,6 +79,8 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterTalon.set(0.0);
         leftShooterTalon.set(0.0);
     }
-
+    public enum ShooterHeight{
+    	LOW,MID,HIGH
+    }
 
 }

@@ -25,5 +25,8 @@ public class Constants {
     public static final boolean SHOOTER_LOW_STATE = false;
 
     //INTAKE CONSTANTS
-    public static final double INTAK_SPEED = 0.75;
+    public static final double INTAKE_SPEED = 0.75;
+    public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
+    public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
+    
 }

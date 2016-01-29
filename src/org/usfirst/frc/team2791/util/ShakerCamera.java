@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 //values that are still needed are
 //conversion factor = (targetWidInFt(known)*targetwidinPix(known))/targetWidInPix(for current frame)
+//target width is 1.667ft
 //center of mass from network tables.
 public class ShakerCamera extends AxisCamera {
     private final double cameraAngleWidth = 47 / 2;
