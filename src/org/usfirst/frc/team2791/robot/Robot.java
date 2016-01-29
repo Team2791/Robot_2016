@@ -22,7 +22,7 @@ public class Robot extends IterativeRobot {
     // subsystems
     private static ShakerDriveTrain driveTrain;
     // modes
-    private SafetyMode safetyMode;
+    public static SafetyMode safetyMode;
     //helpers
     private DriveHelper driverHelper;
     private OperatorHelper operatorHelper;
@@ -65,7 +65,9 @@ public class Robot extends IterativeRobot {
         driverJoystick = new Driver();
         operatorJoystick = new Operator();
         driveTrain = new ShakerDriveTrain();
-
+        
+        safetyMode = SafetyMode.SAFETY;
+        
         driverHelper = new DriveHelper(driverJoystick, driveTrain);
         operatorHelper = new OperatorHelper(operatorJoystick);
     }

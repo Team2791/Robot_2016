@@ -2,60 +2,65 @@ package org.usfirst.frc.team2791.helpers;
 
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
+import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain.DriveType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Created by Akhil on 1/28/2016.
  */
 public class DriveHelper extends ShakerHelper {
-    // Joystick inits
-    private static Driver driverJoystick;
-    private static ShakerDriveTrain.DriveType driveMode;
-    // Subsystem inits
-    private static ShakerDriveTrain driveTrain;
+	// Joystick inits
+	private static Driver driverJoystick;
+	// Subsystem inits
+	private static ShakerDriveTrain driveTrain;
 
+	public DriveHelper(Driver driveJoy, ShakerDriveTrain shakerDrive) {
+		this.driverJoystick = driveJoy;
+		this.driveTrain = shakerDrive;
+		init();
 
-    public DriveHelper(Driver driveJoy, ShakerDriveTrain shakerDrive) {
-        driverJoystick = driveJoy;
-        driveTrain = shakerDrive;
+	}
 
-    }
+	protected void init() {
+//		if ((ShakerDriveTrain.DriveType) driveTrain.getDriveType() != null) {
+//			driveMode = (ShakerDriveTrain.DriveType) driveTrain.getDriveType();
+//		}
+//		else{
 
+//		}
+	}
 
-    protected void init() {
-        driveMode = driveTrain.getDriveType();
-    }
+	public void teleopRun() {
+		switch (driveTrain.getDriveType()) {
+		default:
+		case TANK:
+			driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightY());
+			break;
+		case GTA:
+			driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
+			break;
+		case ARCADE:
+			driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
+		}
+		if (driverJoystick.getButtonA()) {
+			driveTrain.setHighGear();
+		} else if (driverJoystick.getButtonB()) {
+			driveTrain.setLowGear();
+		}
+	}
 
-    public void teleopRun() {
-        switch (driveMode) {
-            case TANK:
-                driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightY());
-                break;
-            case GTA:
-                driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
-                break;
-            case ARCADE:
-                driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
-        }
-        if (driverJoystick.getButtonA()) {
-            driveTrain.setHighGear();
-        } else if (driverJoystick.getButtonB()) {
-            driveTrain.setLowGear();
-        }
-    }
+	public void disableRun() {
+		driveTrain.disable();
+	}
 
-    public void disableRun() {
-        driveTrain.disable();
-    }
+	public void update() {
+		driveTrain.update();
 
-    public void update() {
-        driveTrain.update();
+	}
 
-    }
+	public void reset() {
 
-    public void reset() {
-
-    }
-
+	}
 
 }

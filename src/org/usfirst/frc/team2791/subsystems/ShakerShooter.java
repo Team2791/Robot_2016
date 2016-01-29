@@ -21,9 +21,7 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterTalon = new Talon(Ports.SHOOTER_TALON_LEFT_PORT);
         leftShooterTalon.setInverted(true);
         rightShooterTalon = new Talon(Ports.SHOOTER_TALON_RIGHT_PORT);
-        leftShooterPiston = new Solenoid(Ports.SHOOTER_PISTON_LEFT_CHANNEL);
-        rightShooterPiston = new Solenoid(Ports.SHOOTER_PISTON_RIGHT_CHANNEL);
-
+   
     }
 
     public void run() {
