@@ -47,7 +47,6 @@ public class BasicPID {
     }
 
 
-
     /**
      * Update with the current error and get the new output from the PID
      */

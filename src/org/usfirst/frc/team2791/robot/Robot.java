@@ -3,6 +3,7 @@ package org.usfirst.frc.team2791.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import org.usfirst.frc.team2791.helpers.DriveHelper;
+import org.usfirst.frc.team2791.helpers.OperatorHelper;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
@@ -24,6 +25,7 @@ public class Robot extends IterativeRobot {
     private SafetyMode safetyMode;
     //helpers
     private DriveHelper driverHelper;
+    private OperatorHelper operatorHelper;
 
     // RoboClock stuff
     public static RoboClock getPowerTimer() {
@@ -64,7 +66,8 @@ public class Robot extends IterativeRobot {
         operatorJoystick = new Operator();
         driveTrain = new ShakerDriveTrain();
 
-        driverHelper = new DriveHelper(driverJoystick, operatorJoystick, driveTrain);
+        driverHelper = new DriveHelper(driverJoystick, driveTrain);
+        operatorHelper = new OperatorHelper(operatorJoystick);
     }
 
     public void autonomousInit() {
@@ -79,6 +82,7 @@ public class Robot extends IterativeRobot {
             safetyMode = SafetyMode.SAFETY;
 
         }
+
     }
 
     public void disabledInit() {
@@ -94,12 +98,14 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         super.teleopPeriodic();
         driverHelper.teleopRun();
+        operatorHelper.teleopRun();
 
     }
 
     public void disabledPeriodic() {
         super.disabledPeriodic();
         driverHelper.disableRun();
+        operatorHelper.disableRun();
     }
 
     public RoboClock getTeleopTimer() {

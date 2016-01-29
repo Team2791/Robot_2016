@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2791.helpers;
 
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
-import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
 
 
@@ -11,15 +10,13 @@ import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
 public class DriveHelper extends ShakerHelper {
     // Joystick inits
     private static Driver driverJoystick;
-    private static Operator operatorJoystick;
     private static ShakerDriveTrain.DriveType driveMode;
     // Subsystem inits
     private static ShakerDriveTrain driveTrain;
 
 
-    public DriveHelper(Driver driveJoy, Operator opJoy, ShakerDriveTrain shakerDrive) {
+    public DriveHelper(Driver driveJoy, ShakerDriveTrain shakerDrive) {
         driverJoystick = driveJoy;
-        operatorJoystick = opJoy;
         driveTrain = shakerDrive;
 
     }
