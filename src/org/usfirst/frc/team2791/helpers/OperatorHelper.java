@@ -16,10 +16,6 @@ public class OperatorHelper extends ShakerHelper {
 
 	public OperatorHelper(Operator operatorJoystick) {
 		this.opJoy = operatorJoystick;
-		init();
-	}
-
-	protected void init() {
 		shooter = new ShakerShooter();
 		intake = new ShakerIntake();
 	}
@@ -28,38 +24,39 @@ public class OperatorHelper extends ShakerHelper {
 
 		if (opJoy.getButtonRB())
 			intake.pullBall();
-		if (opJoy.getButtonLB())
+		else if (opJoy.getButtonLB())
 			intake.pushBall();
+		else intake.stopMotors();
 		
 		if (opJoy.getDpadUp())
 			intake.extendIntake();
 		if (opJoy.getDpadDown())
 			intake.retractIntake();
-		
-		if (opJoy.getButtonA())
-			shooter.setShooterLow();
-		if (opJoy.getButtonB())
-			shooter.setShooterMiddle();
-		if (opJoy.getButtonY())
-			shooter.setShooterHigh();
-		
-//		if (opJoy.getButtonSt())
-//			reset();
-		if(opJoy.getButtonX())
-			currentSpeedCounter = 0; 
-		if (opJoy.getButtonSt()) {
-			if(currentSpeedCounter > 3 )
-				currentSpeedCounter = 3;
-			shooter.run(speed[currentSpeedCounter]);
-				
-		}
-		if (opJoy.getButtonSel()) {
-			if(currentSpeedCounter < 0 )
-				currentSpeedCounter = 0;
-			shooter.run(speed[currentSpeedCounter]);
-				
-		}
-		
+//		
+//		if (opJoy.getButtonA())
+//			shooter.setShooterLow();
+//		if (opJoy.getButtonB())
+//			shooter.setShooterMiddle();
+//		if (opJoy.getButtonY())
+//			shooter.setShooterHigh();
+//		
+////		if (opJoy.getButtonSt())
+////			reset();
+//		if(opJoy.getButtonX())
+//			currentSpeedCounter = 0; 
+//		if (opJoy.getButtonSt()) {
+//			if(currentSpeedCounter > 3 )
+//				currentSpeedCounter = 3;
+//			shooter.run(speed[currentSpeedCounter]);
+//				
+//		}
+//		if (opJoy.getButtonSel()) {
+//			if(currentSpeedCounter < 0 )
+//				currentSpeedCounter = 0;
+//			shooter.run(speed[currentSpeedCounter]);
+//				
+//		}
+//		
 
 		// if (opJoy.getDpadRight())
 		// autoShootHigh();
@@ -80,9 +77,9 @@ public class OperatorHelper extends ShakerHelper {
 		shooter.reset();
 	}
 
-	private void autoShootHigh() {
-		intake.extendIntake();
-		shooter.setShooterHigh();
-		shooter.run();
-	}
+//	private void autoShootHigh() {
+//		intake.extendIntake();
+//		shooter.setShooterHigh();
+//		shooter.run();
+//	}
 }

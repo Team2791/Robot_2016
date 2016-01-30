@@ -15,13 +15,8 @@ public class DriveHelper extends ShakerHelper {
     public DriveHelper(Driver driveJoy, ShakerDriveTrain shakerDrive) {
         driverJoystick = driveJoy;
         driveTrain = shakerDrive;
-        init();
-
     }
 
-    protected void init() {
-
-    }
 
     public void teleopRun() {
         switch (driveTrain.getDriveType()) {
@@ -35,9 +30,9 @@ public class DriveHelper extends ShakerHelper {
             case ARCADE:
                 driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
         }
-        if (driverJoystick.getButtonA())
+        if (driverJoystick.getButtonRB())
             driveTrain.setHighGear();
-        if (driverJoystick.getButtonB())
+        if(driverJoystick.getButtonLB()) 
             driveTrain.setLowGear();
 
 

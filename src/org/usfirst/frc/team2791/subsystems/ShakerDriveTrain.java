@@ -37,6 +37,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
 		driveTypeChooser.addObject("GTA Drive", "GTA");
 		driveType = getDriveType();
+
 	}
 
 	public void run() {
@@ -59,12 +60,18 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
+		left = -left;
+		right = -right;
+
 		switch (Robot.safetyMode) {
 		case SAFETY:
 			left *= Constants.FULL_SPEED_SAFETY_MODE;
 			right *= Constants.FULL_SPEED_SAFETY_MODE;
 			this.setLowGear();
 			break;
+		case TEST:
+			left *= Constants.FULL_SPEED_SAFETY_MODE;
+			right *= Constants.FULL_SPEED_SAFETY_MODE;
 		case FULL_CONTROL:
 			break;
 		}
@@ -81,7 +88,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public boolean isHighGear() {
-		
+
 		switch (getCurrentGear()) {
 		case HIGH:
 			return true;
@@ -100,19 +107,14 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 			return GearState.LOW;
 	}
 
-
-
 	public void setHighGear() {
-		if (!isHighGear() && !Robot.safetyMode.equals(Robot.SafetyMode.SAFETY)) {
-			driveSolenoid.set(Constants.DRIVE_HIGH_GEAR);
-		}
+		driveSolenoid.set(Constants.DRIVE_HIGH_GEAR);
 
 	}
 
 	public void setLowGear() {
-		if (isHighGear()) {
-			driveSolenoid.set(Constants.DRIVE_LOW_GEAR);
-		}
+		driveSolenoid.set(Constants.DRIVE_LOW_GEAR);
+
 	}
 
 	public void safetyOverride() {

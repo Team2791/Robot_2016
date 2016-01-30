@@ -8,9 +8,9 @@ public class Ports {
 	public static final int DRIVE_TALON_RIGHT_PORT_BACK = 3;
 	public static final int SHOOTER_TALON_RIGHT_PORT = 4;
 	public static final int SHOOTER_TALON_LEFT_PORT = 5;
-	public static final int INTAKE_TALON_LEFT_PORT = 6;
-	public static final int INTAKE_TALON_RIGHT_PORT = 7;
-	public static final int BALL_AID_SERVO_PORT = 8;
+	public static final int INTAKE_TALON_LEFT_PORT = 8;
+	public static final int INTAKE_TALON_RIGHT_PORT = 9;
+	public static final int BALL_AID_SERVO_PORT = 6;
 
 	// PCM PORTS
 	public static final int PCM_MODULE = 0;

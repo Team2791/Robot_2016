@@ -39,29 +39,27 @@ public class ShakerIntake extends ShakerSubsystem {
 	}
 
 	public void retractIntake() {
-		if (!isIntakeRetracted()) {
 			intakeSolenoid.set(Constants.INTAKE_RECTRACTED_VALUE);
-		}
+		
 	}
 
 	public void extendIntake() {
-		if (isIntakeRetracted()) {
 			intakeSolenoid.set(Constants.INTAKE_EXTENDED_VALUE);
-		}
+		
 	}
 
 	public boolean isIntakeRetracted() {
-
 		return getIntakeState().equals(Constants.INTAKE_RECTRACTED_VALUE);
 	}
 
 	public IntakeState getIntakeState() {
+		System.out.println(intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));
 		if (intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE))
 			return IntakeState.RETRACTED;
 		else if (intakeSolenoid.get().equals(Constants.INTAKE_EXTENDED_VALUE))
 			return IntakeState.EXTENDED;
 		else
-			return null;// null errors?
+			return IntakeState.EXTENDED;
 	}
 
 	public void stopMotors() {
