@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
     private static RoboClock teleopTimer;
     private static RoboClock powerTimer;
     private static GamePeriod gamePeriod;
-    // joysticks
+    // Joysticks
     private static Driver driverJoystick;
     private static Operator operatorJoystick;
     // subsystems
@@ -102,14 +102,15 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         super.teleopPeriodic();
         driverHelper.teleopRun();
-        operatorHelper.teleopRun();
+        driverHelper.update();
+        //operatorHelper.teleopRun();
 
     }
 
     public void disabledPeriodic() {
         super.disabledPeriodic();
         driverHelper.disableRun();
-        operatorHelper.disableRun();
+        //operatorHelper.disableRun();
     }
 
     public RoboClock getTeleopTimer() {
