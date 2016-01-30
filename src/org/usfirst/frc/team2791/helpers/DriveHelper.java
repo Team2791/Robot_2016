@@ -2,9 +2,6 @@ package org.usfirst.frc.team2791.helpers;
 
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
-import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain.DriveType;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Created by Akhil on 1/28/2016.
@@ -16,19 +13,14 @@ public class DriveHelper extends ShakerHelper {
 	private static ShakerDriveTrain driveTrain;
 
 	public DriveHelper(Driver driveJoy, ShakerDriveTrain shakerDrive) {
-		this.driverJoystick = driveJoy;
-		this.driveTrain = shakerDrive;
+		driverJoystick = driveJoy;
+		driveTrain = shakerDrive;
 		init();
 
 	}
 
 	protected void init() {
-//		if ((ShakerDriveTrain.DriveType) driveTrain.getDriveType() != null) {
-//			driveMode = (ShakerDriveTrain.DriveType) driveTrain.getDriveType();
-//		}
-//		else{
 
-//		}
 	}
 
 	public void teleopRun() {
