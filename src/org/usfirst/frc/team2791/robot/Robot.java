@@ -10,6 +10,8 @@ import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
 import org.usfirst.frc.team2791.util.RoboClock;
 
 public class Robot extends IterativeRobot {
+    // modes
+    public static SafetyMode safetyMode;
     // timers
     private static RoboClock disabledTimer;
     private static RoboClock autonTimer;
@@ -21,11 +23,11 @@ public class Robot extends IterativeRobot {
     private static Operator operatorJoystick;
     // subsystems
     private static ShakerDriveTrain driveTrain;
-    // modes
-    public static SafetyMode safetyMode;
     //helpers
     private DriveHelper driverHelper;
     private OperatorHelper operatorHelper;
+
+    private boolean safetyOverride = false;
 
     // RoboClock stuff
     public static RoboClock getPowerTimer() {
@@ -65,9 +67,9 @@ public class Robot extends IterativeRobot {
         driverJoystick = new Driver();
         operatorJoystick = new Operator();
         driveTrain = new ShakerDriveTrain();
-        
+
         safetyMode = SafetyMode.SAFETY;
-        
+
         driverHelper = new DriveHelper(driverJoystick, driveTrain);
         operatorHelper = new OperatorHelper(operatorJoystick);
     }
@@ -78,7 +80,7 @@ public class Robot extends IterativeRobot {
 
     public void teleopInit() {
         gamePeriod = GamePeriod.TELEOP;
-        if (DriverStation.getInstance().isFMSAttached()) {
+        if (DriverStation.getInstance().isFMSAttached() || safetyOverride) {
             safetyMode = SafetyMode.FULL_CONTROL;
         } else {
             safetyMode = SafetyMode.SAFETY;

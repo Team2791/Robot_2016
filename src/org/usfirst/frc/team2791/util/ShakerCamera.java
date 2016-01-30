@@ -23,6 +23,7 @@ public class ShakerCamera extends AxisCamera {
         centerOfMassX = 0;//get this from network tables
         doNecessaryCalculations();
 
+
     }
 
     private void doNecessaryCalculations() {

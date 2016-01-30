@@ -125,6 +125,10 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         }
     }
 
+    public void safetyOverride() {
+
+    }
+
     public DriveType getDriveType() {
         return driveType;
     }

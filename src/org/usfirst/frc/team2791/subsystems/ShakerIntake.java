@@ -59,7 +59,7 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public boolean isIntakeRetracted() {
         refreshIntakeState();
-        return intakePos.equals(Constants.INTAKE_RECTRACTED_VALUE) ? true : false;
+        return intakePos.equals(Constants.INTAKE_RECTRACTED_VALUE);
     }
 
     private void refreshIntakeState() {

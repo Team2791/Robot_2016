@@ -24,9 +24,9 @@ public class OperatorHelper extends ShakerHelper {
 
     public void teleopRun() {
 
-        if (opJoy.getButtonLB())
-            intake.pullBall();
         if (opJoy.getButtonRB())
+            intake.pullBall();
+        if (opJoy.getButtonLB())
             intake.pushBall();
         if (opJoy.getDpadUp())
             intake.extendIntake();
@@ -38,8 +38,10 @@ public class OperatorHelper extends ShakerHelper {
             shooter.setShooterMiddle();
         if (opJoy.getButtonY())
             shooter.setShooterHigh();
-        if (opJoy.getDpadUp())
-            autoShootHigh();
+        if (opJoy.getButtonSt())
+            reset();
+//        if (opJoy.getDpadUp())
+//            autoShootHigh();
     }
 
     public void disableRun() {
@@ -58,5 +60,8 @@ public class OperatorHelper extends ShakerHelper {
     }
 
     private void autoShootHigh() {
+        intake.extendIntake();
+        shooter.setShooterHigh();
+        shooter.run();
     }
 }
