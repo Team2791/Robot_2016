@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2791.subsystems;
 
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TalonSRX;
@@ -9,8 +10,8 @@ import org.usfirst.frc.team2791.configuration.Ports;
 
 
 public class ShakerShooter extends ShakerSubsystem {
-    private TalonSRX leftShooterTalon;
-    private TalonSRX rightShooterTalon;
+    private CANTalon leftShooterTalon;
+    private CANTalon rightShooterTalon;
     private ShooterHeight shooterState;
     private Solenoid firstLevelSolenoid;
     private Solenoid secondLevelSolenoid;
@@ -22,8 +23,8 @@ public class ShakerShooter extends ShakerSubsystem {
     }
 
     public void init() {
-        leftShooterTalon = new TalonSRX(Ports.SHOOTER_TALON_LEFT_PORT);
-        rightShooterTalon = new TalonSRX(Ports.SHOOTER_TALON_RIGHT_PORT);
+        leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
+        rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
         leftShooterTalon.setInverted(true);
         firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
@@ -96,9 +97,11 @@ public class ShakerShooter extends ShakerSubsystem {
     }
 
     public void pushBall() {
-
+    	ballAidServo.setAngle(Constants.SERVO_PUSH_ANGLE);
     }
-
+    public void resetServoAngle(){
+    	ballAidServo.setAngle(Constants.SERVO_DEFAULT_ANGLE);
+    }
     public void stopMotors() {
         leftShooterTalon.set(0.0);
         rightShooterTalon.set(0.0);

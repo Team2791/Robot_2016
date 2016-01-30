@@ -44,14 +44,14 @@ public class ShakerIntake extends ShakerSubsystem {
     }
 
     public void retractIntake() {
-        if (isIntakeRetracted()) {
+        if (!isIntakeRetracted()) {
             intakePos = IntakeState.RETRACTED;
             intakeSolenoid.set(Constants.INTAKE_RECTRACTED_VALUE);
         }
     }
 
     public void extendIntake() {
-        if (!isIntakeRetracted()) {
+        if (isIntakeRetracted()) {
             intakePos = IntakeState.EXTENDED;
             intakeSolenoid.set(Constants.INTAKE_EXTENDED_VALUE);
         }

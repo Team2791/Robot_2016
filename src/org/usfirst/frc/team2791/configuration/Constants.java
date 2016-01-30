@@ -23,6 +23,8 @@ public class Constants {
     public static final double SHOOTER_SPEED = 0.75;
     public static final boolean SHOOTER_HIGH_STATE = true;
     public static final boolean SHOOTER_LOW_STATE = false;
+    public static final int SERVO_PUSH_ANGLE = 70;
+    public static final int SERVO_DEFAULT_ANGLE = 0;
 
     //INTAKE CONSTANTS
     public static final double INTAKE_SPEED = 0.75;
