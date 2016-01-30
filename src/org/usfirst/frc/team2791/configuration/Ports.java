@@ -2,9 +2,9 @@ package org.usfirst.frc.team2791.configuration;
 
 public class Ports {
 	// PWM PORTS
-	public static final int DRIVE_TALON_LEFT_PORT_FRONT = 0;
-	public static final int DRIVE_TALON_LEFT_PORT_BACK = 1;
-	public static final int DRIVE_TALON_RIGHT_PORT_FRONT = 2;
+	public static final int DRIVE_TALON_LEFT_PORT_FRONT = 1;
+	public static final int DRIVE_TALON_LEFT_PORT_BACK = 2;
+	public static final int DRIVE_TALON_RIGHT_PORT_FRONT = 0;
 	public static final int DRIVE_TALON_RIGHT_PORT_BACK = 3;
 	public static final int SHOOTER_TALON_RIGHT_PORT = 4;
 	public static final int SHOOTER_TALON_LEFT_PORT = 5;
