@@ -19,6 +19,10 @@ public class DriveHelper extends ShakerHelper {
 
 
     public void teleopRun() {
+        //Reads the current drive type to chooser what layout should be used
+        //Tank: Left Stick (Y Dir) and Right Stick (Y Dir)
+        //GTA: Left Trigger, Right Trigger, Right Stick (Y Dir)
+        //Arcade: Left Stick (Y Dir), Right Stick (X Dir)
         switch (driveTrain.getDriveType()) {
             default:
             case TANK:
@@ -30,20 +34,25 @@ public class DriveHelper extends ShakerHelper {
             case ARCADE:
                 driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
         }
+        //Driver button layout
+        //RB HIGH GEAR
+        //LB LOW GEAR
         if (driverJoystick.getButtonRB())
             driveTrain.setHighGear();
-        if(driverJoystick.getButtonLB()) 
+        if (driverJoystick.getButtonLB())
             driveTrain.setLowGear();
 
 
     }
 
     public void disableRun() {
+        //runs disable methods of subsystems that fall under the driver
         driveTrain.disable();
     }
 
-    public void update() {
-        driveTrain.update();
+    public void updateSmartDash() {
+        //updateSmartDash the smartDashboard values of subsystems
+        driveTrain.updateSmartDash();
 
     }
 

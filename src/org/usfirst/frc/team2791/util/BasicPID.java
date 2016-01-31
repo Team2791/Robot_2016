@@ -51,7 +51,7 @@ public class BasicPID {
      * Update with the current error and get the new output from the PID
      */
     public double updateAndGetOutput(double currentValue) {
-        //update the current time and error
+        //updateSmartDash the current time and error
         m_currentTime = Timer.getFPGATimestamp();
         m_currentError = currentValue - m_setPoint;
         double output = getPPart() + getIPart() + getDPart();

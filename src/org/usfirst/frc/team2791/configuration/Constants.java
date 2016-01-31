@@ -20,7 +20,7 @@ public class Constants {
     public static final DoubleSolenoid.Value DRIVE_HIGH_GEAR = DoubleSolenoid.Value.kReverse;//this is the solenoid value for high gear
 
     //SHOOTER CONTANTS
-    public static final double SHOOTER_SPEED = 0.75;
+    public static final double MAX_SHOOTER_SPEED = 1.0;
     public static final boolean SHOOTER_HIGH_STATE = true;
     public static final boolean SHOOTER_LOW_STATE = false;
     public static final int SERVO_PUSH_ANGLE = 70;
@@ -30,5 +30,5 @@ public class Constants {
     public static final double INTAKE_SPEED = 1.0;
     public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
-    
+
 }

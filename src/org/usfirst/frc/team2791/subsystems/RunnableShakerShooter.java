@@ -1,21 +1,30 @@
 package org.usfirst.frc.team2791.subsystems;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.configuration.Constants;
+import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
+import org.usfirst.frc.team2791.robot.Robot;
+import org.usfirst.frc.team2791.util.BasicPID;
 
-public class ShakerShooter extends ShakerSubsystem {
+public class RunnableShakerShooter extends ShakerSubsystem {
+    private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
+    private final double[] speed = {0.25, 0.5, 0.75, 1.0};
+    private int shooterSpeedIndex = 0;
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
     private Solenoid firstLevelSolenoid;
     private Solenoid secondLevelSolenoid;
     private boolean robotHasBall;
     private Servo ballAidServo;
+    private BasicPID shooterPID;
+    private Encoder leftShooterEncoder;
 
-    public ShakerShooter() {
+    public RunnableShakerShooter() {
         //init
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
@@ -24,15 +33,29 @@ public class ShakerShooter extends ShakerSubsystem {
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
         robotHasBall = false;
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
+        shooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+        shooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
+
     }
 
     public void run() {
+        while (!Robot.gamePeriod.equals(Robot.GamePeriod.DISABLED)) {
+            try {
+//                shooterPID.updateAndGetOutput();
+                // delay so loop doesn't run crazy fast
+                Thread.sleep(updateDelayMs);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
     private void run(double syncedSpeed) {
         leftShooterTalon.set(syncedSpeed);
         rightShooterTalon.set(syncedSpeed);
     }
+
 
     public void disable() {
         stopMotors();

@@ -8,38 +8,42 @@ import org.usfirst.frc.team2791.subsystems.ShakerShooter;
  * Created by Akhil on 1/28/2016.
  */
 public class OperatorHelper extends ShakerHelper {
-	private Operator opJoy;
-	private ShakerShooter shooter;
-	private ShakerIntake intake;
-	private double[] speed = { 0.25, 0.5, 0.75, 1.0 };
-	private int currentSpeedCounter = 0;
+    private Operator opJoy;
+    private ShakerShooter shooter;
+    private ShakerIntake intake;
+    private double[] speed = {0.25, 0.5, 0.75, 1.0};
+    private int currentSpeedCounter = 0;
 
-	public OperatorHelper(Operator operatorJoystick) {
-		this.opJoy = operatorJoystick;
-		shooter = new ShakerShooter();
-		intake = new ShakerIntake();
-	}
+    public OperatorHelper(Operator operatorJoystick) {
+        //init
+        this.opJoy = operatorJoystick;
+        shooter = new ShakerShooter();
+        intake = new ShakerIntake();
+    }
 
-	public void teleopRun() {
-
-		if (opJoy.getButtonRB())
-			intake.pullBall();
-		else if (opJoy.getButtonLB())
-			intake.pushBall();
-		else intake.stopMotors();
-		
-		if (opJoy.getDpadUp())
-			intake.extendIntake();
-		if (opJoy.getDpadDown())
-			intake.retractIntake();
-//		
+    public void teleopRun() {
+        //Operator button layout
+        //RB - pull ball
+        //LB - push Ball
+        if (opJoy.getButtonRB())
+            intake.pullBall();
+        else if (opJoy.getButtonLB())
+            intake.pushBall();
+        else intake.stopMotors();
+        //DPAD up - extend intake
+        //Dpad down - retract intake
+        if (opJoy.getDpadUp())
+            intake.extendIntake();
+        if (opJoy.getDpadDown())
+            intake.retractIntake();
+//		//button layout for shooter controls when implemented
 //		if (opJoy.getButtonA())
 //			shooter.setShooterLow();
 //		if (opJoy.getButtonB())
 //			shooter.setShooterMiddle();
 //		if (opJoy.getButtonY())
 //			shooter.setShooterHigh();
-//		
+//		//start button resets operator
 ////		if (opJoy.getButtonSt())
 ////			reset();
 //		if(opJoy.getButtonX())
@@ -48,38 +52,38 @@ public class OperatorHelper extends ShakerHelper {
 //			if(currentSpeedCounter > 3 )
 //				currentSpeedCounter = 3;
 //			shooter.run(speed[currentSpeedCounter]);
-//				
+//
 //		}
 //		if (opJoy.getButtonSel()) {
 //			if(currentSpeedCounter < 0 )
 //				currentSpeedCounter = 0;
 //			shooter.run(speed[currentSpeedCounter]);
-//				
+//
 //		}
 //		
 
-		// if (opJoy.getDpadRight())
-		// autoShootHigh();
-	}
+        // if (opJoy.getDpadRight())
+        // autoShootHigh();
+    }
 
-	public void disableRun() {
-		intake.disable();
-		shooter.disable();
-	}
+    public void disableRun() {
+        intake.disable();
+        shooter.disable();
+    }
 
-	public void update() {
-		intake.update();
-		shooter.update();
-	}
+    public void updateSmartDash() {
+        intake.updateSmartDash();
+        shooter.updateSmartDash();
+    }
 
-	public void reset() {
-		intake.reset();
-		shooter.reset();
-	}
+    public void reset() {
+        intake.reset();
+        shooter.reset();
+    }
 
-//	private void autoShootHigh() {
-//		intake.extendIntake();
-//		shooter.setShooterHigh();
-//		shooter.run();
-//	}
+    private void autoShootHigh() {
+        intake.extendIntake();
+        shooter.setShooterHigh();
+        shooter.run();
+    }
 }

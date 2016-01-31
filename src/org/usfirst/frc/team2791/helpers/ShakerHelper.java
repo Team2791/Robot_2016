@@ -6,7 +6,7 @@ public abstract class ShakerHelper {
 
     abstract public void disableRun();
 
-    abstract public void update();
+    abstract public void updateSmartDash();
 
     abstract public void reset();
 

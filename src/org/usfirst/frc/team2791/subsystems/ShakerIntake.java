@@ -9,76 +9,77 @@ import org.usfirst.frc.team2791.configuration.Ports;
  * Created by Akhil on 1/28/2016.
  */
 public class ShakerIntake extends ShakerSubsystem {
-	private Talon rightIntakeMotor;
-	private Talon leftIntakeMotor;
-	private DoubleSolenoid intakeSolenoid;
+    private Talon rightIntakeMotor;
+    private Talon leftIntakeMotor;
+    private DoubleSolenoid intakeSolenoid;
 
-	public ShakerIntake() {
-		this.leftIntakeMotor = new Talon(Ports.INTAKE_TALON_LEFT_PORT);
-		this.rightIntakeMotor = new Talon(Ports.INTAKE_TALON_RIGHT_PORT);
-		leftIntakeMotor.setInverted(true);
-		this.intakeSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.INTAKE_PISTON_CHANNEL_FORWARD,
-				Ports.INTAKE_PISTON_CHANNEL_REVERSE);
+    public ShakerIntake() {
+        //init
+        this.leftIntakeMotor = new Talon(Ports.INTAKE_TALON_LEFT_PORT);
+        this.rightIntakeMotor = new Talon(Ports.INTAKE_TALON_RIGHT_PORT);
+        leftIntakeMotor.setInverted(true);
+        this.intakeSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.INTAKE_PISTON_CHANNEL_FORWARD,
+                Ports.INTAKE_PISTON_CHANNEL_REVERSE);
 
-	}
+    }
 
-	public void run() {
-	}
+    public void run() {
+    }
 
-	public void update() {
+    public void updateSmartDash() {
+    }
 
-	}
+    public void reset() {
+        //runs methods to bring back to original position
+        extendIntake();
+        stopMotors();
+    }
 
-	public void reset() {
-		extendIntake();
-		stopMotors();
-	}
+    public void disable() {
+        stopMotors();
+    }
 
-	public void disable() {
-		stopMotors();
-	}
+    public void retractIntake() {
+        intakeSolenoid.set(Constants.INTAKE_RECTRACTED_VALUE);
 
-	public void retractIntake() {
-			intakeSolenoid.set(Constants.INTAKE_RECTRACTED_VALUE);
-		
-	}
+    }
 
-	public void extendIntake() {
-			intakeSolenoid.set(Constants.INTAKE_EXTENDED_VALUE);
-		
-	}
+    public void extendIntake() {
+        intakeSolenoid.set(Constants.INTAKE_EXTENDED_VALUE);
 
-	public boolean isIntakeRetracted() {
-		return getIntakeState().equals(Constants.INTAKE_RECTRACTED_VALUE);
-	}
+    }
 
-	public IntakeState getIntakeState() {
-		System.out.println(intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));
-		if (intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE))
-			return IntakeState.RETRACTED;
-		else if (intakeSolenoid.get().equals(Constants.INTAKE_EXTENDED_VALUE))
-			return IntakeState.EXTENDED;
-		else
-			return IntakeState.EXTENDED;
-	}
+    public boolean isIntakeRetracted() {
+        return getIntakeState().equals(Constants.INTAKE_RECTRACTED_VALUE);
+    }
 
-	public void stopMotors() {
-		leftIntakeMotor.set(0.0);
-		rightIntakeMotor.set(0.0);
-	}
+    public IntakeState getIntakeState() {
+        System.out.println(intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));
+        if (intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE))
+            return IntakeState.RETRACTED;
+        else if (intakeSolenoid.get().equals(Constants.INTAKE_EXTENDED_VALUE))
+            return IntakeState.EXTENDED;
+        else
+            return IntakeState.EXTENDED;
+    }
 
-	public void pullBall() {
-		leftIntakeMotor.set(Constants.INTAKE_SPEED);
-		rightIntakeMotor.set(Constants.INTAKE_SPEED);
-	}
+    public void stopMotors() {
+        leftIntakeMotor.set(0.0);
+        rightIntakeMotor.set(0.0);
+    }
 
-	public void pushBall() {
-		leftIntakeMotor.set(-Constants.INTAKE_SPEED);
-		rightIntakeMotor.set(-Constants.INTAKE_SPEED);
+    public void pullBall() {
+        leftIntakeMotor.set(Constants.INTAKE_SPEED);
+        rightIntakeMotor.set(Constants.INTAKE_SPEED);
+    }
 
-	}
+    public void pushBall() {
+        leftIntakeMotor.set(-Constants.INTAKE_SPEED);
+        rightIntakeMotor.set(-Constants.INTAKE_SPEED);
 
-	public enum IntakeState {
-		RETRACTED, EXTENDED
-	}
+    }
+
+    public enum IntakeState {
+        RETRACTED, EXTENDED
+    }
 }
