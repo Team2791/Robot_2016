@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
-import org.usfirst.frc.team2791.robot.Robot;
 import org.usfirst.frc.team2791.util.BasicPID;
 
 public class RunnableShakerShooter extends ShakerSubsystem {
@@ -21,7 +20,12 @@ public class RunnableShakerShooter extends ShakerSubsystem {
     private Solenoid secondLevelSolenoid;
     private boolean robotHasBall;
     private Servo ballAidServo;
-    private BasicPID shooterPID;
+    private BasicPID rightShooterPID;
+    private BasicPID leftShooterPID;
+    private boolean usePID = false;
+    private double leftShooterOutput;
+    private double rightShooterOutput;
+    private Encoder rightShooterEncoder;
     private Encoder leftShooterEncoder;
 
     public RunnableShakerShooter() {
@@ -33,16 +37,22 @@ public class RunnableShakerShooter extends ShakerSubsystem {
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
         robotHasBall = false;
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-        shooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-        shooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
+        rightShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+        rightShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
+        leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+        leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
 
     }
 
     public void run() {
-        while (!Robot.gamePeriod.equals(Robot.GamePeriod.DISABLED)) {
+        while (true) {
             try {
-//                shooterPID.updateAndGetOutput();
-                // delay so loop doesn't run crazy fast
+                if (usePID) {//if given value to go to
+                    leftShooterOutput = rightShooterPID.updateAndGetOutput(leftShooterEncoder.getRate());
+                    rightShooterOutput = rightShooterPID.updateAndGetOutput(rightShooterEncoder.getRate());
+                    setShoterSpeeds(leftShooterOutput, rightShooterOutput);
+                }
+                //delay to prevent it from running to fast
                 Thread.sleep(updateDelayMs);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -51,26 +61,46 @@ public class RunnableShakerShooter extends ShakerSubsystem {
     }
 
 
-    private void run(double syncedSpeed) {
+    public void shooterSpeedsWithoutPID(double syncedSpeed) {
+        //this shouldn't be used except for testing or for practice bot....
         leftShooterTalon.set(syncedSpeed);
         rightShooterTalon.set(syncedSpeed);
     }
 
+    private void setShoterSpeeds(double left, double right) {
+        //private method to set speeds of the shooter wheels
+        leftShooterTalon.set(left);
+        rightShooterTalon.set(right);
+    }
+
+    public void shooterSpeedWithPID(int shooterSpeedIndex) {
+        //starts the pid loop
+        usePID = true;
+        rightShooterPID.setSetPoint(speed[shooterSpeedIndex]);
+        leftShooterPID.setSetPoint(speed[shooterSpeedIndex]);
+        rightShooterPID.reset();
+        leftShooterPID.reset();
+    }
+
 
     public void disable() {
+        //disable code --stops wheels
         stopMotors();
     }
 
     public void reset() {
+        //bring robot back to starting configuration --maybe put one button on dash to reset robot pos
         stopMotors();
         setShooterLow();
     }
 
     public void updateSmartDash() {
         SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
+
     }
 
     public ShooterHeight getShooterHeight() {
+        //get current shooter height by determining which solenoid are true
         if (firstLevelSolenoid.get() && secondLevelSolenoid.get())
             return ShooterHeight.HIGH;
         else if (firstLevelSolenoid.get())
@@ -81,33 +111,41 @@ public class RunnableShakerShooter extends ShakerSubsystem {
     }
 
     public void setShooterLow() {
+        //set shooter height to low , set both pistons to false
         firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
         secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
     }
 
     public void setShooterMiddle() {
+        //set shooter height to middle meaning only one piston will be true
         firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
         secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
     }
 
     public void setShooterHigh() {
+        // both pistons will be set to true to get max height
         firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
         secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
     }
 
     public boolean hasBall() {
+        //this boolean will be determined by possible sensors
+        //will be used for auto firing
         return robotHasBall;
     }
 
     public void pushBall() {
+        //will be used to push ball toward the shooter
         ballAidServo.setAngle(Constants.SERVO_PUSH_ANGLE);
     }
 
     public void resetServoAngle() {
+        //bring servo back to original position
         ballAidServo.setAngle(Constants.SERVO_DEFAULT_ANGLE);
     }
 
     public void stopMotors() {
+        //bring both motors to stop
         leftShooterTalon.set(0.0);
         rightShooterTalon.set(0.0);
     }
