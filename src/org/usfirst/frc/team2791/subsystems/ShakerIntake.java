@@ -31,7 +31,7 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public void reset() {
         //runs methods to bring back to original position
-        extendIntake();
+        retractIntake();
         stopMotors();
     }
 

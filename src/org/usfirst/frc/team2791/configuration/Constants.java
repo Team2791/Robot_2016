@@ -25,10 +25,11 @@ public class Constants {
     public static final boolean SHOOTER_LOW_STATE = false;
     public static final int SERVO_PUSH_ANGLE = 70;
     public static final int SERVO_DEFAULT_ANGLE = 0;
+    public static final double THRESHOLD_BALL_DISTANCE = 6.0;
 
     //INTAKE CONSTANTS
     public static final double INTAKE_SPEED = 1.0;
-    public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
-    public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kReverse;
 
 }

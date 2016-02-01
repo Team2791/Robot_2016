@@ -1,6 +1,8 @@
 package org.usfirst.frc.team2791.configuration;
 
 public class Ports {
+	//DIO
+	public static final int BALL_DISTANCE_SENSOR_PORT = 3;
     // PWM PORTS
     public static final int DRIVE_TALON_LEFT_PORT_FRONT = 1;
     public static final int DRIVE_TALON_LEFT_PORT_BACK = 2;

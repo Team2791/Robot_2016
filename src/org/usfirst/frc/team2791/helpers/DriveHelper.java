@@ -26,7 +26,7 @@ public class DriveHelper extends ShakerHelper {
         switch (driveTrain.getDriveType()) {
             default:
             case TANK:
-                driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightY());
+                driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightY());
                 break;
             case GTA:
                 driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
@@ -41,6 +41,8 @@ public class DriveHelper extends ShakerHelper {
             driveTrain.setHighGear();
         if (driverJoystick.getButtonLB())
             driveTrain.setLowGear();
+        if(driverJoystick.getButtonSel())
+        	driveTrain.reset();
 
 
     }

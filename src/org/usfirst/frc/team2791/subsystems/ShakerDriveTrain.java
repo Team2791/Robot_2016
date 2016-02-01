@@ -56,9 +56,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     }
 
     public void setLeftRight(double left, double right) {
-        left = -left;
-        right = -right;
-
         switch (Robot.safetyMode) {
             case SAFETY:
                 left *= Constants.FULL_SPEED_SAFETY_MODE;
