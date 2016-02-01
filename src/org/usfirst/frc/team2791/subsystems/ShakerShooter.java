@@ -83,6 +83,12 @@ public class ShakerShooter extends ShakerSubsystem {
 		leftShooterPID.reset();
 	}
 
+	public void shooterSpeedWithoutPID(int shooterSpeedIndex) {
+
+		shooterSpeedsWithoutPID(speed[shooterSpeedIndex]);
+
+	}
+
 	public void disable() {
 		// disable code --stops wheels
 		stopMotors();
@@ -92,11 +98,12 @@ public class ShakerShooter extends ShakerSubsystem {
 		// bring robot back to starting configuration --maybe put one button on
 		// dash to reset robot pos
 		stopMotors();
-		setShooterLow();
+		// setShooterLow();
 	}
 
 	public void updateSmartDash() {
-		SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
+		// SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
+		SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getAverageVoltage());
 
 	}
 
@@ -130,12 +137,12 @@ public class ShakerShooter extends ShakerSubsystem {
 	}
 
 	public boolean hasBall() {
-        //this boolean will be determined by possible sensors
-        //will be used for auto firing
-    	if(ballCheckingSensor.getAverageVoltage() < Constants.THRESHOLD_BALL_DISTANCE)
-    		return true;
-    	return false;
-    }
+		// this boolean will be determined by possible sensors
+		// will be used for auto firing
+		if (ballCheckingSensor.getAverageVoltage() < Constants.THRESHOLD_BALL_DISTANCE)
+			return true;
+		return false;
+	}
 
 	public void pushBall() {
 		// will be used to push ball toward the shooter
