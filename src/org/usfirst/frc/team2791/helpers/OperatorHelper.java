@@ -70,7 +70,7 @@ public class OperatorHelper extends ShakerHelper {
 
 	public void reset() {
 		shooterSpeedIndex = 0;
-		// shooter.reset();
+		 shooter.reset();
 		intake.reset();
 	}
 

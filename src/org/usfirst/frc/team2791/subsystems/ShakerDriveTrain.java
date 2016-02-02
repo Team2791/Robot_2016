@@ -51,9 +51,9 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void updateSmartDash() {
-		SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
+		SmartDashboard.putNumber("Gear : ", isHighGear() ? (int) 2 : (int) 1);
 		SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
-		SmartDashboard.putNumber("Right Drive Encoders Rate", -rightDriveEncoder.getRate());
+		SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
 		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
 	}
 
