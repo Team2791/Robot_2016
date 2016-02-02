@@ -35,6 +35,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		driveTypeChooser.addDefault("Tank Drive", "TANK");
 		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
 		driveTypeChooser.addObject("GTA Drive", "GTA");
+		driveTypeChooser.addObject("Single Arcade", "SINGLE_ARCADE");
 		driveType = getDriveType();
 		leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORT_A, Ports.LEFT_DRIVE_ENCODER_PORT_B);
 		rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCOODER_PORT_A, Ports.RIGHT_DRIVE_ENCODER_PORT_B);
@@ -135,6 +136,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 			driveType = DriveType.ARCADE;
 		} else if (driverInputType.equals("TANK")) {
 			driveType = DriveType.TANK;
+		} else if (driverInputType.equals("SINGLE_ARCADE")) {
+			driveType = DriveType.SINGLE_ARCADE;
 		} else
 			driveType = DriveType.GTA;
 	}
@@ -144,7 +147,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public enum DriveType {
-		TANK, ARCADE, GTA
+		TANK, ARCADE, GTA, SINGLE_ARCADE
 	}
 
 }

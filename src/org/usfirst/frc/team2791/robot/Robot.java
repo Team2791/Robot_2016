@@ -10,6 +10,8 @@ import org.usfirst.frc.team2791.helpers.OperatorHelper;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
+import org.usfirst.frc.team2791.subsystems.ShakerIntake;
+import org.usfirst.frc.team2791.subsystems.ShakerShooter;
 import org.usfirst.frc.team2791.util.RoboClock;
 
 public class Robot extends IterativeRobot {
@@ -22,15 +24,17 @@ public class Robot extends IterativeRobot {
 	private static RoboClock teleopTimer;
 	private static RoboClock powerTimer;
 	// Joysticks
-	private static Driver driverJoystick;
-	private static Operator operatorJoystick;
-	// subsystems
-	private static ShakerDriveTrain driveTrain;
+	public static Driver driverJoystick;
+	public static Operator operatorJoystick;
 	// helpers
 	private DriveHelper driverHelper;
 	private OperatorHelper operatorHelper;
+	// operator subsystems
+	public static ShakerShooter shooter;
+	public static ShakerIntake intake;
+	// driver subsystems
+	public static ShakerDriveTrain driveTrain;
 
-	private boolean safetyOverride = true;
 	private Compressor compressor;
 	private SendableChooser safeModeChooser;
 
@@ -75,8 +79,8 @@ public class Robot extends IterativeRobot {
 
 		safetyMode = SafetyMode.SAFETY;
 
-		driverHelper = new DriveHelper(driverJoystick, driveTrain);
-		operatorHelper = new OperatorHelper(operatorJoystick);
+		driverHelper = new DriveHelper();
+		operatorHelper = new OperatorHelper();
 
 		compressor = new Compressor();
 		safeModeChooser = new SendableChooser();
@@ -84,6 +88,9 @@ public class Robot extends IterativeRobot {
 		safeModeChooser.addDefault("Safe Mode", "SAFE");
 		safeModeChooser.addObject("Test Mode (Partial Safety)", "TEST");
 		safeModeChooser.addObject("Full Mode", "FULL");
+
+		shooter = new ShakerShooter();
+		intake = new ShakerIntake();
 	}
 
 	public void autonomousInit() {

@@ -4,19 +4,19 @@ import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.subsystems.ShakerIntake;
 import org.usfirst.frc.team2791.subsystems.ShakerShooter;
 import org.usfirst.frc.team2791.subsystems.OldShakerShooter;
+import org.usfirst.frc.team2791.robot.Robot.SafetyMode;
+import static org.usfirst.frc.team2791.robot.Robot.operatorJoystick;
+import static org.usfirst.frc.team2791.robot.Robot.shooter;
+import static org.usfirst.frc.team2791.robot.Robot.intake;
 
 /**
  * Created by Akhil on 1/28/2016.
  */
 public class OperatorHelper extends ShakerHelper {
-	private Operator opJoy;
-	private ShakerShooter shooter;
-	private ShakerIntake intake;
 	private int shooterSpeedIndex = 0;
 
-	public OperatorHelper(Operator operatorJoystick) {
+	public OperatorHelper() {
 		// init
-		this.opJoy = operatorJoystick;
 		shooter = new ShakerShooter();
 		intake = new ShakerIntake();
 	}
@@ -25,33 +25,33 @@ public class OperatorHelper extends ShakerHelper {
 		// Operator button layout
 		// RB - pull ball
 		// LB - push Ball
-		if (opJoy.getAxisRT() > 0.5)
+		if (operatorJoystick.getAxisRT() > 0.5)
 			intake.pullBall();
-		else if (opJoy.getAxisLT() > 0.5)
+		else if (operatorJoystick.getAxisLT() > 0.5)
 			intake.pushBall();
 		else
 			intake.stopMotors();
 		// DPAD up - extend intake
 		// Dpad down - retract intake
-		if (opJoy.getButtonA())
+		if (operatorJoystick.getButtonA())
 			intake.extendIntake();
-		if (opJoy.getButtonY())
+		if (operatorJoystick.getButtonY())
 			intake.retractIntake();
-		if (opJoy.getButtonLB())
+		if (operatorJoystick.getButtonLB())
 			shooterSpeedIndex = shooterSpeedIndex == 0 ? 0 : shooterSpeedIndex--;
-		if (opJoy.getButtonRB())
+		if (operatorJoystick.getButtonRB())
 			shooterSpeedIndex = shooterSpeedIndex == 3 ? 3 : shooterSpeedIndex++;
-		if (opJoy.getButtonB()){
+		if (operatorJoystick.getButtonB()){
 			shooter.shooterSpeedsWithoutPID(shooterSpeedIndex);
 			shooter.shooterSpeedWithPID(shooterSpeedIndex);
 		}
-			if (opJoy.getButtonSel()) {
+			if (operatorJoystick.getButtonSel()) {
 			shooterSpeedIndex = 0;
 			shooter.stopMotors();
 		}
 
 		// Start button to reset to teleop start
-		if (opJoy.getButtonSt())
+		if (operatorJoystick.getButtonSt())
 			reset();
 
 		// if (opJoy.getDpadRight())
