@@ -8,7 +8,7 @@ public class Driver extends OverriddenJoystick {
     }
 
     public double getGtaDriveLeft() {
-        double combined = super.getAxisRightX() - super.getAxisRT() + super.getAxisLT();
+        double combined = super.getAxisRightX() + super.getAxisRT() - super.getAxisLT();
         if (combined > 1.0) return 1.0;
         else if (combined < -1.0) return -1.0;
         return combined;
@@ -16,7 +16,7 @@ public class Driver extends OverriddenJoystick {
     }
 
     public double getGtaDriveRight() {
-        double combined = super.getAxisRightX() - super.getAxisRT() + super.getAxisLT();
+        double combined = -super.getAxisRightX() + super.getAxisRT() - super.getAxisLT();
         if (combined > 1.0) return 1.0;
         else if (combined < -1.0) return -1.0;
         return combined;

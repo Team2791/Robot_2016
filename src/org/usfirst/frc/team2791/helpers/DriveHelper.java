@@ -32,7 +32,7 @@ public class DriveHelper extends ShakerHelper {
                 driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
                 break;
             case ARCADE:
-                driveTrain.setLeftRight(driverJoystick.getAxisLeftY(), driverJoystick.getAxisRightX());
+                driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightX());
         }
         //Driver button layout
         //RB HIGH GEAR

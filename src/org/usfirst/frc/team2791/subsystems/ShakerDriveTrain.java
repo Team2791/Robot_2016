@@ -31,7 +31,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		roboDrive.stopMotor();
 		this.driveSolenoid = new DoubleSolenoid(Ports.DRIVE_PISTON_FORWARD, Ports.DRIVE_PISTON_REVERSE);
 		driveTypeChooser = new SendableChooser();
-		SmartDashboard.putData("Sync Chooser", driveTypeChooser);
+		SmartDashboard.putData("Drive Chooser", driveTypeChooser);
 		driveTypeChooser.addDefault("Tank Drive", "TANK");
 		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
 		driveTypeChooser.addObject("GTA Drive", "GTA");
@@ -53,7 +53,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	public void updateSmartDash() {
 		SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
 		SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
-		SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
+		SmartDashboard.putNumber("Right Drive Encoders Rate", -rightDriveEncoder.getRate());
 		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
 	}
 

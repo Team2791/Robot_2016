@@ -17,7 +17,7 @@ public class OperatorHelper extends ShakerHelper {
 	public OperatorHelper(Operator operatorJoystick) {
 		// init
 		this.opJoy = operatorJoystick;
-		// shooter = new ShakerShooter();
+		shooter = new ShakerShooter();
 		intake = new ShakerIntake();
 	}
 
@@ -25,9 +25,9 @@ public class OperatorHelper extends ShakerHelper {
 		// Operator button layout
 		// RB - pull ball
 		// LB - push Ball
-		if (-opJoy.getAxisRT() > 0.5)
+		if (opJoy.getAxisRT() > 0.5)
 			intake.pullBall();
-		else if (-opJoy.getAxisLT() > 0.5)
+		else if (opJoy.getAxisLT() > 0.5)
 			intake.pushBall();
 		else
 			intake.stopMotors();
@@ -41,9 +41,11 @@ public class OperatorHelper extends ShakerHelper {
 			shooterSpeedIndex = shooterSpeedIndex == 0 ? 0 : shooterSpeedIndex--;
 		if (opJoy.getButtonRB())
 			shooterSpeedIndex = shooterSpeedIndex == 3 ? 3 : shooterSpeedIndex++;
-		if (opJoy.getButtonB())
+		if (opJoy.getButtonB()){
 			shooter.shooterSpeedsWithoutPID(shooterSpeedIndex);
-		if (opJoy.getButtonSel()) {
+			shooter.shooterSpeedWithPID(shooterSpeedIndex);
+		}
+			if (opJoy.getButtonSel()) {
 			shooterSpeedIndex = 0;
 			shooter.stopMotors();
 		}
@@ -58,12 +60,12 @@ public class OperatorHelper extends ShakerHelper {
 
 	public void disableRun() {
 		intake.disable();
-		// shooter.disable();
+		 shooter.disable();
 	}
 
 	public void updateSmartDash() {
 		intake.updateSmartDash();
-		// shooter.updateSmartDash();
+		 shooter.updateSmartDash();
 	}
 
 	public void reset() {

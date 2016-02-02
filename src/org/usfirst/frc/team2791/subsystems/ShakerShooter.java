@@ -42,7 +42,6 @@ public class ShakerShooter extends ShakerSubsystem {
 		leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
 		leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
 		ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
-
 	}
 
 	public void run() {
@@ -51,8 +50,10 @@ public class ShakerShooter extends ShakerSubsystem {
 				if (usePID) {// if given value to go to
 					leftShooterOutput = rightShooterPID.updateAndGetOutput(leftShooterEncoder.getRate());
 					rightShooterOutput = rightShooterPID.updateAndGetOutput(rightShooterEncoder.getRate());
-					setShoterSpeeds(leftShooterOutput, rightShooterOutput);
-					usePID = hasBall();
+					SmartDashboard.putNumber("Right Shooter Output", rightShooterOutput);
+					SmartDashboard.putNumber("Left Shooter Output", leftShooterOutput);
+					//setShoterSpeeds(leftShooterOutput, rightShooterOutput);
+					//usePID = hasBall();
 				}
 				// delay to prevent it from running to fast
 				Thread.sleep(updateDelayMs);
@@ -103,7 +104,7 @@ public class ShakerShooter extends ShakerSubsystem {
 
 	public void updateSmartDash() {
 		// SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
-		SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getAverageVoltage());
+		SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getVoltage());
 
 	}
 

@@ -80,7 +80,7 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor();
 		safeModeChooser = new SendableChooser();
-		SmartDashboard.putData("Sync Chooser", safeModeChooser);
+		SmartDashboard.putData("Safe Mode Chooser", safeModeChooser);
 		safeModeChooser.addDefault("Safe Mode", "SAFE");
 		safeModeChooser.addObject("Test Mode (Partial Safety)", "TEST");
 		safeModeChooser.addObject("Full Mode", "FULL");
@@ -127,6 +127,7 @@ public class Robot extends IterativeRobot {
 		driverHelper.updateSmartDash();
 
 		operatorHelper.teleopRun();
+		operatorHelper.updateSmartDash();
 		compressor.start();
 
 	}
