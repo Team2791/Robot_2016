@@ -29,6 +29,7 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
         leftShooterTalon.setInverted(true);
+        leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Voltage);
         firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
