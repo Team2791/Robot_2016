@@ -5,27 +5,27 @@ package org.usfirst.frc.team2791.helpers;
  */
 public class AutonHelper extends ShakerHelper {
 
-	
-	public void teleopRun() {
-		
-		
-	}
 
-	
-	public void disableRun() {
-		
-		
-	}
+    public void teleopRun() {
 
-	
-	public void updateSmartDash() {
-		
-		
-	}
 
-	
-	public void reset() {
-		
-		
-	}
+    }
+
+
+    public void disableRun() {
+
+
+    }
+
+
+    public void updateSmartDash() {
+
+
+    }
+
+
+    public void reset() {
+
+
+    }
 }
