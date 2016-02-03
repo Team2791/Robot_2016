@@ -16,8 +16,8 @@ public class Constants {
 
     //ROBOT DRIVE CONSTANTS
     public static final double FULL_SPEED_SAFETY_MODE = 0.50;//sets max speed percentage during safety mode
-    public static final DoubleSolenoid.Value DRIVE_LOW_GEAR = DoubleSolenoid.Value.kForward;//this is the solenoid value for low gear
-    public static final DoubleSolenoid.Value DRIVE_HIGH_GEAR = DoubleSolenoid.Value.kReverse;//this is the solenoid value for high gear
+    public static final DoubleSolenoid.Value DRIVE_LOW_GEAR = DoubleSolenoid.Value.kReverse;//this is the solenoid value for low gear
+    public static final DoubleSolenoid.Value DRIVE_HIGH_GEAR = DoubleSolenoid.Value.kForward;//this is the solenoid value for high gear
 
     //SHOOTER CONTANTS
     public static final double MAX_SHOOTER_SPEED = 1.0;

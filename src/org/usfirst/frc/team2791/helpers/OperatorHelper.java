@@ -17,8 +17,6 @@ public class OperatorHelper extends ShakerHelper {
 
 	public OperatorHelper() {
 		// init
-		shooter = new ShakerShooter();
-		intake = new ShakerIntake();
 	}
 
 	public void teleopRun() {
