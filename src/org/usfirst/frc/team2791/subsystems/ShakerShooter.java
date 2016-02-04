@@ -2,167 +2,213 @@ package org.usfirst.frc.team2791.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.util.BasicPID;
 
+import com.ni.vision.NIVision.CalibrationThumbnailType;
 
-public class ShakerShooter extends ShakerSubsystem {
-    private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
-    private final double[] speed = {0.25, 0.5, 0.75, 1.0};
-    private final int delayTimeBeforeShooting = 100;//time for wheels to get to speed
-    private final int delayTimeForServo = 100;//time for servo to push
-    private CANTalon leftShooterTalon;
-    private CANTalon rightShooterTalon;
-    private Solenoid firstLevelSolenoid;
-    private Solenoid secondLevelSolenoid;
-    private Servo ballAidServo;
-    private BasicPID rightShooterPID;
-    private BasicPID leftShooterPID;
-    private AnalogInput ballCheckingSensor;
-    private boolean autoFire;
-    private double fireSpeed = 1.0;
-    private boolean usePID = false;
+public class ShakerShooter extends ShakerSubsystem implements Runnable {
+	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
+	private final double[] speed = { 0.25, 0.5, 0.75, 1.0 };
+	private final double delayTimeBeforeShooting = 1.0;// time for wheels to get
+														// to
+														// speed
+	private final double delayTimeForServo = 1.0;// time for servo to push
+	private CANTalon leftShooterTalon;
+	private CANTalon rightShooterTalon;
+	private Solenoid firstLevelSolenoid;
+	private Solenoid secondLevelSolenoid;
+	private Servo ballAidServo;
+	private BasicPID rightShooterPID;
+	private BasicPID leftShooterPID;
+	private AnalogInput ballCheckingSensor;
+	private boolean autoFire;
+	private double fireSpeed = 1.0;
+	private boolean usePID = false;
+	private DoubleSolenoid armAttachment;
+	double time;
 
-    public ShakerShooter() {
-        // init
-        leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
-        rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
-        leftShooterTalon.setInverted(true);
-//        leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Voltage);
-        firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
-        secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
-        ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-        rightShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-        rightShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
-        leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-        leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
-        ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
-        SmartDashboard.putNumber("Fire Speed", fireSpeed);
-    }
+	public ShakerShooter() {
+		// init
+		leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
+		rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
+		rightShooterTalon.setInverted(true);
+//		 leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
+//		 rightShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
+		firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
+		secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
+		ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
+//		rightShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+//		rightShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
+//		leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+//		leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
+		ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
+		SmartDashboard.putNumber("Fire Speed", fireSpeed);
 
-    public void run() {
-        while (true) {
-            try {
-                if (autoFire) {// if auto fire
-                    // Runs the wheels at the set speed
-                    fireSpeed = SmartDashboard.getNumber("Fire Speed");
-                    shooterSpeedsWithoutPID(fireSpeed);
-                    Thread.sleep(delayTimeBeforeShooting);
-                    pushBall();
-                    Thread.sleep(delayTimeForServo);
-                    resetServoAngle();
-                    Thread.sleep(delayTimeForServo);
-                    stopMotors();
-                    autoFire = false;
-                }
+		armAttachment = new DoubleSolenoid(Ports.INTAKE_ARM_CHANNEL_FORWARD, Ports.INTAKE_ARM_CHANNEL_REVERSE);
 
+	}
 
-                // delay to prevent it from running to fast
-                Thread.sleep(updateDelayMs);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	public void run() {
+		while (true) {
+			try {
+				leftShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+				rightShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+				if (autoFire) {// if auto fire
+					// Runs the wheels at the set speed
+					fireSpeed = SmartDashboard.getNumber("Fire Speed");
+					time = Timer.getFPGATimestamp();
+					while (Timer.getFPGATimestamp() - time < delayTimeBeforeShooting) {
+						shooterSpeedsWithoutPID(fireSpeed);
+						System.out.println("The wheels are spinning up");
+					}
+					System.out.println(" I have been told to fire at" + fireSpeed);
+					time = Timer.getFPGATimestamp();
+					while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+						shooterSpeedsWithoutPID(fireSpeed);
+						pushBall();
+						System.out.println("The ball is being pushed out");
+					}
+					while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+						System.out.println("RESETTING SHOOTER....");
+						resetServoAngle();
+					leftShooterTalon.set(fireSpeed);
+					rightShooterTalon.set(fireSpeed);
 
-    public void shooterSpeedsWithoutPID(double syncedSpeed) {
-        // this shouldn't be used except for testing or for practice bot....
-        leftShooterTalon.set(syncedSpeed);
-        rightShooterTalon.set(syncedSpeed);
-    }
+					System.out.println("JUST WROTE TO THE TALON");
+					Thread.sleep(10000);
 
-    public void shooterSpeedWithPID(int shooterSpeedIndex) {
-        // starts the pid loop
-        usePID = true;
-        rightShooterPID.setSetPoint(speed[shooterSpeedIndex]);
-        leftShooterPID.setSetPoint(speed[shooterSpeedIndex]);
-        rightShooterPID.reset();
-        leftShooterPID.reset();
-    }
+					System.out.println("DELAY OVER");
+					time = Timer.getFPGATimestamp();
+					while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+						pushBall();
+						System.out.println("The ball is being pushed out");
+					}
+					
+					}
 
-    public void disable() {
-        // disable code --stops wheels
-        stopMotors();
-    }
+					leftShooterTalon.set(0);
+					rightShooterTalon.set(0);
+					autoFire = false;
+				}
+				resetServoAngle();
+				// delay to prevent it from running to fast
+				Thread.sleep(updateDelayMs);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public void reset() {
-        // bring robot back to starting configuration --maybe put one button on
-        // dash to reset robot pos
-        stopMotors();
-        // setShooterLow();
-    }
+	public void shooterSpeedsWithoutPID(double syncedSpeed) {
+		// this shouldn't be used except for testing or for practice bot....
+		leftShooterTalon.set(syncedSpeed);
+		rightShooterTalon.set(syncedSpeed);
+	}
 
-    public void updateSmartDash() {
-        // SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
-        SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getVoltage());
+	public void shooterSpeedWithPID(int shooterSpeedIndex) {
+		// starts the pid loop
+//		usePID = true;
+//		rightShooterPID.setSetPoint(speed[shooterSpeedIndex]);
+//		leftShooterPID.setSetPoint(speed[shooterSpeedIndex]);
+//		rightShooterPID.reset();
+//		leftShooterPID.reset();
+	}
 
-    }
+	public void disable() {
+		// disable code --stops wheels
+		stopMotors();
+	}
 
-    public ShooterHeight getShooterHeight() {
-        // get current shooter height by determining which solenoid are true
-        if (firstLevelSolenoid.get() && secondLevelSolenoid.get())
-            return ShooterHeight.HIGH;
-        else if (firstLevelSolenoid.get())
-            return ShooterHeight.MID;
-        else
-            return ShooterHeight.LOW;
+	public void reset() {
+		// bring robot back to starting configuration --maybe put one button on
+		// dash to reset robot pos
+		stopMotors();
+		// setShooterLow();
+	}
 
-    }
+	public void updateSmartDash() {
+		// SmartDashboard.putString("Shooter Height: ",
+		// getShooterHeight().toString());
+		SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getVoltage());
 
-    public void setShooterLow() {
-        // set shooter height to low , set both pistons to false
-        firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-    }
+	}
 
-    public void setShooterMiddle() {
-        // set shooter height to middle meaning only one piston will be true
-        firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-    }
+	public ShooterHeight getShooterHeight() {
+		// get current shooter height by determining which solenoid are true
+		if (firstLevelSolenoid.get() && secondLevelSolenoid.get())
+			return ShooterHeight.HIGH;
+		else if (firstLevelSolenoid.get())
+			return ShooterHeight.MID;
+		else
+			return ShooterHeight.LOW;
 
-    public void setShooterHigh() {
-        // both pistons will be set to true to get max height
-        firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-    }
+	}
 
-    public boolean hasBall() {
-        // this boolean will be determined by possible sensors
-        // will be used for auto firing
-        return ballCheckingSensor.getAverageVoltage() > Constants.THRESHOLD_BALL_DISTANCE;
-    }
+	public void setShooterLow() {
+		// set shooter height to low , set both pistons to false
+		firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+		secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+	}
 
-    public void pushBall() {
-        // will be used to push ball toward the shooter
+	public void setShooterMiddle() {
+		// set shooter height to middle meaning only one piston will be true
+		firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
+		secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+	}
 
-        ballAidServo.set(1);
+	public void setShooterHigh() {
+		// both pistons will be set to true to get max height
+		firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
+		secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
+	}
 
-    }
+	public boolean hasBall() {
+		// this boolean will be determined by possible sensors
+		// will be used for auto firing
+		return ballCheckingSensor.getAverageVoltage() > Constants.THRESHOLD_BALL_DISTANCE;
+	}
 
-    public void resetServoAngle() {
-        // bring servo back to original position
-        ballAidServo.set(0);
-    }
+	public void pushBall() {
+		// will be used to push ball toward the shooter
 
-    public void autoFire() {
-        fireSpeed = SmartDashboard.getNumber("Fire Speed");
-        autoFire = true;
-    }
+		ballAidServo.set(1);
 
-    public void stopMotors() {
-        // bring both motors to stop
-        leftShooterTalon.set(0.0);
-        rightShooterTalon.set(0.0);
-    }
+	}
 
-    public enum ShooterHeight {
-        LOW, MID, HIGH
-    }
+	public void resetServoAngle() {
+		// bring servo back to original position
+		ballAidServo.set(0);
+	}
+
+	public void autoFire() {
+		fireSpeed = SmartDashboard.getNumber("Fire Speed");
+		autoFire = true;
+	}
+
+	public void setArmAttachmentUp() {
+		armAttachment.set(Constants.INTAKE_ARM_UP_VALUE);
+	}
+
+	public void setArmAttachmentDown() {
+		armAttachment.set(Constants.INTAKE_ARM_DOWN_VALUE);
+	}
+
+	public void stopMotors() {
+		// bring both motors to stop
+		leftShooterTalon.set(0.0);
+		rightShooterTalon.set(0.0);
+	}
+
+	public enum ShooterHeight {
+		LOW, MID, HIGH
+	}
 
 }

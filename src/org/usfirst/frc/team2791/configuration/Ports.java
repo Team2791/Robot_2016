@@ -19,6 +19,7 @@ public class Ports {
     public static final int INTAKE_TALON_RIGHT_PORT = 9;
     public static final int BALL_AID_SERVO_PORT = 4;
 
+
     // PCM PORTS
     public static final int PCM_MODULE = 20;
     public static final int DRIVE_PISTON_FORWARD = 0;
@@ -27,6 +28,7 @@ public class Ports {
     public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL = 5;
     public static final int INTAKE_PISTON_CHANNEL_FORWARD = 2;
     public static final int INTAKE_PISTON_CHANNEL_REVERSE = 3;
-
+    public static final int INTAKE_ARM_CHANNEL_FORWARD = 6;
+    public static final int INTAKE_ARM_CHANNEL_REVERSE = 7;
 
 }

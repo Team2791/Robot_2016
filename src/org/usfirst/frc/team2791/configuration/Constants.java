@@ -31,5 +31,7 @@ public class Constants {
     public static final double INTAKE_SPEED = 1.0;
     public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kReverse;
+    public static final DoubleSolenoid.Value INTAKE_ARM_UP_VALUE = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value INTAKE_ARM_DOWN_VALUE = DoubleSolenoid.Value.kReverse;
 
 }

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2791.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,6 +37,9 @@ public class Robot extends IterativeRobot {
     private OperatorHelper operatorHelper;
     private Compressor compressor;
     private SendableChooser safeModeChooser;
+    public Thread shooterThread;
+    public DigitalOutput ledDio;
+    
 
     // RoboClock stuff
     public static RoboClock getPowerTimer() {
@@ -89,7 +93,10 @@ public class Robot extends IterativeRobot {
         safeModeChooser.addObject("Full Mode", "FULL");
 
         shooter = new ShakerShooter();
+        shooterThread = new Thread(shooter);
+        shooterThread.start();
         intake = new ShakerIntake();
+        ledDio = new DigitalOutput(9);
     }
 
     public void autonomousInit() {
@@ -135,7 +142,7 @@ public class Robot extends IterativeRobot {
         operatorHelper.teleopRun();
         operatorHelper.updateSmartDash();
         compressor.start();
-
+        ledDio.set(true);
     }
 
     public void disabledPeriodic() {
@@ -143,6 +150,7 @@ public class Robot extends IterativeRobot {
         driverHelper.disableRun();
         operatorHelper.disableRun();
         compressor.stop();
+        ledDio.set(false);
     }
 
     public RoboClock getTeleopTimer() {

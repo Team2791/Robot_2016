@@ -26,8 +26,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         this.rightTalonB = new Talon(Ports.DRIVE_TALON_RIGHT_PORT_BACK);
         this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
         roboDrive.stopMotor();
-        this.driveSolenoid = new DoubleSolenoid(Ports.DRIVE_PISTON_FORWARD, Ports.DRIVE_PISTON_REVERSE);
-
+        this.driveSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_FORWARD, Ports.DRIVE_PISTON_REVERSE);
         leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORT_A, Ports.LEFT_DRIVE_ENCODER_PORT_B);
         rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCOODER_PORT_A, Ports.RIGHT_DRIVE_ENCODER_PORT_B);
     }
