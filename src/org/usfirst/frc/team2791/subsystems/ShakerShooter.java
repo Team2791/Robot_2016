@@ -29,7 +29,7 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
         leftShooterTalon.setInverted(true);
-        leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Voltage);
+//        leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Voltage);
         firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
@@ -136,17 +136,17 @@ public class ShakerShooter extends ShakerSubsystem {
     public boolean hasBall() {
         // this boolean will be determined by possible sensors
         // will be used for auto firing
-        return ballCheckingSensor.getAverageVoltage() < Constants.THRESHOLD_BALL_DISTANCE;
+        return ballCheckingSensor.getAverageVoltage() > Constants.THRESHOLD_BALL_DISTANCE;
     }
 
     public void pushBall() {
         // will be used to push ball toward the shooter
-        ballAidServo.setAngle(Constants.SERVO_PUSH_ANGLE);
+        ballAidServo.set(1);
     }
 
     public void resetServoAngle() {
         // bring servo back to original position
-        ballAidServo.setAngle(Constants.SERVO_DEFAULT_ANGLE);
+        ballAidServo.set(0);
     }
 
     public void stopMotors() {

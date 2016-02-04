@@ -25,7 +25,7 @@ public class Constants {
     public static final boolean SHOOTER_LOW_STATE = false;
     public static final int SERVO_PUSH_ANGLE = 70;
     public static final int SERVO_DEFAULT_ANGLE = 0;
-    public static final double THRESHOLD_BALL_DISTANCE = 6.0;
+    public static final double THRESHOLD_BALL_DISTANCE = 0.250;
 
     //INTAKE CONSTANTS
     public static final double INTAKE_SPEED = 1.0;
