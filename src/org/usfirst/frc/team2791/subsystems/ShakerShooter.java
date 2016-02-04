@@ -1,15 +1,21 @@
 package org.usfirst.frc.team2791.subsystems;
 
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.util.BasicPID;
 
+
 public class ShakerShooter extends ShakerSubsystem {
     private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
     private final double[] speed = {0.25, 0.5, 0.75, 1.0};
+    private final int delayTimeBeforeShooting = 100;//time for wheels to get to speed
+    private final int delayTimeForServo = 100;//time for servo to push
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
     private Solenoid firstLevelSolenoid;
@@ -17,12 +23,10 @@ public class ShakerShooter extends ShakerSubsystem {
     private Servo ballAidServo;
     private BasicPID rightShooterPID;
     private BasicPID leftShooterPID;
-    private boolean usePID = false;
-    private double leftShooterOutput;
-    private double rightShooterOutput;
-    private Encoder rightShooterEncoder;
-    private Encoder leftShooterEncoder;
     private AnalogInput ballCheckingSensor;
+    private boolean autoFire;
+    private double fireSpeed = 1.0;
+    private boolean usePID = false;
 
     public ShakerShooter() {
         // init
@@ -38,19 +42,26 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
         leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
         ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
+        SmartDashboard.putNumber("Fire Speed", fireSpeed);
     }
 
     public void run() {
         while (true) {
             try {
-                if (usePID) {// if given value to go to
-                    leftShooterOutput = rightShooterPID.updateAndGetOutput(leftShooterEncoder.getRate());
-                    rightShooterOutput = rightShooterPID.updateAndGetOutput(rightShooterEncoder.getRate());
-                    SmartDashboard.putNumber("Right Shooter Output", rightShooterOutput);
-                    SmartDashboard.putNumber("Left Shooter Output", leftShooterOutput);
-                    //setShoterSpeeds(leftShooterOutput, rightShooterOutput);
-                    //usePID = hasBall();
+                if (autoFire) {// if auto fire
+                    // Runs the wheels at the set speed
+                    fireSpeed = SmartDashboard.getNumber("Fire Speed");
+                    shooterSpeedsWithoutPID(fireSpeed);
+                    Thread.sleep(delayTimeBeforeShooting);
+                    pushBall();
+                    Thread.sleep(delayTimeForServo);
+                    resetServoAngle();
+                    Thread.sleep(delayTimeForServo);
+                    stopMotors();
+                    autoFire = false;
                 }
+
+
                 // delay to prevent it from running to fast
                 Thread.sleep(updateDelayMs);
             } catch (InterruptedException e) {
@@ -65,12 +76,6 @@ public class ShakerShooter extends ShakerSubsystem {
         rightShooterTalon.set(syncedSpeed);
     }
 
-    private void setShoterSpeeds(double left, double right) {
-        // private method to set speeds of the shooter wheels
-        leftShooterTalon.set(left);
-        rightShooterTalon.set(right);
-    }
-
     public void shooterSpeedWithPID(int shooterSpeedIndex) {
         // starts the pid loop
         usePID = true;
@@ -78,12 +83,6 @@ public class ShakerShooter extends ShakerSubsystem {
         leftShooterPID.setSetPoint(speed[shooterSpeedIndex]);
         rightShooterPID.reset();
         leftShooterPID.reset();
-    }
-
-    public void shooterSpeedWithoutPID(int shooterSpeedIndex) {
-
-        shooterSpeedsWithoutPID(speed[shooterSpeedIndex]);
-
     }
 
     public void disable() {
@@ -141,12 +140,19 @@ public class ShakerShooter extends ShakerSubsystem {
 
     public void pushBall() {
         // will be used to push ball toward the shooter
+
         ballAidServo.set(1);
+
     }
 
     public void resetServoAngle() {
         // bring servo back to original position
         ballAidServo.set(0);
+    }
+
+    public void autoFire() {
+        fireSpeed = SmartDashboard.getNumber("Fire Speed");
+        autoFire = true;
     }
 
     public void stopMotors() {
