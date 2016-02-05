@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.robot.Robot;
@@ -26,7 +27,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         this.rightTalonB = new Talon(Ports.DRIVE_TALON_RIGHT_PORT_BACK);
         this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
         roboDrive.stopMotor();
-        this.driveSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_FORWARD, Ports.DRIVE_PISTON_REVERSE);
+        this.driveSolenoid
+                = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_FORWARD, Ports.DRIVE_PISTON_REVERSE);
         leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORT_A, Ports.LEFT_DRIVE_ENCODER_PORT_B);
         rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCOODER_PORT_A, Ports.RIGHT_DRIVE_ENCODER_PORT_B);
     }
@@ -87,6 +89,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         return false;
     }
 
+    @NotNull
     private GearState getCurrentGear() {
         if (driveSolenoid.get().equals(Constants.DRIVE_HIGH_GEAR))
             return GearState.HIGH;

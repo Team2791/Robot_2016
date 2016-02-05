@@ -1,5 +1,7 @@
 package org.usfirst.frc.team2791.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.robot.Robot;
 
@@ -9,7 +11,9 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class Logger {
+    @Nullable
     private static File logFile = null;
+    @Nullable
     private static Logger loggerInstance = null;
     private static boolean enabled = false;
     private static double lastLogTime;
@@ -18,6 +22,7 @@ public class Logger {
         logFile = findFileHome();
     }
 
+    @Nullable
     public static Logger getInstance() {
         if (loggerInstance == null) {
             loggerInstance = new Logger();
@@ -43,7 +48,7 @@ public class Logger {
         return line;
     }
 
-    public static void exception(Throwable t) {
+    public static void exception(@NotNull Throwable t) {
         if (enabled) {
             try {
                 BufferedWriter loggerWriter = new BufferedWriter(new FileWriter(
@@ -63,7 +68,7 @@ public class Logger {
         }
     }
 
-    public static void write(Object event) {
+    public static void write(@NotNull Object event) {
         if (enabled) {
             try {
                 BufferedWriter loggerWriter = new BufferedWriter(new FileWriter(logFile.getAbsoluteFile(), true));
@@ -82,7 +87,8 @@ public class Logger {
         }
     }
 
-    public static String buildLine(String message, int level) {
+    @NotNull
+    public static String buildLine(@NotNull String message, int level) {
         if (message.indexOf(Util.repeatString("\t", 2)) != 0) {
             message = Util.repeatString("\t", 2) + message;
         }
@@ -100,6 +106,7 @@ public class Logger {
         enabled = false;
     }
 
+    @NotNull
     private File findFileHome() {
         //logs are stored in "/home/lvuser/logs"
         SimpleDateFormat sdf = new SimpleDateFormat("EEE_MMM-dd_hh-mm-ss");

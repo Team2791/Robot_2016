@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 
@@ -48,6 +49,7 @@ public class OldShakerShooter extends ShakerSubsystem {
         SmartDashboard.putString("Shooter Height: ", getShooterHeight().toString());
     }
 
+    @NotNull
     public ShooterHeight getShooterHeight() {
         if (firstLevelSolenoid.get() && secondLevelSolenoid.get())
             return ShooterHeight.HIGH;

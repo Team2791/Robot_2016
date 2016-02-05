@@ -4,7 +4,7 @@ public class Camera {
     //////////////////
     //// Vision - global targeting values
     //////////////////
-    public static final String cameraPort = "cam0";// check on robotRio(web
+    public static final String cameraPort = "cam0"; // check on robotRio(web
     // interface)
     public static final int HUE_LOW = 60;
     public static final int HUE_HIGH = 100;
@@ -27,9 +27,9 @@ public class Camera {
     public static final int blueLow = 235;
     public static final int blueHigh = 255;
     // Minimum width the height ratio of valid targets;
-    public static final int minWidHighRat = 1;//rough estimate of min must be tested
-    public static final int minWidth = 80;// min width of targets
+    public static final int minWidHighRat = 1; //rough estimate of min must be tested
+    public static final int minWidth = 80; // min width of targets
     public static final int calibrated = 0;
     public static final int exclude = 0;
-    public static final int centeringDeadzone = 10;//number of pixels wide that the center should be within
+    public static final int centeringDeadzone = 10; //number of pixels wide that the center should be within
 }

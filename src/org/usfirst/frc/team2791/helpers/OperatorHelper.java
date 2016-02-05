@@ -2,76 +2,79 @@ package org.usfirst.frc.team2791.helpers;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
-/**
- * Created by Akhil on 1/28/2016.
- */
 public class OperatorHelper extends ShakerHelper {
-	double whenShotBall = 0;
-	boolean shooterIsReset = false;
-	private int shooterSpeedIndex = 0;
+    private double whenShotBall = 0;
+    private boolean shooterIsReset = false;
+    private int shooterSpeedIndex = 0;
 
-	public OperatorHelper() {
-		// init
-	}
+    public OperatorHelper() {
+        // init
+    }
 
-	public void teleopRun() {
-		// Operator button layout
-		if (operatorJoystick.getButtonB()) {
-			shooter.shooterSpeedsWithoutPID(1.0);
-			intake.pullBall();
-		} else if (operatorJoystick.getButtonX()) {
-			shooter.shooterSpeedsWithoutPID(-1.0);
-			intake.pushBall();
-		} else {
-			intake.stopMotors();
-			shooter.stopMotors();
-		}
-		// intake operations
-		if (operatorJoystick.getButtonA())
-			intake.extendIntake();
-		if (operatorJoystick.getButtonY())
-			intake.retractIntake();
-		// Shooter operations
-		shooter.shooterSpeedsWithoutPID(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
-		if (operatorJoystick.getDpadDown())
-			shooter.pushBall();
-		else
-			shooter.resetServoAngle();
-		if (operatorJoystick.getButtonSel()) {
-			shooter.stopMotors();
-		}
-		if (operatorJoystick.getDpadUp())
-			shooter.autoFire();
-		if (operatorJoystick.getDpadRight())
-			shooter.setArmAttachmentUp();
-		if (operatorJoystick.getDpadLeft())
-			shooter.setArmAttachmentDown();
+    public void teleopRun() {
+        // Operator button layout
+        //Run intake inward with assistance of the shooter wheels
 
-		// Start button to reset to teleop start
-		if (operatorJoystick.getButtonSt())
-			reset();
+        if (operatorJoystick.getButtonB()) {
+            shooter.shooterSpeedsWithoutPID(1.0);
+            intake.pullBall();
+        }
+        //Run reverse if button pressed
+        else if (operatorJoystick.getButtonX()) {
+            shooter.shooterSpeedsWithoutPID(-1.0);
+            intake.pushBall();
+        }
+        //else stop
+        else {
+            intake.stopMotors();
+            shooter.stopMotors();
+        }
+        //Extend intake
+        if (operatorJoystick.getButtonA())
+            intake.extendIntake();
+        //Retract intake
+        if (operatorJoystick.getButtonY())
+            intake.retractIntake();
+        //Run shooters without pid only meant for testing
+        shooter.shooterSpeedsWithoutPID(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
+        //run servo motor to push ball into spinning wheels (meant as a manual mode) else reset servo back to 0 position
+        if (operatorJoystick.getDpadDown())
+            shooter.pushBall();
+        else
+            shooter.resetServoAngle();
+        //Fail safe meant to stop motors
+        if (operatorJoystick.getButtonSel()) {
+            shooter.stopMotors();
+        }
+        //autofire shooter
+        if (operatorJoystick.getDpadUp())
+            shooter.autoFire();
+        //movement of arm attachment
+        if (operatorJoystick.getDpadRight())
+            shooter.setArmAttachmentUp();
+        if (operatorJoystick.getDpadLeft())
+            shooter.setArmAttachmentDown();
 
-	}
+        // Start button to reset to teleop start
+        if (operatorJoystick.getButtonSt())
+            reset();
 
-	public void disableRun() {
-		intake.disable();
-		shooter.disable();
-	}
+    }
 
-	public void updateSmartDash() {
-		intake.updateSmartDash();
-		shooter.updateSmartDash();
-	}
+    public void disableRun() {
+        intake.disable();
+        shooter.disable();
+    }
 
-	public void reset() {
-		shooterSpeedIndex = 0;
-		shooter.reset();
-		intake.reset();
-	}
+    public void updateSmartDash() {
+        intake.updateSmartDash();
+        shooter.updateSmartDash();
+    }
 
-	// private void autoShootHigh() {
-	// intake.extendIntake();
-	// shooter.setShooterHigh();
-	// shooter.shooterSpeedWithPID(3);
-	// }
+    public void reset() {
+        shooterSpeedIndex = 0;
+        shooter.reset();
+        intake.reset();
+    }
+
 }

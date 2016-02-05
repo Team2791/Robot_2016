@@ -8,6 +8,7 @@ public class Driver extends OverriddenJoystick {
     }
 
     public double getGtaDriveLeft() {
+        //Does the math to get Gta Drive Type on left motor
         double combined = super.getAxisLeftX() + super.getAxisRT() - super.getAxisLT();
         if (combined > 1.0) return 1.0;
         else if (combined < -1.0) return -1.0;
@@ -16,6 +17,7 @@ public class Driver extends OverriddenJoystick {
     }
 
     public double getGtaDriveRight() {
+        //Does the math to get Gta Drive Type on right motor
         double combined = -super.getAxisLeftX() + super.getAxisRT() - super.getAxisLT();
         if (combined > 1.0) return 1.0;
         else if (combined < -1.0) return -1.0;

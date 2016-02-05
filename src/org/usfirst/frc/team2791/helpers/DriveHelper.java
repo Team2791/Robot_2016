@@ -2,13 +2,12 @@ package org.usfirst.frc.team2791.helpers;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.jetbrains.annotations.NotNull;
 
 import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
 import static org.usfirst.frc.team2791.robot.Robot.driverJoystick;
 
-/**
- * Created by Akhil on 1/28/2016.
- */
+
 public class DriveHelper extends ShakerHelper {
 
     private SendableChooser driveTypeChooser;
@@ -52,6 +51,7 @@ public class DriveHelper extends ShakerHelper {
             driveTrain.setHighGear();
         if (driverJoystick.getButtonLB())
             driveTrain.setLowGear();
+        //resets all subsystems under the driver
         if (driverJoystick.getButtonSel())
             driveTrain.reset();
 
@@ -73,19 +73,21 @@ public class DriveHelper extends ShakerHelper {
 
     }
 
+    @NotNull
     public DriveType getDriveType() {
         //reads data of the smart dashboard and converts to enum DriveType
         String driverInputType = (String) driveTypeChooser.getSelected();
-        if (driverInputType.equals("GTA")) {
-            return DriveType.GTA;
-        } else if (driverInputType.equals("ARCADE")) {
-            return DriveType.ARCADE;
-        } else if (driverInputType.equals("TANK")) {
-            return DriveType.TANK;
-        } else if (driverInputType.equals("SINGLE_ARCADE")) {
-            return DriveType.SINGLE_ARCADE;
-        } else
-            return DriveType.GTA;
+        switch (driverInputType) {
+            default:
+            case "GTA":
+                return DriveType.GTA;
+            case "ARCADE":
+                return DriveType.ARCADE;
+            case "TANK":
+                return DriveType.TANK;
+            case "SINGLE_ARCADE":
+                return DriveType.SINGLE_ARCADE;
+        }
     }
 
 

@@ -32,14 +32,14 @@ public class Robot extends IterativeRobot {
     private static RoboClock autonTimer;
     private static RoboClock teleopTimer;
     private static RoboClock powerTimer;
+    public Thread shooterThread;
+    public DigitalOutput ledDio;
     // helpers
     private DriveHelper driverHelper;
     private OperatorHelper operatorHelper;
+    //other
     private Compressor compressor;
     private SendableChooser safeModeChooser;
-    public Thread shooterThread;
-    public DigitalOutput ledDio;
-    
 
     // RoboClock stuff
     public static RoboClock getPowerTimer() {
@@ -138,7 +138,6 @@ public class Robot extends IterativeRobot {
         super.teleopPeriodic();
         driverHelper.teleopRun();
         driverHelper.updateSmartDash();
-
         operatorHelper.teleopRun();
         operatorHelper.updateSmartDash();
         compressor.start();
