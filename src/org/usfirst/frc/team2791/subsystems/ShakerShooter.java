@@ -12,7 +12,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
     //    private final double[] speed = {0.25, 0.5, 0.75, 1.0};
     private final double delayTimeBeforeShooting = 0.5;// time for wheels to get to speed
     private final double delayTimeForServo = 1.0;// time for servo to push
-
+    private final int encoderTicks = 128 * 4;
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
     private Solenoid firstLevelSolenoid;
@@ -35,6 +35,11 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         //configuration
         rightShooterTalon.setInverted(true);
         leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
+        rightShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
+        leftShooterTalon.configEncoderCodesPerRev(encoderTicks);
+        rightShooterTalon.configEncoderCodesPerRev(encoderTicks);
+//        leftShooterTalon.reverseSensor(false);
+//        rightShooterTalon.reverseSensor(true);
         SmartDashboard.putNumber("Fire Speed", fireSpeed);
 
     }
@@ -69,12 +74,12 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
                 //reset everything
                 stopMotors();
                 autoFire = false;
-                try {
-                    //slows down the rate at which this method is called(so it doesnt run too fast)
-                    Thread.sleep(updateDelayMs);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            }
+            try {
+                //slows down the rate at which this method is called(so it doesnt run too fast)
+                Thread.sleep(updateDelayMs);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
