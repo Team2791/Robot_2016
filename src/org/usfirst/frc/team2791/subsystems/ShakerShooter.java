@@ -76,7 +76,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
                 autoFire = false;
             }
             try {
-                //slows down the rate at which this method is called(so it doesnt run too fast)
+                //slows down the rate at which this method is called(so it doesn't run too fast)
                 Thread.sleep(updateDelayMs);
             } catch (InterruptedException e) {
                 e.printStackTrace();
