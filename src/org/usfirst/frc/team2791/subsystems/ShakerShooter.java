@@ -6,115 +6,86 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
-import org.usfirst.frc.team2791.util.BasicPID;
 
 public class ShakerShooter extends ShakerSubsystem implements Runnable {
     private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
     //    private final double[] speed = {0.25, 0.5, 0.75, 1.0};
-    private final double delayTimeBeforeShooting = 1.0;// time for wheels to get
-    // to
-    // speed
+    private final double delayTimeBeforeShooting = 0.5;// time for wheels to get to speed
     private final double delayTimeForServo = 1.0;// time for servo to push
-    double time;
+
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
     private Solenoid firstLevelSolenoid;
     private Solenoid secondLevelSolenoid;
     private Servo ballAidServo;
-    private BasicPID rightShooterPID;
-    private BasicPID leftShooterPID;
     private AnalogInput ballCheckingSensor;
     private boolean autoFire;
-    private double fireSpeed = 1.0;
-    private boolean usePID = false;
-    private DoubleSolenoid armAttachment;
+    private double fireSpeed = 1.0; //send percentage from -1 to 1
+    private double time;
 
     public ShakerShooter() {
         // init
+        //constructors
+        ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
-        rightShooterTalon.setInverted(true);
-//		 leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
-//		 rightShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
+        ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
         firstLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
         secondLevelSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
-        ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-//		rightShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-//		rightShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
-//		leftShooterPID = new BasicPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-//		leftShooterPID.setMaxOutput(Constants.MAX_SHOOTER_SPEED);
-        ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
+        //configuration
+        rightShooterTalon.setInverted(true);
+        leftShooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
         SmartDashboard.putNumber("Fire Speed", fireSpeed);
-
-        armAttachment = new DoubleSolenoid(Ports.INTAKE_ARM_CHANNEL_FORWARD, Ports.INTAKE_ARM_CHANNEL_REVERSE);
 
     }
 
     public void run() {
         while (true) {
-            try {
+            if (autoFire) {
+                //sets shooter pid
                 leftShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
                 rightShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
-                if (autoFire) {// if auto fire
-                    // Runs the wheels at the set speed
-                    fireSpeed = SmartDashboard.getNumber("Fire Speed");
-                    time = Timer.getFPGATimestamp();
-                    while (Timer.getFPGATimestamp() - time < delayTimeBeforeShooting) {
-                        shooterSpeedsWithoutPID(fireSpeed);
-                        System.out.println("The wheels are spinning up");
-                    }
-                    System.out.println(" I have been told to fire at" + fireSpeed);
-                    time = Timer.getFPGATimestamp();
-                    while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-                        shooterSpeedsWithoutPID(fireSpeed);
-                        pushBall();
-                        System.out.println("The ball is being pushed out");
-                    }
-                    while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-                        System.out.println("RESETTING SHOOTER....");
-                        resetServoAngle();
-                        leftShooterTalon.set(fireSpeed);
-                        rightShooterTalon.set(fireSpeed);
-
-                        System.out.println("JUST WROTE TO THE TALON");
-                        Thread.sleep(10000);
-
-                        System.out.println("DELAY OVER");
-                        time = Timer.getFPGATimestamp();
-                        while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-                            pushBall();
-                            System.out.println("The ball is being pushed out");
-                        }
-
-                    }
-
-                    leftShooterTalon.set(0);
-                    rightShooterTalon.set(0);
-                    autoFire = false;
+                //gets fire speed from the dashboard (FOR TESTING ONLY!!!!)
+                fireSpeed = SmartDashboard.getNumber("Fire Speed");
+                //soft limits for fire speed
+                fireSpeed = fireSpeed >= 1.0 ? 1.0 : fireSpeed;
+                fireSpeed = fireSpeed <= -1.0 ? -1.0 : fireSpeed;
+                //converts the fireSpeed percentage to speed values and sets pid to that
+                setShooterSpeeds(fireSpeed * 1500.0);
+                time = Timer.getFPGATimestamp();
+                //buffer time for wheels to get to speed
+                while (Timer.getFPGATimestamp() - time < delayTimeBeforeShooting) {
+                    setShooterSpeeds(fireSpeed);
+                    System.out.println("The wheels are spinning up");
                 }
-                resetServoAngle();
-                // delay to prevent it from running to fast
-                Thread.sleep(updateDelayMs);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                //update current time
+                time = Timer.getFPGATimestamp();
+                //push ball
+                while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+                    setShooterSpeeds(fireSpeed);
+                    pushBall();
+                    System.out.println("The ball is being pushed out");
+                }
+                //reset everything
+                stopMotors();
+                autoFire = false;
+                try {
+                    //slows down the rate at which this method is called(so it doesnt run too fast)
+                    Thread.sleep(updateDelayMs);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void shooterSpeedsWithoutPID(double syncedSpeed) {
+
+    public void setShooterSpeeds(double syncedSpeed) {
         // this shouldn't be used except for testing or for practice bot....
         leftShooterTalon.set(syncedSpeed);
         rightShooterTalon.set(syncedSpeed);
     }
 
-    public void shooterSpeedWithPID(int shooterSpeedIndex) {
-        // starts the pid loop
-//		usePID = true;
-//		rightShooterPID.setSetPoint(speed[shooterSpeedIndex]);
-//		leftShooterPID.setSetPoint(speed[shooterSpeedIndex]);
-//		rightShooterPID.reset();
-//		leftShooterPID.reset();
-    }
 
     public void disable() {
         // disable code --stops wheels
@@ -132,6 +103,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         // SmartDashboard.putString("Shooter Height: ",
         // getShooterHeight().toString());
         SmartDashboard.putNumber("Ball Distance Sensor", ballCheckingSensor.getVoltage());
+        SmartDashboard.putNumber("Left shooter Error", leftShooterTalon.getClosedLoopError());
+        SmartDashboard.putNumber("Left shooter Error", rightShooterTalon.getClosedLoopError());
 
     }
 
@@ -188,13 +161,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         autoFire = true;
     }
 
-    public void setArmAttachmentUp() {
-        armAttachment.set(Constants.INTAKE_ARM_UP_VALUE);
-    }
-
-    public void setArmAttachmentDown() {
-        armAttachment.set(Constants.INTAKE_ARM_DOWN_VALUE);
-    }
 
     public void stopMotors() {
         // bring both motors to stop
@@ -206,4 +172,49 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         LOW, MID, HIGH
     }
 
+
 }
+//This run method works but doesn't use PID
+//    public void run() {
+//        while (true) {
+//            try {
+//
+//                leftShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+//                rightShooterTalon.setPID(PID.SHOOTER_P, PID.SHOOTER_I, PID.SHOOTER_D);
+//                if (autoFire) {// if auto fire
+//                    // Runs the wheels at the set speed (for now gets from the smartDash)
+//                    fireSpeed = SmartDashboard.getNumber("Fire Speed");
+//                    //updates time current time for delays
+//                    time = Timer.getFPGATimestamp();
+//                    //runs the while loop until delay is met
+//                    //this allows the shooter wheels buffer time before firing
+//                    while (Timer.getFPGATimestamp() - time < delayTimeBeforeShooting) {
+//                        setShooterSpeeds(fireSpeed);
+//                        System.out.println("The wheels are spinning up");
+//                    }
+//                    //update time for next while loop
+//                    time = Timer.getFPGATimestamp();
+//                    //this while loop keeps shooters running while running servo
+//                    while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+//                        setShooterSpeeds(fireSpeed);
+//                        pushBall();
+//                        System.out.println("The ball is being pushed out");
+//
+//                    }
+////                    while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+////                        System.out.println("RESETTING SHOOTER....");
+////                        resetServoAngle();
+//
+////                    }
+//
+//                    leftShooterTalon.set(0);
+//                    rightShooterTalon.set(0);
+//                    autoFire = false;
+//
+//                }
+//                Thread.sleep(updateDelayMs);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }

@@ -16,12 +16,12 @@ public class OperatorHelper extends ShakerHelper {
         //Run intake inward with assistance of the shooter wheels
 
         if (operatorJoystick.getButtonB()) {
-            shooter.shooterSpeedsWithoutPID(1.0);
+            shooter.setShooterSpeeds(1.0);
             intake.pullBall();
         }
         //Run reverse if button pressed
         else if (operatorJoystick.getButtonX()) {
-            shooter.shooterSpeedsWithoutPID(-1.0);
+            shooter.setShooterSpeeds(-1.0);
             intake.pushBall();
         }
         //else stop
@@ -36,7 +36,7 @@ public class OperatorHelper extends ShakerHelper {
         if (operatorJoystick.getButtonY())
             intake.retractIntake();
         //Run shooters without pid only meant for testing
-        shooter.shooterSpeedsWithoutPID(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
+        shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
         //run servo motor to push ball into spinning wheels (meant as a manual mode) else reset servo back to 0 position
         if (operatorJoystick.getDpadDown())
             shooter.pushBall();
@@ -51,10 +51,9 @@ public class OperatorHelper extends ShakerHelper {
             shooter.autoFire();
         //movement of arm attachment
         if (operatorJoystick.getDpadRight())
-            shooter.setArmAttachmentUp();
+            intake.setArmAttachmentUp();
         if (operatorJoystick.getDpadLeft())
-            shooter.setArmAttachmentDown();
-
+            intake.setArmAttachmentDown();
         // Start button to reset to teleop start
         if (operatorJoystick.getButtonSt())
             reset();

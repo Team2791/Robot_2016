@@ -10,6 +10,7 @@ public class ShakerIntake extends ShakerSubsystem {
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private DoubleSolenoid intakeSolenoid;
+    private DoubleSolenoid armAttachment;
 
     public ShakerIntake() {
         //init
@@ -18,6 +19,8 @@ public class ShakerIntake extends ShakerSubsystem {
         leftIntakeMotor.setInverted(true);
         this.intakeSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.INTAKE_PISTON_CHANNEL_FORWARD,
                 Ports.INTAKE_PISTON_CHANNEL_REVERSE);
+
+        armAttachment = new DoubleSolenoid(Ports.INTAKE_ARM_CHANNEL_FORWARD, Ports.INTAKE_ARM_CHANNEL_REVERSE);
 
     }
 
@@ -79,6 +82,14 @@ public class ShakerIntake extends ShakerSubsystem {
         leftIntakeMotor.set(-Constants.INTAKE_SPEED);
         rightIntakeMotor.set(-Constants.INTAKE_SPEED);
 
+    }
+
+    public void setArmAttachmentUp() {
+        armAttachment.set(Constants.INTAKE_ARM_UP_VALUE);
+    }
+
+    public void setArmAttachmentDown() {
+        armAttachment.set(Constants.INTAKE_ARM_DOWN_VALUE);
     }
 
     public enum IntakeState {
