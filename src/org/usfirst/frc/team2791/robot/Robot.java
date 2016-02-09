@@ -10,6 +10,7 @@ import org.usfirst.frc.team2791.helpers.DriveHelper;
 import org.usfirst.frc.team2791.helpers.OperatorHelper;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
+import org.usfirst.frc.team2791.subsystems.ShakerClaw;
 import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
 import org.usfirst.frc.team2791.subsystems.ShakerIntake;
 import org.usfirst.frc.team2791.subsystems.ShakerShooter;
@@ -25,6 +26,7 @@ public class Robot extends IterativeRobot {
     // operator subsystems
     public static ShakerShooter shooter;
     public static ShakerIntake intake;
+    public static ShakerClaw claw;
     // driver subsystems
     public static ShakerDriveTrain driveTrain;
     // timers

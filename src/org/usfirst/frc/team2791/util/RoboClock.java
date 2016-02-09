@@ -1,6 +1,6 @@
 package org.usfirst.frc.team2791.util;
 
-import org.jetbrains.annotations.NotNull;
+
 
 public class RoboClock {
     private long timeWhenLastStarted;
@@ -93,7 +93,7 @@ public class RoboClock {
         return timeWhenLastPaused / 1000.0;
     }
 
-    @NotNull
+    
     public String toString() {
         updateSystemTimes();
         String s = "";

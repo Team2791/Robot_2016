@@ -13,21 +13,21 @@ public class OperatorHelper extends ShakerHelper {
 
     public void teleopRun() {
         // Operator button layout
-        //Run intake inward with assistance of the shooter wheels
+        //Run intake inward with assistance of the shooter wheel   	
 
         if (operatorJoystick.getButtonB()) {
-            shooter.setShooterSpeeds(1.0);
+        	shooter.setShooterSpeeds(-1, false);
             intake.pullBall();
         }
         //Run reverse if button pressed
         else if (operatorJoystick.getButtonX()) {
-            shooter.setShooterSpeeds(-1.0);
+        	shooter.setShooterSpeeds(1, false);
             intake.pushBall();
         }
         //else stop
         else {
+            shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(),operatorJoystick.getButtonRB());
             intake.stopMotors();
-            shooter.stopMotors();
         }
         //Extend intake
         if (operatorJoystick.getButtonA())
@@ -36,19 +36,19 @@ public class OperatorHelper extends ShakerHelper {
         if (operatorJoystick.getButtonY())
             intake.retractIntake();
         //Run shooters without pid only meant for testing
-        shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
+        System.out.println(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT());
         //run servo motor to push ball into spinning wheels (meant as a manual mode) else reset servo back to 0 position
-        if (operatorJoystick.getDpadDown())
-            shooter.pushBall();
-        else
-            shooter.resetServoAngle();
+//        if (operatorJoystick.getDpadDown())
+//            shooter.pushBall();
+//        else
+//            shooter.resetServoAngle();
         //Fail safe meant to stop motors
         if (operatorJoystick.getButtonSel()) {
             shooter.stopMotors();
         }
         //autofire shooter
         if (operatorJoystick.getDpadUp())
-            shooter.autoFire();
+            shooter.autoFire(1.0);
         //movement of arm attachment
         if (operatorJoystick.getDpadRight())
             intake.setArmAttachmentUp();

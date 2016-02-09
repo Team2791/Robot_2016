@@ -2,7 +2,6 @@ package org.usfirst.frc.team2791.helpers;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.jetbrains.annotations.NotNull;
 
 import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
 import static org.usfirst.frc.team2791.robot.Robot.driverJoystick;
@@ -73,7 +72,7 @@ public class DriveHelper extends ShakerHelper {
 
     }
 
-    @NotNull
+    
     public DriveType getDriveType() {
         //reads data of the smart dashboard and converts to enum DriveType
         String driverInputType = (String) driveTypeChooser.getSelected();

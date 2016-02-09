@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2791.util;
 
-import org.jetbrains.annotations.NotNull;
 
 public class Util {
     public static String newline = System.lineSeparator();
@@ -26,12 +25,12 @@ public class Util {
         }
     }
 
-    public static String repeatString(@NotNull String s, int repetitions) {
+    public static String repeatString( String s, int repetitions) {
         return new String(new char[repetitions]).replace("\0", s);
     }
 
-    @NotNull
-    public static String truncateLastTerm(@NotNull String message, @NotNull String term) {
+    
+    public static String truncateLastTerm( String message,  String term) {
         int lastIndex = getLastIndex(message, term);
 
         if (lastIndex == -1) {
@@ -41,7 +40,7 @@ public class Util {
         return message.substring(0, lastIndex);
     }
 
-    public static int getLastIndex(@NotNull String message, @NotNull String term) {
+    public static int getLastIndex( String message,  String term) {
         int index = message.indexOf(term);
         while (index >= 0) {
             index = message.indexOf(term, index + 1);

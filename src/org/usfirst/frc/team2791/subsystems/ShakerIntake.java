@@ -2,7 +2,6 @@ package org.usfirst.frc.team2791.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
-import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 
@@ -20,7 +19,7 @@ public class ShakerIntake extends ShakerSubsystem {
         this.intakeSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.INTAKE_PISTON_CHANNEL_FORWARD,
                 Ports.INTAKE_PISTON_CHANNEL_REVERSE);
 
-        armAttachment = new DoubleSolenoid(Ports.INTAKE_ARM_CHANNEL_FORWARD, Ports.INTAKE_ARM_CHANNEL_REVERSE);
+        armAttachment = new DoubleSolenoid(Ports.PCM_MODULE,Ports.INTAKE_ARM_CHANNEL_FORWARD, Ports.INTAKE_ARM_CHANNEL_REVERSE);
 
     }
 
@@ -53,7 +52,7 @@ public class ShakerIntake extends ShakerSubsystem {
 
     }
 
-    @NotNull
+    
     public IntakeState getIntakeState() {
         //returns state of intake in form of the enum IntakeState
         System.out.println(intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));

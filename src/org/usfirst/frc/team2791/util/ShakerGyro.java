@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SensorBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.jetbrains.annotations.NotNull;
 
 public class ShakerGyro extends SensorBase implements Runnable {
     private static final double calibrationTime = 5.0;
@@ -28,7 +27,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
     private boolean recalibrate = false;
     private boolean calibrated = false;
 
-    public ShakerGyro(@NotNull SPI.Port port) throws InterruptedException {
+    public ShakerGyro( SPI.Port port) throws InterruptedException {
         m_spi = new SPI(port);
         m_spi.setClockRate(4000000); // set to 4 MHz because that's the rRio's max, gyro can do 8 MHz
         m_spi.setMSBFirst();
@@ -39,7 +38,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
         calibrationTimer = new Timer();
     }
 
-    public static String byteArrayToHex(@NotNull byte[] a) {
+    public static String byteArrayToHex( byte[] a) {
         StringBuilder sb = new StringBuilder(a.length * 2);
         for (byte b : a)
             sb.append(String.format("%02x", b & 0xff));
@@ -140,7 +139,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
      * @return registerValue - The sensor data.
      * @brief Reads the sensor data.
      *******************************************************************************/
-    @NotNull
+    
     public byte[] ADXRS453_GetSensorData() {
         byte[] dataBuffer = {0, 0, 0, 0};
 
@@ -185,7 +184,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
         return result;
     }
 
-    private void SPI_transaction(@NotNull byte[] inputBuffer, byte[] outputBuffer, int size) {
+    private void SPI_transaction( byte[] inputBuffer, byte[] outputBuffer, int size) {
         check_parity(inputBuffer); // do parity bit things
 //	    System.out.println("Gyro hex command " + byteArrayToHex(inputBuffer));
         m_spi.transaction(inputBuffer, outputBuffer, 4);

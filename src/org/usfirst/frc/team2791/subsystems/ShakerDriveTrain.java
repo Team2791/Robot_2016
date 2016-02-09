@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.robot.Robot;
@@ -89,7 +88,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         return false;
     }
 
-    @NotNull
+    
     private GearState getCurrentGear() {
         if (driveSolenoid.get().equals(Constants.DRIVE_HIGH_GEAR))
             return GearState.HIGH;
