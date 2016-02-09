@@ -10,7 +10,7 @@ import static org.usfirst.frc.team2791.robot.Robot.driverJoystick;
 public class DriveHelper extends ShakerHelper {
 
     private SendableChooser driveTypeChooser;
-
+    private boolean clawToggle;
 
     public DriveHelper() {
         driveTypeChooser = new SendableChooser();
@@ -19,7 +19,7 @@ public class DriveHelper extends ShakerHelper {
         driveTypeChooser.addObject("Arcade Drive", "ARCADE");
         driveTypeChooser.addObject("GTA Drive", "GTA");
         driveTypeChooser.addObject("Single Arcade", "SINGLE_ARCADE");
-
+        clawToggle = false;
 
     }
 
@@ -53,7 +53,9 @@ public class DriveHelper extends ShakerHelper {
         //resets all subsystems under the driver
         if (driverJoystick.getButtonSel())
             driveTrain.reset();
-
+//        if (driverJoystick.getButtonA())
+//            clawToggle = !clawToggle;
+//        claw.set(clawToggle);
     }
 
     public void disableRun() {
@@ -72,7 +74,7 @@ public class DriveHelper extends ShakerHelper {
 
     }
 
-    
+
     public DriveType getDriveType() {
         //reads data of the smart dashboard and converts to enum DriveType
         String driverInputType = (String) driveTypeChooser.getSelected();

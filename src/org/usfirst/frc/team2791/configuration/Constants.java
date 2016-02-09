@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2791.configuration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Relay;
 
 public class Constants {
     //ROBOCLOCK
@@ -24,8 +25,8 @@ public class Constants {
 
     //SHOOTER CONTANTS
     public static final double MAX_SHOOTER_SPEED = 1.0;
-    public static final boolean SHOOTER_HIGH_STATE = true;
-    public static final boolean SHOOTER_LOW_STATE = false;
+    public static final Relay.Value SHOOTER_HIGH_STATE = Relay.Value.kForward;
+    public static final Relay.Value SHOOTER_LOW_STATE = Relay.Value.kReverse;
     public static final int SERVO_PUSH_ANGLE = 70;
     public static final int SERVO_DEFAULT_ANGLE = 0;
     public static final double THRESHOLD_BALL_DISTANCE = 0.250;

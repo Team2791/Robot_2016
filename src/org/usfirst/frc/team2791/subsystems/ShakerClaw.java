@@ -22,6 +22,11 @@ public class ShakerClaw extends ShakerSubsystem {
 
     }
 
+    public void set(boolean toggle) {
+        levelOneSolenoid.set(toggle);
+        levelTwoSolenoid.set(toggle);
+    }
+
     public void reset() {
         levelOneSolenoid.set(false);
         levelTwoSolenoid.set(false);
