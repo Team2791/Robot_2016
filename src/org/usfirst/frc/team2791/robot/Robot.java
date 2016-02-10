@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
     // operator subsystems
     public static ShakerShooter shooter;
     public static ShakerIntake intake;
-    public static ShakerClaw claw;
+//    public static ShakerClaw claw;
     // driver subsystems
     public static ShakerDriveTrain driveTrain;
     // timers
@@ -99,6 +99,7 @@ public class Robot extends IterativeRobot {
         shooterThread.start();
         intake = new ShakerIntake();
         ledDio = new DigitalOutput(9);
+//        claw = new ShakerClaw();
     }
 
     public void autonomousInit() {

@@ -29,8 +29,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-        firstLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
-        secondLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
+//        firstLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
+//        secondLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
         ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
         rightShooterTalon.setInverted(true);
         leftShooterTalon.reverseOutput(true);
@@ -137,6 +137,10 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
     @Override
     public void reset() {
+    	stopMotors();
+    	// reset the PID on the Talons
+		leftShooterTalon.reset();
+		rightShooterTalon.reset();
         // TODO Auto-generated method stub
 
     }
