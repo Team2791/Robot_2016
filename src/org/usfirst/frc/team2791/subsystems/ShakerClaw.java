@@ -1,22 +1,23 @@
 package org.usfirst.frc.team2791.subsystems;
 
+import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 
+import com.ni.vision.NIVision.ConnectionConstraintType;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class ShakerClaw extends ShakerSubsystem {
-	private Solenoid levelOneSolenoid;
-	private Solenoid levelTwoSolenoid;
+	private DoubleSolenoid clawSolenoid;
 
 	public ShakerClaw() {
-		levelOneSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.CLAW_LEVEL_ONE_SOLENOID_PORT);
-		levelTwoSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.CLAW_LEVEL_TWO_SOLENOID_PORT);
+		clawSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.CLAW_REVERSE_CHANNEL, Ports.CLAW_FORWARD_CHANNEL);
 	}
 
 	@Override
 	public void run() {
-		levelOneSolenoid.set(true);
-		levelTwoSolenoid.set(true);
+		clawSolenoid.set(Constants.CLAW_EXTENDED_VALUE);
 	}
 
 	@Override
@@ -25,14 +26,15 @@ public class ShakerClaw extends ShakerSubsystem {
 	}
 
 	public void set(boolean toggle) {
-		levelOneSolenoid.set(toggle);
-		levelTwoSolenoid.set(toggle);
+		if (toggle)
+			clawSolenoid.set(Constants.CLAW_EXTENDED_VALUE);
+		else
+			clawSolenoid.set(Constants.CLAW_RETRACTED_VALUE);
 	}
 
 	@Override
 	public void reset() {
-		levelOneSolenoid.set(false);
-		levelTwoSolenoid.set(false);
+		clawSolenoid.set(Constants.CLAW_RETRACTED_VALUE);
 	}
 
 	@Override
