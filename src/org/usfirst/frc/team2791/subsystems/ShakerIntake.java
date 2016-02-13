@@ -5,6 +5,7 @@ import org.usfirst.frc.team2791.configuration.Ports;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShakerIntake extends ShakerSubsystem {
 	private Talon rightIntakeMotor;
@@ -31,6 +32,7 @@ public class ShakerIntake extends ShakerSubsystem {
 
 	@Override
 	public void updateSmartDash() {
+		SmartDashboard.putString("Intake state", getIntakeState().toString());
 	}
 
 	@Override

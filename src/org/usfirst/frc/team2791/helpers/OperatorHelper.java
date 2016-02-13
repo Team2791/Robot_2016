@@ -14,19 +14,19 @@ public class OperatorHelper extends ShakerHelper {
 	private boolean shooterIsReset = false;
 	private int shooterSpeedIndex = 0;
 	private Toggle shooterPIDToggle;
-	private int shooterLevel;
+	private int shooterLevel = 0;
 
 	public OperatorHelper() {
 		// init
 		shooterPIDToggle = new Toggle(false);
-		switch (shooter.getShooterHeight()) {
-		case LOW:
-			shooterLevel = 0;
-		case MID:
-			shooterLevel = 1;
-		case HIGH:
-			shooterLevel = 2;
-		}
+		 switch (shooter.getShooterHeight()) {
+		 case LOW:
+		 shooterLevel = 0;
+		 case MID:
+		 shooterLevel = 1;
+		 case HIGH:
+		 shooterLevel = 2;
+		 }
 	}
 
 	@Override

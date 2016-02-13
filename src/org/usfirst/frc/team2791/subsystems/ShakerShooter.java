@@ -25,8 +25,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private boolean autoFire;
 	private CANTalon leftShooterTalon;
 	private CANTalon rightShooterTalon;
-	private DoubleSolenoid firstLevelSolenoid;
-	private DoubleSolenoid secondLevelSolenoid;
+	private DoubleSolenoid shortPiston;
+	private DoubleSolenoid longPiston;
 	private Servo ballAidServo;
 	private AnalogInput ballDistanceSensor;
 
@@ -34,9 +34,9 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
 		rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
 		ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-		firstLevelSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_FORWARD,
+		longPiston = new DoubleSolenoid(Ports.PCM_MODULE, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_FORWARD,
 				Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_REVERSE);
-		secondLevelSolenoid = new DoubleSolenoid(Ports.SECOND_PCM_MODULE,
+		shortPiston = new DoubleSolenoid(Ports.SECOND_PCM_MODULE,
 				Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_FORWARD, Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_REVERSE);
 		ballDistanceSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
 		rightShooterTalon.setInverted(true);
@@ -140,6 +140,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		SmartDashboard.putNumber("RightShooterSpeed", rightShooterTalon.getEncVelocity());
 		SmartDashboard.putNumber("Left Shooter Error", leftShooterTalon.getClosedLoopError());
 		SmartDashboard.putNumber("Right Shooter Error", -rightShooterTalon.getClosedLoopError());
+		SmartDashboard.putString("Current shooter setpoint", getShooterHeight().toString());
 
 	}
 
@@ -186,10 +187,10 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
 	public ShooterHeight getShooterHeight() {
 		// get current shooter height by determining which solenoid are true
-		if (firstLevelSolenoid.get().equals(Constants.SHOOTER_HIGH_STATE)
-				&& secondLevelSolenoid.get().equals(Constants.SHOOTER_HIGH_STATE))
+		if (shortPiston.get().equals(Constants.SHOOTER_HIGH_STATE)
+				&& longPiston.get().equals(Constants.SHOOTER_HIGH_STATE))
 			return ShooterHeight.HIGH;
-		else if (firstLevelSolenoid.get().equals(Constants.SHOOTER_HIGH_STATE))
+		else if (shortPiston.get().equals(Constants.SHOOTER_HIGH_STATE))
 			return ShooterHeight.MID;
 		else
 			return ShooterHeight.LOW;
@@ -198,20 +199,21 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
 	public void setShooterLow() {
 		// set shooter height to low , set both pistons to false
-		firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-		secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE_LEVEL_TWO);
+		shortPiston.set(DoubleSolenoid.Value.kReverse);
+		longPiston.set(DoubleSolenoid.Value.kForward);
+		// short needs to switch
 	}
 
 	public void setShooterMiddle() {
 		// set shooter height to middle meaning only one piston will be true
-		firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-		secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE_LEVEL_TWO);
+		shortPiston.set(DoubleSolenoid.Value.kReverse);
+		longPiston.set(DoubleSolenoid.Value.kReverse);
 	}
 
 	public void setShooterHigh() {
 		// both pistons will be set to true to get max height
-		firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-		secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE_LEVEL_TWO);
+		shortPiston.set(DoubleSolenoid.Value.kForward); //was reverse //this is short one
+		longPiston.set(DoubleSolenoid.Value.kReverse);
 	}
 
 	public enum ShooterHeight {

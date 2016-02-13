@@ -25,8 +25,8 @@ public class DriveHelper extends ShakerHelper {
 		driveTypeChooser.addObject("GTA Drive", "GTA");
 		driveTypeChooser.addObject("Single Arcade", "SINGLE_ARCADE");
 		clawToggle = new Toggle(false);
-		extendIntakeToggle = new Toggle(false);
-		useArmAttachmentToggle = new Toggle(true);
+		extendIntakeToggle = new Toggle(true);
+		useArmAttachmentToggle = new Toggle(false);
 
 	}
 

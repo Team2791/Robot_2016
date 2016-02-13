@@ -89,7 +89,15 @@ public class Robot extends IterativeRobot {
 		driveTrain = new ShakerDriveTrain();
 
 		safetyMode = SafetyMode.SAFETY;
-
+		
+		shooter = new ShakerShooter();
+		shooterThread = new Thread(shooter);
+		shooterThread.start();
+		intake = new ShakerIntake();
+		ledDio = new DigitalOutput(9);
+		claw = new ShakerClaw();
+		cam = new ShakerCamera();
+		cam2 = new ShakerCamera();
 		driverHelper = new DriveHelper();
 		operatorHelper = new OperatorHelper();
 
@@ -100,14 +108,6 @@ public class Robot extends IterativeRobot {
 		safeModeChooser.addObject("Test Mode (Partial Safety)", "TEST");
 		safeModeChooser.addObject("Full Mode", "FULL");
 
-		shooter = new ShakerShooter();
-		shooterThread = new Thread(shooter);
-		shooterThread.start();
-		intake = new ShakerIntake();
-		ledDio = new DigitalOutput(9);
-		claw = new ShakerClaw();
-		cam = new ShakerCamera();
-		cam2 = new ShakerCamera();
 	}
 
 	@Override

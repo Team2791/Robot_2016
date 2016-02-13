@@ -12,7 +12,8 @@ public class ShakerClaw extends ShakerSubsystem {
 	private DoubleSolenoid clawSolenoid;
 
 	public ShakerClaw() {
-		clawSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.CLAW_REVERSE_CHANNEL, Ports.CLAW_FORWARD_CHANNEL);
+		clawSolenoid = new DoubleSolenoid(Ports.SECOND_PCM_MODULE, Ports.CLAW_REVERSE_CHANNEL, Ports.CLAW_FORWARD_CHANNEL);
+		
 	}
 
 	@Override

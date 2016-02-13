@@ -26,20 +26,20 @@ public class Constants {
 	public static final double MAX_SHOOTER_SPEED = 1.0;
 	public static final DoubleSolenoid.Value SHOOTER_HIGH_STATE = DoubleSolenoid.Value.kReverse;
 	public static final DoubleSolenoid.Value SHOOTER_LOW_STATE = DoubleSolenoid.Value.kForward;
-	public static final DoubleSolenoid.Value SHOOTER_HIGH_STATE_LEVEL_TWO = DoubleSolenoid.Value.kForward;
-	public static final DoubleSolenoid.Value SHOOTER_LOW_STATE_LEVEL_TWO = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value SHOOTER_HIGH_STATE_LEVEL_TWO = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value SHOOTER_LOW_STATE_LEVEL_TWO = DoubleSolenoid.Value.kForward;
 	public static final int SERVO_PUSH_ANGLE = 70;
 	public static final int SERVO_DEFAULT_ANGLE = 0;
 	public static final double THRESHOLD_BALL_DISTANCE = 0.250;
 
 	// INTAKE CONSTANTS
 	public static final double INTAKE_SPEED = 1.0;
-	public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kForward;
-	public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
 	public static final DoubleSolenoid.Value INTAKE_ARM_UP_VALUE = DoubleSolenoid.Value.kForward;
 	public static final DoubleSolenoid.Value INTAKE_ARM_DOWN_VALUE = DoubleSolenoid.Value.kReverse;
 	//CLAW CONSTANTS
-	public static final DoubleSolenoid.Value CLAW_RETRACTED_VALUE = DoubleSolenoid.Value.kReverse;
-	public static final DoubleSolenoid.Value CLAW_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
+	public static final DoubleSolenoid.Value CLAW_RETRACTED_VALUE = DoubleSolenoid.Value.kForward;
+	public static final DoubleSolenoid.Value CLAW_EXTENDED_VALUE = DoubleSolenoid.Value.kReverse;
 
 }
