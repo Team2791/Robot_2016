@@ -2,34 +2,31 @@ package org.usfirst.frc.team2791.helpers;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
+import org.usfirst.frc.team2791.subsystems.ShakerIntake.IntakeState;
 import org.usfirst.frc.team2791.util.Toggle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class OperatorHelper extends ShakerHelper {
 	private double whenShotBall = 0;
 	private boolean shooterIsReset = false;
 	private int shooterSpeedIndex = 0;
 	private Toggle shooterPIDToggle;
-	private Toggle extendIntakeToggle;
-	private Toggle useArmAttachmentToggle;
 	private int shooterLevel = 0;
 
 	public OperatorHelper() {
 		// init
 		shooterPIDToggle = new Toggle(false);
-		extendIntakeToggle = new Toggle(false);
-		useArmAttachmentToggle = new Toggle(true);
-
 	}
 
 	public void teleopRun() {
 		// Operator button layout
 		if (operatorJoystick.getButtonB()) {
 			// Run intake inward with assistance of the shooter wheel
-//			shooter.setShooterSpeeds(-1, false);
+			shooter.setShooterSpeeds(-1, false);
 			intake.pullBall();
 		} else if (operatorJoystick.getButtonX()) {
 			// Run reverse if button pressed
-//			shooter.setShooterSpeeds(1, false);
+			shooter.setShooterSpeeds(1, false);
 			intake.pushBall();
 		} else {
 			// else run the manual controls
@@ -38,29 +35,30 @@ public class OperatorHelper extends ShakerHelper {
 			intake.stopMotors();
 		}
 
-		if (extendIntakeToggle.getToggleOutput())
-			// Extend intake
-			intake.extendIntake();
-		else
-			// Retract intake
-			intake.retractIntake();
-
 		// autofire shooter
-		if (operatorJoystick.getDpadUp())
+		if (operatorJoystick.getButtonA())
 			shooter.autoFire(1.0);// currently only runs the servo back and
 									// forth
+		if (intake.getIntakeState().equals(IntakeState.EXTENDED)) {
+			if (operatorJoystick.getDpadUp())
+				shooter.setShooterHigh();
+			if (operatorJoystick.getDpadRight())
+				shooter.setShooterMiddle();
+			if (operatorJoystick.getDpadDown())
+				shooter.setShooterLow();
+		}
 		// toggle arm attachments
-		if (useArmAttachmentToggle.getToggleOutput())
-			intake.setArmAttachmentDown();
-		else
-			intake.setArmAttachmentUp();
+		// if (intake.getIntakeState().equals(IntakeState.EXTENDED))
 		// switch (shooterLevel) {
 		// case 0:
 		// shooter.setShooterLow();
+		// break;
 		// case 1:
 		// shooter.setShooterMiddle();
-		// case 2:
-		// shooter.setShooterHigh();
+		// break;
+		// // case 2:
+		// // shooter.setShooterHigh();
+		// // break;
 		// }
 
 		// Start button to reset to teleop start
@@ -68,15 +66,12 @@ public class OperatorHelper extends ShakerHelper {
 			reset();
 		// toggle the pid
 		shooterPIDToggle.giveToggleInput(operatorJoystick.getButtonSel());
-		// intake extension toggle
-		extendIntakeToggle.giveToggleInput(operatorJoystick.getButtonA());
-		// arm attachment
-		useArmAttachmentToggle.giveToggleInput(operatorJoystick.getButtonY());
+
 		if (operatorJoystick.getButtonRB())
 			shooterLevel++;
 		if (operatorJoystick.getButtonLB())
 			shooterLevel--;
-		shooterLevel = shooterLevel > 2 ? 2 : shooterLevel;
+		shooterLevel = shooterLevel > 1 ? 1 : shooterLevel;
 		shooterLevel = shooterLevel < 0 ? 0 : shooterLevel;
 	}
 
@@ -88,6 +83,8 @@ public class OperatorHelper extends ShakerHelper {
 	public void updateSmartDash() {
 		intake.updateSmartDash();
 		shooter.updateSmartDash();
+		SmartDashboard.putBoolean("Shooter PID", shooterPIDToggle.getToggleOutput());
+		SmartDashboard.putNumber("Shooter Height SetPoint", shooterLevel);
 	}
 
 	public void reset() {

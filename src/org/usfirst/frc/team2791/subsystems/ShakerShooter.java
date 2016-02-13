@@ -20,7 +20,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
     private boolean autoFire;
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
-    private Relay firstLevelSolenoid;
+    private DoubleSolenoid firstLevelSolenoid;
     private Relay secondLevelSolenoid;
     private Servo ballAidServo;
     private AnalogInput ballCheckingSensor;
@@ -29,8 +29,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
         ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-//        firstLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL);
-//        secondLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL);
+       firstLevelSolenoid = new DoubleSolenoid(Ports.PCM_MODULE,Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_FORWARD, Ports.SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_REVERSE);
+        secondLevelSolenoid = new Relay(Ports.SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_CHANNEL);
         ballCheckingSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
         rightShooterTalon.setInverted(true);
         leftShooterTalon.reverseOutput(true);
@@ -187,19 +187,19 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
     public void setShooterLow() {
         // set shooter height to low , set both pistons to false
         firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+//        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE_LEVEL_TWO);
     }
 
     public void setShooterMiddle() {
         // set shooter height to middle meaning only one piston will be true
         firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+//        secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE_LEVEL_TWO);
     }
 
     public void setShooterHigh() {
         // both pistons will be set to true to get max height
         firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-        secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
+//        secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE_LEVEL_TWO);
     }
 
     public enum ShooterHeight {

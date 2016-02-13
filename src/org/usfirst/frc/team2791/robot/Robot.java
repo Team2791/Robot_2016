@@ -15,6 +15,7 @@ import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
 import org.usfirst.frc.team2791.subsystems.ShakerIntake;
 import org.usfirst.frc.team2791.subsystems.ShakerShooter;
 import org.usfirst.frc.team2791.util.RoboClock;
+import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
     // modes
@@ -42,6 +43,9 @@ public class Robot extends IterativeRobot {
     //other
     private Compressor compressor;
     private SendableChooser safeModeChooser;
+    
+    private ShakerCamera cam;
+
 
     // RoboClock stuff
     public static RoboClock getPowerTimer() {
@@ -100,6 +104,7 @@ public class Robot extends IterativeRobot {
         intake = new ShakerIntake();
         ledDio = new DigitalOutput(9);
 //        claw = new ShakerClaw();
+        cam = new ShakerCamera();
     }
 
     public void autonomousInit() {

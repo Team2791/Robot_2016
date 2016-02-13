@@ -25,8 +25,10 @@ public class Constants {
 
     //SHOOTER CONTANTS
     public static final double MAX_SHOOTER_SPEED = 1.0;
-    public static final Relay.Value SHOOTER_HIGH_STATE = Relay.Value.kForward;
-    public static final Relay.Value SHOOTER_LOW_STATE = Relay.Value.kReverse;
+    public static final DoubleSolenoid.Value SHOOTER_HIGH_STATE = DoubleSolenoid.Value.kReverse;
+    public static final Relay.Value SHOOTER_HIGH_STATE_LEVEL_TWO = Relay.Value.kForward;
+    public static final Relay.Value SHOOTER_LOW_STATE_LEVEL_TWO = Relay.Value.kReverse;
+    public static final DoubleSolenoid.Value SHOOTER_LOW_STATE = DoubleSolenoid.Value.kForward;
     public static final int SERVO_PUSH_ANGLE = 70;
     public static final int SERVO_DEFAULT_ANGLE = 0;
     public static final double THRESHOLD_BALL_DISTANCE = 0.250;
