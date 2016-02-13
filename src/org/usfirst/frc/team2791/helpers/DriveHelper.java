@@ -1,13 +1,14 @@
 package org.usfirst.frc.team2791.helpers;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import static org.usfirst.frc.team2791.robot.Robot.claw;
 import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
 import static org.usfirst.frc.team2791.robot.Robot.driverJoystick;
 import static org.usfirst.frc.team2791.robot.Robot.intake;
 
 import org.usfirst.frc.team2791.util.Toggle;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveHelper extends ShakerHelper {
 
@@ -29,6 +30,7 @@ public class DriveHelper extends ShakerHelper {
 
 	}
 
+	@Override
 	public void teleopRun() {
 		// Reads the current drive type to chooser what layout should be used
 		// Tank: Left Stick (Y Dir) and Right Stick (Y Dir)
@@ -59,9 +61,9 @@ public class DriveHelper extends ShakerHelper {
 		// resets all subsystems under the driver
 		if (driverJoystick.getButtonSel())
 			driveTrain.reset();
-//		clawToggle.giveToggleInput(driverJoystick.getButtonX());
-//		   claw.set(clawToggle.get());
-			
+		clawToggle.giveToggleInput(driverJoystick.getButtonX());
+		claw.set(clawToggle.get());
+
 		// intake extension toggle
 		extendIntakeToggle.giveToggleInput(driverJoystick.getButtonA());
 		if (extendIntakeToggle.getToggleOutput())
@@ -79,11 +81,13 @@ public class DriveHelper extends ShakerHelper {
 			intake.setArmAttachmentUp();
 	}
 
+	@Override
 	public void disableRun() {
 		// runs disable methods of subsystems that fall under the driver
 		driveTrain.disable();
 	}
 
+	@Override
 	public void updateSmartDash() {
 		// updateSmartDash the smartDashboard values of subsystems
 		driveTrain.updateSmartDash();
@@ -91,6 +95,7 @@ public class DriveHelper extends ShakerHelper {
 
 	}
 
+	@Override
 	public void reset() {
 
 	}

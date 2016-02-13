@@ -27,15 +27,17 @@ public class Ports {
 	public static final int INTAKE_PISTON_CHANNEL_REVERSE = 3;
 	public static final int SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_FORWARD = 4;
 	public static final int SHOOTER_PISTON_CHANNEL_FIRST_LEVEL_REVERSE = 5;
-	public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_CHANNEL = 0; //Relay port  
-//	public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_FORWARD = 6;
-//	public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_REVERSE = 7;
+	// public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_CHANNEL = 0;
+	// //Relay port
+	public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_FORWARD = 6;
+	public static final int SHOOTER_PISTON_CHANNEL_SECOND_LEVEL_REVERSE = 7;
 	public static final int INTAKE_ARM_CHANNEL_FORWARD = 6;
 	public static final int INTAKE_ARM_CHANNEL_REVERSE = 7;
 	public static final int CLAW_LEVEL_ONE_SOLENOID_PORT = 8;
 	public static final int CLAW_LEVEL_TWO_SOLENOID_PORT = 9;
 	// CAN Ports
 	public static final int PCM_MODULE = 20;
+	public static final int SECOND_PCM_MODULE = 21;
 	public static final int SHOOTER_TALON_RIGHT_PORT = 10;
 	public static final int SHOOTER_TALON_LEFT_PORT = 11;
 }

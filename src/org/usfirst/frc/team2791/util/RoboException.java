@@ -1,21 +1,20 @@
 package org.usfirst.frc.team2791.util;
 
-
 public class RoboException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public RoboException() {
-    }
+	public RoboException() {
+	}
 
-    public RoboException(String message) {
-        super(message);
-    }
+	public RoboException(String message) {
+		super(message);
+	}
 
-    public RoboException(Throwable cause) {
-        super(cause);
-    }
+	public RoboException(Throwable cause) {
+		super(cause);
+	}
 
-    public RoboException(String message,  Object o) {
-        super(message + Util.newline + o.toString());
-    }
+	public RoboException(String message, Object o) {
+		super(message + Util.newline + o.toString());
+	}
 }

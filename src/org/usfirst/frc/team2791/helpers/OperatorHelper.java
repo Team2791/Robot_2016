@@ -1,9 +1,12 @@
 package org.usfirst.frc.team2791.helpers;
 
-import static org.usfirst.frc.team2791.robot.Robot.*;
+import static org.usfirst.frc.team2791.robot.Robot.intake;
+import static org.usfirst.frc.team2791.robot.Robot.operatorJoystick;
+import static org.usfirst.frc.team2791.robot.Robot.shooter;
 
 import org.usfirst.frc.team2791.subsystems.ShakerIntake.IntakeState;
 import org.usfirst.frc.team2791.util.Toggle;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class OperatorHelper extends ShakerHelper {
@@ -11,13 +14,22 @@ public class OperatorHelper extends ShakerHelper {
 	private boolean shooterIsReset = false;
 	private int shooterSpeedIndex = 0;
 	private Toggle shooterPIDToggle;
-	private int shooterLevel = 0;
+	private int shooterLevel;
 
 	public OperatorHelper() {
 		// init
 		shooterPIDToggle = new Toggle(false);
+		switch (shooter.getShooterHeight()) {
+		case LOW:
+			shooterLevel = 0;
+		case MID:
+			shooterLevel = 1;
+		case HIGH:
+			shooterLevel = 2;
+		}
 	}
 
+	@Override
 	public void teleopRun() {
 		// Operator button layout
 		if (operatorJoystick.getButtonB()) {
@@ -39,6 +51,13 @@ public class OperatorHelper extends ShakerHelper {
 		if (operatorJoystick.getButtonA())
 			shooter.autoFire(1.0);// currently only runs the servo back and
 									// forth
+		if (operatorJoystick.getButtonRB())
+			shooterLevel++;
+		if (operatorJoystick.getButtonLB())
+			shooterLevel--;
+		shooterLevel = shooterLevel > 2 ? 2 : shooterLevel;
+		shooterLevel = shooterLevel < 0 ? 0 : shooterLevel;
+
 		if (intake.getIntakeState().equals(IntakeState.EXTENDED)) {
 			if (operatorJoystick.getDpadUp())
 				shooter.setShooterHigh();
@@ -47,6 +66,9 @@ public class OperatorHelper extends ShakerHelper {
 			if (operatorJoystick.getDpadDown())
 				shooter.setShooterLow();
 		}
+		// else{
+		// intake.extendIntake();
+		// }
 		// toggle arm attachments
 		// if (intake.getIntakeState().equals(IntakeState.EXTENDED))
 		// switch (shooterLevel) {
@@ -67,19 +89,15 @@ public class OperatorHelper extends ShakerHelper {
 		// toggle the pid
 		shooterPIDToggle.giveToggleInput(operatorJoystick.getButtonSel());
 
-		if (operatorJoystick.getButtonRB())
-			shooterLevel++;
-		if (operatorJoystick.getButtonLB())
-			shooterLevel--;
-		shooterLevel = shooterLevel > 1 ? 1 : shooterLevel;
-		shooterLevel = shooterLevel < 0 ? 0 : shooterLevel;
 	}
 
+	@Override
 	public void disableRun() {
 		intake.disable();
 		shooter.disable();
 	}
 
+	@Override
 	public void updateSmartDash() {
 		intake.updateSmartDash();
 		shooter.updateSmartDash();
@@ -87,6 +105,7 @@ public class OperatorHelper extends ShakerHelper {
 		SmartDashboard.putNumber("Shooter Height SetPoint", shooterLevel);
 	}
 
+	@Override
 	public void reset() {
 		shooterSpeedIndex = 0;
 		shooter.reset();

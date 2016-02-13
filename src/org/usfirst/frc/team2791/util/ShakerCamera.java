@@ -1,13 +1,10 @@
 package org.usfirst.frc.team2791.util;
 
-import com.ni.vision.NIVision.Image;
-
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.image.HSLImage;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.vision.AxisCamera;
 
-public class ShakerCamera extends AxisCamera {
+//public class ShakerCamera extends AxisCamera {
+public class ShakerCamera {
 	private final double cameraAngleWidth = 47 / 2;
 	private int cameraPixelHeight = 240;
 	private double halfCamHtFt;
@@ -19,7 +16,7 @@ public class ShakerCamera extends AxisCamera {
 	private CameraServer camServer;
 
 	public ShakerCamera() {
-		super("cam0");
+		// super("cam0");
 		camServer = CameraServer.getInstance();
 		camServer.setQuality(50);
 		camServer.startAutomaticCapture("cam0");
@@ -28,7 +25,7 @@ public class ShakerCamera extends AxisCamera {
 	}
 
 	public void update() {
-		
+
 	}
 
 	public double getDistance() {// send next camera image
