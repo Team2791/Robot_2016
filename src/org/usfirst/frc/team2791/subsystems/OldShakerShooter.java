@@ -141,20 +141,20 @@
 //
 // public void setShooterLow() {
 // // set shooter height to low , set both pistons to false
-// firstLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
-// secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+// firstLevelSolenoid.set(Constants.SMALL_PISTON_LOW_STATE);
+// secondLevelSolenoid.set(Constants.SMALL_PISTON_LOW_STATE);
 // }
 //
 // public void setShooterMiddle() {
 // // set shooter height to middle meaning only one piston will be true
-// firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-// secondLevelSolenoid.set(Constants.SHOOTER_LOW_STATE);
+// firstLevelSolenoid.set(Constants.SMALL_PISTON_HIGH_STATE);
+// secondLevelSolenoid.set(Constants.SMALL_PISTON_LOW_STATE);
 // }
 //
 // public void setShooterHigh() {
 // // both pistons will be set to true to get max height
-// firstLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
-// secondLevelSolenoid.set(Constants.SHOOTER_HIGH_STATE);
+// firstLevelSolenoid.set(Constants.SMALL_PISTON_HIGH_STATE);
+// secondLevelSolenoid.set(Constants.SMALL_PISTON_HIGH_STATE);
 // }
 //
 // public boolean hasBall() {
