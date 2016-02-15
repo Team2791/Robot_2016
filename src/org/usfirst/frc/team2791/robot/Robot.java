@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.helpers.DriveHelper;
-import org.usfirst.frc.team2791.helpers.OperatorHelper;
+import org.usfirst.frc.team2791.helpers.AutonHelper;
+import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.subsystems.ShakerClaw;
@@ -38,8 +38,8 @@ public class Robot extends IterativeRobot {
     public Thread shooterThread;
     public DigitalOutput ledDio;
     // helpers
-    private DriveHelper driverHelper;
-    private OperatorHelper operatorHelper;
+    private TeleopHelper teleopHelper;
+    private AutonHelper autonHelper;
     // other
     private Compressor compressor;
     private SendableChooser safeModeChooser;
@@ -97,8 +97,8 @@ public class Robot extends IterativeRobot {
         claw = new ShakerClaw();
         cam = new ShakerCamera("cam1", true);
 //        cam2 = new ShakerCamera("cam1", false);
-        driverHelper = new DriveHelper();
-        operatorHelper = new OperatorHelper();
+        autonHelper = new AutonHelper();
+        teleopHelper = new TeleopHelper();
 
         compressor = new Compressor();
         safeModeChooser = new SendableChooser();
@@ -151,11 +151,9 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         super.teleopPeriodic();
-        driverHelper.teleopRun();
+        teleopHelper.teleopRun();
         cam.update();
-        driverHelper.updateSmartDash();
-        operatorHelper.teleopRun();
-        operatorHelper.updateSmartDash();
+        teleopHelper.updateSmartDash();
         compressor.start();
         ledDio.set(true);
     }
@@ -163,8 +161,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledPeriodic() {
         super.disabledPeriodic();
-        driverHelper.disableRun();
-        operatorHelper.disableRun();
+        teleopHelper.disableRun();
         compressor.stop();
         ledDio.set(false);
     }
