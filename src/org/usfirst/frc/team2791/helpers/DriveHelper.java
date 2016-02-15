@@ -50,10 +50,10 @@ public class DriveHelper extends ShakerHelper {
         // Driver button layout
         // RB HIGH GEAR
         // LB LOW GEAR
-        if (driverJoystick.getButtonRB())
-            driveTrain.setHighGear();
-        if (driverJoystick.getButtonLB())
+        if (driverJoystick.getButtonB())
             driveTrain.setLowGear();
+        else 
+            driveTrain.setHighGear();
         // resets all subsystems under the driver
         if (driverJoystick.getButtonSel())
             driveTrain.reset();

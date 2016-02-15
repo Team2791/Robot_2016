@@ -9,8 +9,8 @@ public class ShakerCamera {
     private final double cameraAngleWidth = 47 / 2;
     private final int STARTX = 0;
     private final int STARTY = 240 / 2;
-    private final int ENDX = 320;
-    private final int ENDY = 240 / 2 + 20;
+    private final int ENDX = 640;
+    private final int ENDY = 240 / 2;
     private int cameraPixelHeight = 240;
     private double halfCamHtFt;
     private int halfCamHtPx;
@@ -35,8 +35,9 @@ public class ShakerCamera {
     public void update() {
         NIVision.IMAQdxStartAcquisition(this.session);
         NIVision.IMAQdxGrab(session, image, 1);
+        System.out.println(NIVision.imaqGetImageSize(image));
         if (drawOnImage)
-            NIVision.imaqDrawLineOnImage(image, image, NIVision.DrawMode.DRAW_VALUE, new NIVision.Point(STARTX, STARTY), new NIVision.Point(ENDX, ENDY), 0.0f);
+            NIVision.imaqDrawLineOnImage(image, image, NIVision.DrawMode.DRAW_VALUE, new NIVision.Point(STARTX, STARTY), new NIVision.Point(ENDX, ENDY),1.0f);
         CameraServer.getInstance().setImage(image);
 
     }

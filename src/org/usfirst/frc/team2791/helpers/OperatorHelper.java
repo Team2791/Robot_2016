@@ -12,6 +12,7 @@ public class OperatorHelper extends ShakerHelper {
     private int shooterSpeedIndex = 0;
     private Toggle shooterPIDToggle;
     private int shooterLevel = 0;
+    private Toggle useArmAttachmentToggle;
 
     public OperatorHelper() {
         // init
@@ -24,6 +25,7 @@ public class OperatorHelper extends ShakerHelper {
             case HIGH:
                 shooterLevel = 2;
         }
+        useArmAttachmentToggle = new Toggle(false);
     }
 
     @Override
@@ -39,8 +41,8 @@ public class OperatorHelper extends ShakerHelper {
             intake.pushBall();
         } else {
             // else run the manual controls
-            shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(),
-                    shooterPIDToggle.get());
+            shooter.setShooterSpeeds(0,false);
+//                    shooterPIDToggle.get());
             intake.stopMotors();
         }
 
@@ -63,28 +65,25 @@ public class OperatorHelper extends ShakerHelper {
             if (operatorJoystick.getDpadDown())
                 shooter.setShooterLow();
         }
-        // else{
-        // intake.extendIntake();
-        // }
-        // toggle arm attachments
-        // if (intake.getIntakeState().equals(IntakeState.EXTENDED))
-        // switch (shooterLevel) {
-        // case 0:
-        // shooter.setShooterLow();
-        // break;
-        // case 1:
-        // shooter.setShooterMiddle();
-        // break;
-        // // case 2:
-        // // shooter.setShooterHigh();
-        // // break;
-        // }
+        if (intake.getIntakeState().equals(IntakeState.RETRACTED)) {
+            if (operatorJoystick.getDpadUp())intake.extendIntake();
+            if (operatorJoystick.getDpadRight())intake.extendIntake();
+            if (operatorJoystick.getDpadDown())intake.extendIntake();
+        }
+//        useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY());
+//        if (useArmAttachmentToggle.getToggleOutput())
+//            intake.setArmAttachmentDown();
+//        else
+//            intake.setArmAttachmentUp();
+//    
 
         // Start button to reset to teleop start
         if (operatorJoystick.getButtonSt())
             reset();
         // toggle the pid
         shooterPIDToggle.giveToggleInput(operatorJoystick.getButtonSel());
+      
+//        shooter.setShooterSpeeds(1, true);
 
     }
 
@@ -100,6 +99,7 @@ public class OperatorHelper extends ShakerHelper {
         shooter.updateSmartDash();
         SmartDashboard.putBoolean("Shooter PID", shooterPIDToggle.getToggleOutput());
         SmartDashboard.putNumber("Shooter Height SetPoint", shooterLevel);
+        
     }
 
     @Override

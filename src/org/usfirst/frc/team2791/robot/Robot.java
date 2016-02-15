@@ -95,8 +95,8 @@ public class Robot extends IterativeRobot {
         intake = new ShakerIntake();
         ledDio = new DigitalOutput(9);
         claw = new ShakerClaw();
-        cam = new ShakerCamera("cam0", false);
-        cam2 = new ShakerCamera("cam1", false);
+        cam = new ShakerCamera("cam1", true);
+//        cam2 = new ShakerCamera("cam1", false);
         driverHelper = new DriveHelper();
         operatorHelper = new OperatorHelper();
 
@@ -152,6 +152,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         super.teleopPeriodic();
         driverHelper.teleopRun();
+        cam.update();
         driverHelper.updateSmartDash();
         operatorHelper.teleopRun();
         operatorHelper.updateSmartDash();
