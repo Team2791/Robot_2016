@@ -29,7 +29,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
     private boolean recalibrate = false;
     private boolean calibrated = false;
 
-    public ShakerGyro(SPI.Port port) throws InterruptedException {
+    public ShakerGyro(SPI.Port port) {
         m_spi = new SPI(port);
         m_spi.setClockRate(4000000); // set to 4 MHz because that's the rRio's
         // max, gyro can do 8 MHz

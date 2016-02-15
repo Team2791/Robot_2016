@@ -11,7 +11,7 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
  * Created by Akhil on 2/14/2016.
  */
 public class TeleopHelper extends ShakerHelper {
-    private Toggle shooterPIDToggle;
+    private boolean recalibrate = false;//for gyro
     private SendableChooser driveTypeChooser;
     private Toggle clawToggle;
     private Toggle extendIntakeToggle;
@@ -19,7 +19,6 @@ public class TeleopHelper extends ShakerHelper {
 
     public TeleopHelper() {
         // init
-        shooterPIDToggle = new Toggle(false);
         useArmAttachmentToggle = new Toggle(false);
         driveTypeChooser = new SendableChooser();
         SmartDashboard.putData("Drive Chooser", driveTypeChooser);
@@ -30,9 +29,10 @@ public class TeleopHelper extends ShakerHelper {
         clawToggle = new Toggle(false);
         extendIntakeToggle = new Toggle(true);
         useArmAttachmentToggle = new Toggle(false);
+        SmartDashboard.putBoolean("Recalibrate", recalibrate);
     }
 
-    public void teleopRun() {
+    public void run() {
         operatorRun();
         driverRun();
         sharedRun();
@@ -59,6 +59,7 @@ public class TeleopHelper extends ShakerHelper {
                 driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
                 break;
         }
+
         // Driver button layout
         // RB HIGH GEAR
         // LB LOW GEAR
@@ -66,6 +67,7 @@ public class TeleopHelper extends ShakerHelper {
             driveTrain.setLowGear();
         else
             driveTrain.setHighGear();
+
         // resets all subsystems under the driver
         if (driverJoystick.getButtonSel())
             driveTrain.reset();
@@ -74,17 +76,16 @@ public class TeleopHelper extends ShakerHelper {
 
         // intake extension toggle
         extendIntakeToggle.giveToggleInput(driverJoystick.getButtonA());
-        if (extendIntakeToggle.getToggleOutput())
-            // Extend intake
+        if (extendIntakeToggle.getToggleOutput())//Extend intake
             intake.extendIntake();
-        else
-            // Retract intake
+        else// Retract intake
             intake.retractIntake();
 
     }
 
     private void operatorRun() {
         // Operator button layout
+
         if (operatorJoystick.getButtonB()) {
             // Run intake inward with assistance of the shooter wheel
             shooter.setShooterSpeeds(-1200, true);
@@ -95,15 +96,12 @@ public class TeleopHelper extends ShakerHelper {
             intake.pushBall();
         } else {
             // else run the manual controls
-            shooter.setShooterSpeeds(0, false);
-//                    shooterPIDToggle.get());
             intake.stopMotors();
         }
 
         // autofire shooter
         if (operatorJoystick.getButtonA())
-            shooter.autoFire(1.0);// currently only runs the servo back and
-        // forth
+            shooter.autoFire(1.0);// does complete shot
 
 
         if (intake.getIntakeState().equals(ShakerIntake.IntakeState.EXTENDED)) {
@@ -113,31 +111,19 @@ public class TeleopHelper extends ShakerHelper {
                 shooter.setShooterMiddle();
             if (operatorJoystick.getDpadDown())
                 shooter.setShooterLow();
+        } else if (intake.getIntakeState().equals(ShakerIntake.IntakeState.RETRACTED)) {
+            extendIntakeToggle.giveToggleInput(operatorJoystick.getDpadDown() || operatorJoystick.getDpadUp() || operatorJoystick.getDpadRight());
         }
-        if (intake.getIntakeState().equals(ShakerIntake.IntakeState.RETRACTED)) {
-            if (operatorJoystick.getDpadUp()) intake.extendIntake();
-            if (operatorJoystick.getDpadRight()) intake.extendIntake();
-            if (operatorJoystick.getDpadDown()) intake.extendIntake();
-        }
-//        useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY());
-//        if (useArmAttachmentToggle.getToggleOutput())
-//            intake.setArmAttachmentDown();
-//        else
-//            intake.setArmAttachmentUp();
-//
 
         // Start button to reset to teleop start
         if (operatorJoystick.getButtonSt())
             reset();
-        // toggle the pid
-        shooterPIDToggle.giveToggleInput(operatorJoystick.getButtonSel());
 
-//        shooter.setShooterSpeeds(1, true);
     }
 
     private void sharedRun() {
         // arm attachment
-        useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY());
+        useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY() || operatorJoystick.getButtonY());
         if (useArmAttachmentToggle.getToggleOutput())
             intake.setArmAttachmentDown();
         else
@@ -148,16 +134,20 @@ public class TeleopHelper extends ShakerHelper {
     public void disableRun() {
         // runs disable methods of subsystems that fall under the driver
         driveTrain.disable();
+        if (SmartDashboard.getBoolean("recalibrate")) {
+            driveTrain.calibrateGyro();
+            recalibrate = false;
+        }
     }
 
     @Override
     public void updateSmartDash() {
         intake.updateSmartDash();
         shooter.updateSmartDash();
-        SmartDashboard.putBoolean("Shooter PID", shooterPIDToggle.getToggleOutput());
         // updateSmartDash the smartDashboard values of subsystems
         driveTrain.updateSmartDash();
         SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
+        SmartDashboard.putBoolean("Is Gyro calibrating: ", driveTrain.isGyroCalibrating());
 
     }
 

@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2791.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,19 +30,19 @@ public class Robot extends IterativeRobot {
     // driver subsystems
     public static ShakerDriveTrain driveTrain;
     // timers
-    private static RoboClock disabledTimer;
-    private static RoboClock autonTimer;
-    private static RoboClock teleopTimer;
-    private static RoboClock powerTimer;
+    public static RoboClock disabledTimer;
+    public static RoboClock autonTimer;
+    public static RoboClock teleopTimer;
+    public static RoboClock powerTimer;
+
     public Thread shooterThread;
-    public DigitalOutput ledDio;
+    //    public DigitalOutput ledDio;
     // helpers
     private TeleopHelper teleopHelper;
     private AutonHelper autonHelper;
     // other
     private Compressor compressor;
     private SendableChooser safeModeChooser;
-
     private ShakerCamera cam;
     private ShakerCamera cam2;
 
@@ -93,7 +92,7 @@ public class Robot extends IterativeRobot {
         shooterThread = new Thread(shooter);
         shooterThread.start();
         intake = new ShakerIntake();
-        ledDio = new DigitalOutput(9);
+//        ledDio = new DigitalOutput(9);
         claw = new ShakerClaw();
         cam = new ShakerCamera("cam1", true);
 //        cam2 = new ShakerCamera("cam1", false);
@@ -106,12 +105,12 @@ public class Robot extends IterativeRobot {
         safeModeChooser.addDefault("Safe Mode", "SAFE");
         safeModeChooser.addObject("Test Mode (Partial Safety)", "TEST");
         safeModeChooser.addObject("Full Mode", "FULL");
-
     }
 
     @Override
     public void autonomousInit() {
         gamePeriod = GamePeriod.AUTONOMOUS;
+        autonTimer.start();
     }
 
     @Override
@@ -151,11 +150,11 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         super.teleopPeriodic();
-        teleopHelper.teleopRun();
+        teleopHelper.run();
         cam.update();
         teleopHelper.updateSmartDash();
         compressor.start();
-        ledDio.set(true);
+//        ledDio.set(true);
     }
 
     @Override
@@ -163,7 +162,8 @@ public class Robot extends IterativeRobot {
         super.disabledPeriodic();
         teleopHelper.disableRun();
         compressor.stop();
-        ledDio.set(false);
+
+//        ledDio.set(false);
     }
 
     public RoboClock getTeleopTimer() {

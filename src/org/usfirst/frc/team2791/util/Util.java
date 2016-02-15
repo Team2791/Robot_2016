@@ -47,6 +47,10 @@ public class Util {
         return index;
     }
 
+    public static double tickToFeet(double encoderTicks, double wheelDiameter) {
+        return (wheelDiameter * Math.PI / encoderTicks);
+    }
+
     public enum UnitLength {
         FEET(1.0 / 12.0, "ft"), INCHES(1.0, "in");
         private double unitsPerInch;
