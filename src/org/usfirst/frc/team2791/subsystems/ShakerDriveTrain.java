@@ -123,7 +123,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		SmartDashboard.putNumber("Auton timer", autonTimer.getTotalTime());
 
 		SmartDashboard.putNumber("Current angle pid error", anglePID.getError());
-		SmartDashboard.putNumber("Current gyro angle", getAngle()*12);
 		SmartDashboard.putNumber("PID OUTPUT: ", anglePIDOutput);
 		SmartDashboard.putNumber("Average dist", getAvgDist());
 		SmartDashboard.putNumber("drivePID output", drivePIDOutput);
@@ -139,7 +138,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
-		System.out.println("Left Output: " + left + "Right Ouput: " + right);
+//		System.out.println("Left Output: " + left + "Right Ouput: " + right);
 		roboDrive.setLeftRightMotorOutputs(sanitizeValue(left), sanitizeValue(right));
 	}
 

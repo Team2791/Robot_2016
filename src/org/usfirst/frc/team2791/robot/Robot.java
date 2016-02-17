@@ -179,6 +179,8 @@ public class Robot extends IterativeRobot {
 		teleopHelper.disableRun();
 		compressor.stop();
 		autonHelper.disableRun();
+
+		SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
 		if(operatorJoystick.getButtonSt())
 			driveTrain.calibrateGyro();
 		// ledDio.set(false);

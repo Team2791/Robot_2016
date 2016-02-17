@@ -45,7 +45,7 @@ public class AutonHelper extends ShakerHelper {
 			break;
 		case 1:
 			driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"), 
-					SmartDashboard.getNumber("Angle setpoint")/12);
+					SmartDashboard.getNumber("Angle setpoint"));
 //			driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint")/12);
 			
 //		case 1:

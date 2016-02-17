@@ -14,7 +14,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private final double delayTimeBeforeShooting = 0.5;// time for wheels to
 	// get
 	// to speed
-	private final double delayTimeForServo = 0.5;// time for servo to push
+	private final double delayTimeForServo = 0.8;// time for servo to push
 	private final int encoderTicks = 128 * 4;
 	private double fireSpeed;
 	private boolean autoFire;
@@ -36,16 +36,16 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		shortPiston = new DoubleSolenoid(Ports.SECOND_PCM_MODULE, Ports.SHORT_PISTON_FORWARD,
 				Ports.SHORT_PISTON_REVERSE);
 		ballDistanceSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
-		rightShooterTalon.setInverted(true);
+		rightShooterTalon.setInverted(false);
 		// true, false, true, false // right sensor correct, direction wrong,
 		// left vis versa
 		// false false true true // was working correctly maybe
 		rightShooterTalon.reverseOutput(false);
 		leftShooterTalon.reverseOutput(false);
 		leftShooterTalon.reverseSensor(true);
-		rightShooterTalon.reverseSensor(true);
+		rightShooterTalon.reverseSensor(false);
 		leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-		rightShooterTalon.configPeakOutputVoltage(0, -12.0f);
+		rightShooterTalon.configPeakOutputVoltage(+12.0f,0);
 		//
 		SmartDashboard.putNumber("Shooter p", PID.SHOOTER_P);
 		SmartDashboard.putNumber("Shooter i", PID.SHOOTER_I);
@@ -86,8 +86,9 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 							+ rightShooterTalon.getSetpoint());
 
 					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
-					while (Timer.getFPGATimestamp()-whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
-						if(overrideShot)
+					while (Timer.getFPGATimestamp()
+							- whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
+						if (overrideShot)
 							break;
 						if (!(Math.abs(leftShooterTalon.getError()) < 50
 								&& Math.abs(rightShooterTalon.getError()) < 50)) {
@@ -196,19 +197,22 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	}
 
 	public boolean hasBall() {
-		System.out.println("The ball distance check sensor is: " + ballDistanceSensor.getVoltage());
+		// System.out.println("The ball distance check sensor is: " +
+		// ballDistanceSensor.getVoltage());
 		return ballDistanceSensor.getVoltage() > 0.263;
 	}
 
 	public void pushBall() {
 		// will be used to push ball toward the shooter
 		ballAidServo.set(0);
+		System.out.println("Im being told to push the ball");
 
 	}
 
 	public void resetServoAngle() {
 		// bring servo back to original position
 		ballAidServo.set(1);
+		System.out.println("Im being told to Reset!!");
 	}
 
 	public void autoFire(double speed) {
@@ -251,6 +255,11 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
 	public void overrideAutoShot() {
 		overrideShot = true;
+	}
+
+	public boolean getIfAutoFire() {
+		return autoFire;
+
 	}
 
 	public enum ShooterHeight {

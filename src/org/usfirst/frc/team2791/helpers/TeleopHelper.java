@@ -86,19 +86,22 @@ public class TeleopHelper extends ShakerHelper {
     private void operatorRun() {
         // Operator button layout
 
+    	
+    	
         if (operatorJoystick.getButtonB()) {
             // Run intake inward with assistance of the shooter wheel
-            shooter.setShooterSpeeds(-1200, false);
+            shooter.setShooterSpeeds(-0.6, false);
             intake.pullBall();
         } else if (operatorJoystick.getButtonX()) {
             // Run reverse if button pressed
-            shooter.setShooterSpeeds(1200, false);
+            shooter.setShooterSpeeds(0.6, false);
             intake.pushBall();
         } else {
             // else run the manual controls
-        	shooter.setShooterSpeeds(0, false);
+        	shooter.setShooterSpeeds(operatorJoystick.getAxisRT(), false);
             intake.stopMotors();
         }
+        System.out.println("Shooter Speeds are set to:" +operatorJoystick.getAxisRT());
 
         // autofire shooter
         if (operatorJoystick.getButtonA())
@@ -121,7 +124,7 @@ public class TeleopHelper extends ShakerHelper {
         	shooter.overrideAutoShot();
         if(operatorJoystick.getDpadLeft())
         	shooter.pushBall();
-        else
+        if(!shooter.getIfAutoFire())
         	shooter.resetServoAngle();
         // Start button to reset to teleop start
         if (operatorJoystick.getButtonSt())
