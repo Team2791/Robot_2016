@@ -23,19 +23,23 @@ public class ShakerCamera {
     private boolean drawOnImage;
 
     public ShakerCamera(String cameraPort, boolean shouldDrawOnImage) {
+    	try{
         image = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
         session = NIVision.IMAQdxOpenCamera(cameraPort, NIVision.IMAQdxCameraControlMode.CameraControlModeController);
         NIVision.IMAQdxConfigureGrab(this.session);
         halfCamHtPx = 120;
         targetHeightFt = 1.16667;
         this.drawOnImage = shouldDrawOnImage;
-
+    	}
+    	catch(Error e){
+    		
+    	}
     }
 
     public void update() {
         NIVision.IMAQdxStartAcquisition(this.session);
         NIVision.IMAQdxGrab(session, image, 1);
-        System.out.println(NIVision.imaqGetImageSize(image));
+//        System.out.println(NIVision.imaqGetImageSize(image));
         if (drawOnImage)
             NIVision.imaqDrawLineOnImage(image, image, NIVision.DrawMode.DRAW_VALUE, new NIVision.Point(STARTX, STARTY), new NIVision.Point(ENDX, ENDY),1.0f);
         CameraServer.getInstance().setImage(image);

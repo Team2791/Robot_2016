@@ -54,7 +54,7 @@ public class BasicPID {
         m_currentTime = Timer.getFPGATimestamp();
         m_currentError = currentValue - m_setPoint;
         double output = getPPart() + getIPart() + getDPart();
-        m_previousTime = Timer.getFPGATimestamp();
+        m_previousTime = m_currentTime;
         m_previousError = m_currentError;
 
         if (output > m_maxOutput)

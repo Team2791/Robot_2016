@@ -32,7 +32,7 @@ public class TeleopHelper extends ShakerHelper {
         SmartDashboard.putBoolean("Recalibrate", recalibrate);
     }
 
-    public void run() {
+    public void run(){
         operatorRun();
         driverRun();
         sharedRun();
@@ -88,14 +88,15 @@ public class TeleopHelper extends ShakerHelper {
 
         if (operatorJoystick.getButtonB()) {
             // Run intake inward with assistance of the shooter wheel
-            shooter.setShooterSpeeds(-1200, true);
+            shooter.setShooterSpeeds(-1200, false);
             intake.pullBall();
         } else if (operatorJoystick.getButtonX()) {
             // Run reverse if button pressed
-            shooter.setShooterSpeeds(1200, true);
+            shooter.setShooterSpeeds(1200, false);
             intake.pushBall();
         } else {
             // else run the manual controls
+        	shooter.setShooterSpeeds(0, false);
             intake.stopMotors();
         }
 
@@ -112,9 +113,16 @@ public class TeleopHelper extends ShakerHelper {
             if (operatorJoystick.getDpadDown())
                 shooter.setShooterLow();
         } else if (intake.getIntakeState().equals(ShakerIntake.IntakeState.RETRACTED)) {
-            extendIntakeToggle.giveToggleInput(operatorJoystick.getDpadDown() || operatorJoystick.getDpadUp() || operatorJoystick.getDpadRight());
+//        	
+//            if(operatorJoystick.getDpadDown() || operatorJoystick.getDpadUp() || operatorJoystick.getDpadRight());
+//            	extendIntakeToggle.setManual(true);
         }
-
+        if(operatorJoystick.getButtonRB())
+        	shooter.overrideAutoShot();
+        if(operatorJoystick.getDpadLeft())
+        	shooter.pushBall();
+        else
+        	shooter.resetServoAngle();
         // Start button to reset to teleop start
         if (operatorJoystick.getButtonSt())
             reset();
@@ -134,10 +142,7 @@ public class TeleopHelper extends ShakerHelper {
     public void disableRun() {
         // runs disable methods of subsystems that fall under the driver
         driveTrain.disable();
-        if (SmartDashboard.getBoolean("recalibrate")) {
-            driveTrain.calibrateGyro();
-            recalibrate = false;
-        }
+       
     }
 
     @Override
@@ -148,6 +153,7 @@ public class TeleopHelper extends ShakerHelper {
         driveTrain.updateSmartDash();
         SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
         SmartDashboard.putBoolean("Is Gyro calibrating: ", driveTrain.isGyroCalibrating());
+        SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());
 
     }
 

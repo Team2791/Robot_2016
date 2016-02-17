@@ -61,7 +61,7 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public IntakeState getIntakeState() {
         // returns state of intake in form of the enum IntakeState
-        System.out.println(intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));
+//        System.out.println("intake extended: " + intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE));
         if (intakeSolenoid.get().equals(Constants.INTAKE_RECTRACTED_VALUE))
             return IntakeState.RETRACTED;
         else if (intakeSolenoid.get().equals(Constants.INTAKE_EXTENDED_VALUE))
