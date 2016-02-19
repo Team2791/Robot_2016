@@ -39,6 +39,7 @@ public class AutonHelper extends ShakerHelper {
 			driveTrain.setLeftRight(0, 0);
 			break;
 		case 0:
+			driveTrain.setLowGear();
 			driveTrain.resetGyro();
 			driveTrain.resetEncoders();
 			counter++;
@@ -121,6 +122,9 @@ public class AutonHelper extends ShakerHelper {
 		if(Timer.getFPGATimestamp() - lowBar_sweetSpotTime > 0.5)
 			return true;
 		return false;
+		
+	}
+	public boolean traverseFunBridges{
 		
 	}
 	public enum defense{	//uneven terrain applies to rough terrain,moat, etc. ... things that challenge our drive train
