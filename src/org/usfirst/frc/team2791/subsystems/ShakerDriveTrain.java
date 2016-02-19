@@ -55,13 +55,13 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		anglePID.setMinOutput(-0.5);
 	}
 
-	public boolean driveInFeet(double distance,double angle) {
+	public boolean driveInFeet(double distance,double angle,double maxOutput) {
 		distance*=12;//convert distance from feet to inches
 		setLowGear();
 		distancePID.setSetPoint(distance);
 		anglePID.setSetPoint(angle);
-		distancePID.setMaxOutput(0.4);
-		distancePID.setMinOutput(-0.4);
+		distancePID.setMaxOutput(maxOutput);
+		distancePID.setMinOutput(-maxOutput);
 		anglePID.setMaxOutput(1);
 		anglePID.setMinOutput(-1);
 		anglePID.changeGains(PID.DRIVE_ANGLE_P, PID.DRIVE_ANGLE_I, PID.DRIVE_ANGLE_D);
