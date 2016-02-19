@@ -62,8 +62,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		anglePID.setSetPoint(angle);
 		distancePID.setMaxOutput(maxOutput);
 		distancePID.setMinOutput(-maxOutput);
-		anglePID.setMaxOutput(1);
-		anglePID.setMinOutput(-1);
+		anglePID.setMaxOutput(maxOutput);
+		anglePID.setMinOutput(-maxOutput);
 		anglePID.changeGains(PID.DRIVE_ANGLE_P, PID.DRIVE_ANGLE_I, PID.DRIVE_ANGLE_D);
 		distancePID.changeGains(PID.DRIVE_DISTANCE_P, PID.DRIVE_DISTANCE_I, PID.DRIVE_DISTANCE_D);
 		drivePIDOutput = -distancePID.updateAndGetOutput(this.getAvgDist());
