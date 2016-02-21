@@ -2,15 +2,11 @@ package org.usfirst.frc.team2791.subsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.PID;
 import org.usfirst.frc.team2791.configuration.Ports;
-import org.usfirst.frc.team2791.robot.Robot;
 import org.usfirst.frc.team2791.util.BasicPID;
 import org.usfirst.frc.team2791.util.ShakerGyro;
 import org.usfirst.frc.team2791.util.Util;
-
-import com.ni.vision.NIVision.GeometricAdvancedSetupDataOption;
 
 import static org.usfirst.frc.team2791.robot.Robot.autonTimer;
 
@@ -140,28 +136,13 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 
 	public void setLeftRight(double left, double right) {
 		// System.out.println("Left Output: " + left + "Right Ouput: " + right);
-		roboDrive.setLeftRightMotorOutputs(sanitizeValue(left), sanitizeValue(right));
+		roboDrive.setLeftRightMotorOutputs(left, right);
 	}
 
 	public void setArcadeDrive(double left, double right) {
 		roboDrive.arcadeDrive(left, right);
 	}
 
-	private double sanitizeValue(double value) {
-		// This is just used as a threshold for the values
-		// if connected to ds station or connected overriden via smartdash will
-		// return value that is inputed
-		// switch (Robot.safetyMode) {
-		// case SAFETY:
-		// case TEST:
-		// return value * Constants.FULL_SPEED_SAFETY_MODE;
-		//
-		// case FULL_CONTROL:
-		// return value;
-		// }
-		// return value;
-		return value;
-	}
 
 	public boolean isHighGear() {
 
