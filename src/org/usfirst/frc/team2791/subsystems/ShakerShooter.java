@@ -24,8 +24,9 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private DoubleSolenoid longPiston;
 	private Servo ballAidServo;
 	private AnalogInput ballDistanceSensor;
-	private double feedForward = 0.231;
-	private double setPoint = 1000;
+	private double feedForward = 0.4;
+	private double closeShotSetPoint = 590;
+	private double farShotSetpoint = 850;
 	private boolean overrideShot = false;
 
 	public ShakerShooter() {
@@ -33,8 +34,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
 		ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
 		longPiston = new DoubleSolenoid(Ports.PCM_MODULE, Ports.LONG_PISTON_FORWARD, Ports.LONG_PISTON_REVERSE);
-		shortPiston = new DoubleSolenoid(Ports.SECOND_PCM_MODULE, Ports.SHORT_PISTON_FORWARD,
-				Ports.SHORT_PISTON_REVERSE);
+		shortPiston = new DoubleSolenoid(Ports.PCM_MODULE, Ports.SHORT_PISTON_FORWARD, Ports.SHORT_PISTON_REVERSE);
 		ballDistanceSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
 		rightShooterTalon.setInverted(false);
 		// true, false, true, false // right sensor correct, direction wrong,
@@ -45,7 +45,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		leftShooterTalon.reverseSensor(true);
 		rightShooterTalon.reverseSensor(false);
 		leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-		rightShooterTalon.configPeakOutputVoltage(+12.0f,0);
+		rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
 		//
 		SmartDashboard.putNumber("Shooter p", PID.SHOOTER_P);
 		SmartDashboard.putNumber("Shooter i", PID.SHOOTER_I);
@@ -54,7 +54,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		PID.SHOOTER_I = SmartDashboard.getNumber("Shooter i");
 		PID.SHOOTER_D = SmartDashboard.getNumber("Shooter d");
 		SmartDashboard.putNumber("FeedForward", feedForward);
-		SmartDashboard.putNumber("ShooterSetPoint", setPoint);
+		SmartDashboard.putNumber("closeShotSetpoint", closeShotSetPoint);
+		SmartDashboard.putNumber("farShotSetpoint", farShotSetpoint);
 		leftShooterTalon.setIZone(500);
 		rightShooterTalon.setIZone(500);
 		leftShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
@@ -78,12 +79,14 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		try {
 			while (true) {
 				if (autoFire) {
-					setPoint = SmartDashboard.getNumber("ShooterSetPoint");
+					closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
+					farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
+					double setPoint = getShooterHeight().equals(ShooterHeight.MID)?farShotSetpoint:closeShotSetPoint;
 					setShooterSpeeds(setPoint, true);
-					System.out.println("my setpoint is " + setPoint);
+//					System.out.println("my setpoint is " + setPoint);
 
-					System.out.println("Talons think the setpoint is " + leftShooterTalon.getSetpoint() + " and "
-							+ rightShooterTalon.getSetpoint());
+//					System.out.println("Talons think the setpoint is " + leftShooterTalon.getSetpoint() + " and "
+//							+ rightShooterTalon.getSetpoint());
 
 					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 					while (Timer.getFPGATimestamp()
@@ -96,7 +99,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 							whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 						}
 						Thread.sleep(10);
-						setPoint = SmartDashboard.getNumber("ShooterSetPoint");
 						setShooterSpeeds(setPoint, true);
 
 					}
@@ -104,7 +106,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 					// push ball
 					while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
 						Thread.sleep(10);
-						setPoint = SmartDashboard.getNumber("ShooterSetPoint");
 						setShooterSpeeds(setPoint, true);
 						pushBall();
 					}
@@ -204,15 +205,15 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
 	public void pushBall() {
 		// will be used to push ball toward the shooter
-		ballAidServo.set(0);
-		System.out.println("Im being told to push the ball");
+		ballAidServo.set(0.5);
+//		System.out.println("Im being told to push the ball");
 
 	}
 
 	public void resetServoAngle() {
 		// bring servo back to original position
 		ballAidServo.set(1);
-		System.out.println("Im being told to Reset!!");
+//		System.out.println("Im being told to Reset!!");
 	}
 
 	public void autoFire(double speed) {
@@ -233,10 +234,12 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	}
 
 	public void setShooterLow() {
-		// set shooter height to low , set both pistons to false
-		shortPiston.set(Constants.SMALL_PISTON_LOW_STATE);
-		longPiston.set(Constants.LARGE_PISTON_LOW_STATE);
-		// short needs to switch
+		// both pistons will be set to true to get max height
+		shortPiston.set(Constants.SMALL_PISTON_HIGH_STATE); // was reverse
+		// //this is short
+		// one
+		longPiston.set(Constants.LARGE_PISTON_HIGH_STATE);
+
 	}
 
 	public void setShooterMiddle() {
@@ -246,11 +249,10 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	}
 
 	public void setShooterHigh() {
-		// both pistons will be set to true to get max height
-		shortPiston.set(Constants.SMALL_PISTON_HIGH_STATE); // was reverse
-		// //this is short
-		// one
-		longPiston.set(Constants.LARGE_PISTON_HIGH_STATE);
+		// set shooter height to low , set both pistons to false
+		shortPiston.set(Constants.SMALL_PISTON_LOW_STATE);
+		longPiston.set(Constants.LARGE_PISTON_LOW_STATE);
+		// short needs to switch
 	}
 
 	public void overrideAutoShot() {

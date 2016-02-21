@@ -1,20 +1,23 @@
 package org.usfirst.frc.team2791.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
+
 import org.usfirst.frc.team2791.configuration.Constants;
 import org.usfirst.frc.team2791.configuration.Ports;
 
 public class ShakerClaw extends ShakerSubsystem {
-    private DoubleSolenoid clawSolenoid;
-
+    private Solenoid lowClawSolenoid;
+    private Solenoid highClawSolenoid;
     public ShakerClaw() {
-        clawSolenoid = new DoubleSolenoid(Ports.SECOND_PCM_MODULE, Ports.CLAW_REVERSE_CHANNEL, Ports.CLAW_FORWARD_CHANNEL);
-
+        lowClawSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.CLAW_LOWER_CHANNEL);
+        highClawSolenoid = new Solenoid(Ports.PCM_MODULE,Ports.CLAW_HIGHER_CHANNEL);
+        
     }
 
     @Override
     public void run() {
-        clawSolenoid.set(Constants.CLAW_EXTENDED_VALUE);
+        lowClawSolenoid.set(true);
     }
 
     @Override
@@ -23,15 +26,14 @@ public class ShakerClaw extends ShakerSubsystem {
     }
 
     public void set(boolean toggle) {
-        if (toggle)
-            clawSolenoid.set(Constants.CLAW_EXTENDED_VALUE);
-        else
-            clawSolenoid.set(Constants.CLAW_RETRACTED_VALUE);
+            lowClawSolenoid.set(toggle);
+            highClawSolenoid.set(toggle);
+        
     }
 
     @Override
     public void reset() {
-        clawSolenoid.set(Constants.CLAW_RETRACTED_VALUE);
+		set(false);
     }
 
     @Override

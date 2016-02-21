@@ -5,8 +5,11 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team2791.configuration.Ports;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
@@ -51,6 +54,8 @@ public class Robot extends IterativeRobot {
 	private ShakerCamera cam;
 	private ShakerCamera cam2;
 	private ShakerAccelerometer acc;
+	public static PowerDistributionPanel PDP;
+
 	// RoboClock stuff
 	public static RoboClock getPowerTimer() {
 		return powerTimer;
@@ -99,22 +104,22 @@ public class Robot extends IterativeRobot {
 		intake = new ShakerIntake();
 		// ledDio = new DigitalOutput(9);
 		claw = new ShakerClaw();
-		cam = new ShakerCamera("cam1", false);
-		
-//		 cam2 = new ShakerCamera("cam1", false);
+		cam = new ShakerCamera("cam1", true);
+
+		// cam2 = new ShakerCamera("cam1", false);
 		autonHelper = new AutonHelper();
 		teleopHelper = new TeleopHelper();
 
-		compressor = new Compressor();
+		compressor = new Compressor(Ports.PCM_MODULE);
 		safeModeChooser = new SendableChooser();
 		SmartDashboard.putData("Safe Mode Chooser", safeModeChooser);
 		safeModeChooser.addDefault("Safe Mode", "SAFE");
 		safeModeChooser.addObject("Test Mode (Partial Safety)", "TEST");
 		safeModeChooser.addObject("Full Mode", "FULL");
-
+		PDP = new PowerDistributionPanel(Ports.PCM_MODULE);
 		acc = new ShakerAccelerometer();
-//		camServer = CameraServer.getInstance();
-//		camServer.startAutomaticCapture("cam1");
+		// camServer = CameraServer.getInstance();
+		// camServer.startAutomaticCapture("cam1");
 	}
 
 	@Override
@@ -156,6 +161,7 @@ public class Robot extends IterativeRobot {
 		super.autonomousPeriodic();
 		autonHelper.run();
 		autonHelper.updateSmartDash();
+		cam.update();
 	}
 
 	@Override
@@ -164,7 +170,10 @@ public class Robot extends IterativeRobot {
 		teleopHelper.run();
 		cam.update();
 		teleopHelper.updateSmartDash();
-		compressor.start();
+		if (shooter.getIfAutoFire())
+			compressor.stop();
+		else
+			compressor.start();
 		SmartDashboard.putNumber("Acceleromter in x dir", acc.getX());
 		SmartDashboard.putNumber("Acceleromter in y dir", acc.getY());
 		SmartDashboard.putNumber("Acceleromter in z dir", acc.getZ());
@@ -181,8 +190,13 @@ public class Robot extends IterativeRobot {
 		autonHelper.disableRun();
 
 		SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
-		if(operatorJoystick.getButtonSt())
+		if (operatorJoystick.getButtonSt())
 			driveTrain.calibrateGyro();
+		if (operatorJoystick.getButtonSel()) {
+			System.out.println("Resetting Auton step counter...");
+			autonHelper.resetAutonStepCounter();
+			System.out.println("Done...");
+		}
 		// ledDio.set(false);
 	}
 

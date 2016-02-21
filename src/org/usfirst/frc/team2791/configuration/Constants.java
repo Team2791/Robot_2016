@@ -24,8 +24,8 @@ public class Constants {
 
     // SHOOTER CONTANTS
     public static final double MAX_SHOOTER_SPEED = 1.0;
-    public static final DoubleSolenoid.Value SMALL_PISTON_HIGH_STATE = DoubleSolenoid.Value.kForward;
-    public static final DoubleSolenoid.Value SMALL_PISTON_LOW_STATE = DoubleSolenoid.Value.kReverse;
+    public static final DoubleSolenoid.Value SMALL_PISTON_HIGH_STATE = DoubleSolenoid.Value.kReverse;
+    public static final DoubleSolenoid.Value SMALL_PISTON_LOW_STATE = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value LARGE_PISTON_HIGH_STATE = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value LARGE_PISTON_LOW_STATE = DoubleSolenoid.Value.kForward;
     public static final int SERVO_PUSH_ANGLE = 70;
@@ -34,8 +34,8 @@ public class Constants {
 
     // INTAKE CONSTANTS
     public static final double INTAKE_SPEED = 1.0;
-    public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
-    public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value INTAKE_ARM_UP_VALUE = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value INTAKE_ARM_DOWN_VALUE = DoubleSolenoid.Value.kReverse;
     //CLAW CONSTANTS

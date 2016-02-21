@@ -25,7 +25,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	private Encoder leftDriveEncoder;
 	private Encoder rightDriveEncoder;
 	private RobotDrive roboDrive;
-	private DoubleSolenoid driveSolenoid;
+	private Solenoid driveSolenoid;
 	private double drivePIDOutput;
 	private double anglePIDOutput;
 	private double driveEncoderTicks = 128;
@@ -38,8 +38,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		this.rightTalonB = new Talon(Ports.DRIVE_TALON_RIGHT_PORT_BACK);
 		this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
 		roboDrive.stopMotor();
-		this.driveSolenoid = new DoubleSolenoid(Ports.PCM_MODULE, Ports.DRIVE_PISTON_FORWARD,
-				Ports.DRIVE_PISTON_REVERSE);
+		this.driveSolenoid = new Solenoid(Ports.PCM_MODULE, Ports.DRIVE_SHIFTING_PISTON);
 		this.leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORT_A, Ports.LEFT_DRIVE_ENCODER_PORT_B);
 		this.rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCOODER_PORT_A, Ports.RIGHT_DRIVE_ENCODER_PORT_B);
 		leftDriveEncoder.reset();
@@ -55,8 +54,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		anglePID.setMinOutput(-0.5);
 	}
 
-	public boolean driveInFeet(double distance,double angle,double maxOutput) {
-		distance*=12;//convert distance from feet to inches
+	public boolean driveInFeet(double distance, double angle, double maxOutput) {
+		distance *= 12;// convert distance from feet to inches
 		setLowGear();
 		distancePID.setSetPoint(distance);
 		anglePID.setSetPoint(angle);
@@ -73,7 +72,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		SmartDashboard.putNumber("Right Encoder Position", getRightDistance());
 		SmartDashboard.putNumber("drivePID output", drivePIDOutput);
 		SmartDashboard.putNumber("drive error", distancePID.getError());
-		
+
 		return (Math.abs(distancePID.getError()) < 0.5) && (Math.abs(anglePID.getError()) < 2.5)
 				&& (Math.abs(getAvgSpeed()) < 0.1);
 
@@ -85,11 +84,12 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		anglePID.changeGains(PID.DRIVE_ANGLE_P, PID.DRIVE_ANGLE_I, PID.DRIVE_ANGLE_D);
 		distancePID.changeGains(PID.DRIVE_DISTANCE_P, PID.DRIVE_DISTANCE_I, PID.DRIVE_DISTANCE_D);
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
-		// add in a 0.18 % feed forward because there is a minimum amount of power
+		// add in a 0.18 % feed forward because there is a minimum amount of
+		// power
 		// needed to turn the robot at all when standing still
-		if(anglePIDOutput > 0.02) {
+		if (anglePIDOutput > 0.02) {
 			anglePIDOutput += 0.15;
-		} else if(anglePIDOutput < -0.02) {
+		} else if (anglePIDOutput < -0.02) {
 			anglePIDOutput -= 0.15;
 		}
 		setLeftRight(anglePIDOutput, -anglePIDOutput);
@@ -122,15 +122,15 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		SmartDashboard.putNumber("Auton drive PID error", distancePID.getError());
 		SmartDashboard.putNumber("Auton drive angle PID error", anglePID.getError());
 		SmartDashboard.putNumber("Auton timer", autonTimer.getTotalTime());
-
+		SmartDashboard.putNumber("Current gyro angle", getAngle());
 		SmartDashboard.putNumber("Current angle pid error", anglePID.getError());
 		SmartDashboard.putNumber("PID OUTPUT: ", anglePIDOutput);
 		SmartDashboard.putNumber("Average dist", getAvgDist());
 		SmartDashboard.putNumber("drivePID output", drivePIDOutput);
-		
+
 		SmartDashboard.putNumber("encoder left", getLeftDistance());
 		SmartDashboard.putNumber("encoder right", getRightDistance());
-		
+
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
-//		System.out.println("Left Output: " + left + "Right Ouput: " + right);
+		// System.out.println("Left Output: " + left + "Right Ouput: " + right);
 		roboDrive.setLeftRightMotorOutputs(sanitizeValue(left), sanitizeValue(right));
 	}
 
@@ -175,31 +175,34 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	private GearState getCurrentGear() {
-		if (driveSolenoid.get().equals(Constants.DRIVE_HIGH_GEAR))
+		if (driveSolenoid.get())
 			return GearState.HIGH;
-		else if (driveSolenoid.get().equals(Constants.DRIVE_LOW_GEAR))
+		else if (!driveSolenoid.get())
 			return GearState.LOW;
 		else
 			return GearState.LOW;
 	}
 
 	public void setHighGear() {
-		driveSolenoid.set(Constants.DRIVE_HIGH_GEAR);
+		driveSolenoid.set(true);
 
 	}
 
 	public void setLowGear() {
-		driveSolenoid.set(Constants.DRIVE_LOW_GEAR);
+		driveSolenoid.set(false);
 
 	}
-	public void resetEncoders(){
+
+	public void resetEncoders() {
 		leftDriveEncoder.reset();
 		rightDriveEncoder.reset();
 	}
+
 	public double getLeftDistance() {
 		return leftDriveEncoder.getDistance();
 	}
-	public void resetGyro(){
+
+	public void resetGyro() {
 		gyro.reset();
 	}
 
