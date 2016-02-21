@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2791.robot;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -36,9 +35,8 @@ public class Robot extends IterativeRobot {
     public static RoboClock teleopTimer;
     public static RoboClock powerTimer;
     public static PowerDistributionPanel PDP;
+    public static ShakerCameras cam;
     public Thread shooterThread;
-    public ShakerCameras cam;
-    private CameraServer camServer;
     // public DigitalOutput ledDio;
     // helpers
     private TeleopHelper teleopHelper;

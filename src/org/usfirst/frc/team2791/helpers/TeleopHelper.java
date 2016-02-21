@@ -17,6 +17,7 @@ public class TeleopHelper extends ShakerHelper {
     private Toggle extendIntakeToggle;
     private Toggle useArmAttachmentToggle;
     private double averageVoltage = 0;
+    private boolean isShooterNotLow = false;
 
     public TeleopHelper() {
         // init
@@ -96,12 +97,18 @@ public class TeleopHelper extends ShakerHelper {
 
         if (intake.getIntakeState().equals(ShakerIntake.IntakeState.EXTENDED)) {//checks if  the intake is up before doing anything
             //set shooter to spot accordingly
-            if (operatorJoystick.getDpadUp())
+            if (operatorJoystick.getDpadUp()) {
                 shooter.setShooterHigh();
-            if (operatorJoystick.getDpadRight())
+                isShooterNotLow = true;
+            }
+            if (operatorJoystick.getDpadRight()) {
                 shooter.setShooterMiddle();
-            if (operatorJoystick.getDpadDown())
+                isShooterNotLow = true;
+            }
+            if (operatorJoystick.getDpadDown()) {
                 shooter.setShooterLow();
+                isShooterNotLow = false;
+            }
         }
         if (operatorJoystick.getButtonRB()) {//this will run the servo either manually or override an autoshot
             //if it is currently auto firing then it will override shot else it will just run the servo
@@ -115,6 +122,12 @@ public class TeleopHelper extends ShakerHelper {
     }
 
     private void sharedRun() {
+        if (operatorJoystick.getButtonSt() || driverJoystick.getButtonSt() || isShooterNotLow)//this will switch cameras according to the state of the shooter and according to the driver or operator choice
+            cam.update(0, true);
+        else if (operatorJoystick.getButtonSt() && isShooterNotLow || driverJoystick.getButtonSt() && isShooterNotLow)// if the shooter is not in the low position and driver/op hits start it goes back to  the other camera
+            cam.update(1, false);
+        else
+            cam.update(1, false);
         if (operatorJoystick.getButtonSel()) {//If the operator needs to override the driver for some reason they can hold the select button(back button)
             //and they will gain control over all the subsystems as well
             // arm attachment
