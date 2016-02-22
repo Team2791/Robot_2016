@@ -29,8 +29,8 @@ public class AutonHelper extends ShakerHelper {
 		SmartDashboard.putNumber("DISTANCE I", PID.DRIVE_DISTANCE_I);
 		SmartDashboard.putNumber("Distance D", PID.DRIVE_DISTANCE_D);
 		SmartDashboard.putNumber("Angle setpoint", setPoint);
-
 		SmartDashboard.putNumber("pid distance travel", 1.0);
+		SmartDashboard.getNumber("pid distance travel");
 		SmartDashboard.putNumber("Auton step counter", counter);
 		defenseNumber = new SendableChooser();// choose what number defense
 												// robot is front of
@@ -43,6 +43,7 @@ public class AutonHelper extends ShakerHelper {
 		defenseNumber.addObject("4 Center", "4");
 		defenseNumber.addObject("4 Right", "15");// to side goal
 		defenseNumber.addObject("5", "5");
+		defenseNumber.addObject("test", "16");
 		defenseNumber = new SendableChooser();// 1 is all the way left 5 is all
 												// the way right
 
@@ -141,11 +142,16 @@ public class AutonHelper extends ShakerHelper {
 				counter = defenseType;
 				driveTrain.resetEncoders();
 			}
+			break;
 		case 15:
 			if (defenseFourToRightShootingSpot()){
 				counter = defenseType;
 				driveTrain.resetEncoders();
 			}
+			break;
+		case 16:
+			driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),SmartDashboard.getNumber("Angle setpoint"),0.5);
+			break;
 			// case 1://next few cases are working low bar
 			// if (driveTrain.driveInFeet(20, 0, 0.75))
 			// counter++;
@@ -256,7 +262,7 @@ public class AutonHelper extends ShakerHelper {
 
 	public boolean defenseOneToShootingSpot() {
 		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+			if (driveTrain.driveInFeet(8, 60, 0.5))
 				return true;
 		}
 
