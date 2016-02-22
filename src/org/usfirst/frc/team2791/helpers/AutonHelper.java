@@ -270,7 +270,7 @@ public class AutonHelper extends ShakerHelper {
 	}
 	public boolean defenseTwoToLeftShootingSpot() {
 		if (driveTrain.driveInFeet(14, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+			if (driveTrain.driveInFeet(4, 45, 0.5))
 				return true;
 		}
 
@@ -278,8 +278,11 @@ public class AutonHelper extends ShakerHelper {
 	}
 	public boolean defenseTwoToCenterShootingSpot() {
 		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+			if (driveTrain.driveInFeet(4.2, 90, 0.5)){
+				if(driveTrain.driveInFeet(2, -90, 0.5))
+			
 				return true;
+			}
 		}
 
 		return false;
@@ -292,16 +295,19 @@ public class AutonHelper extends ShakerHelper {
 		return false;
 	}
 	public boolean defenseFourToCenterShootingSpot() {
-		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+		if (driveTrain.driveInFeet(10, 0, 0.5)) {
+			if (driveTrain.driveInFeet(4.2, -90, 0.5)){
+				if(driveTrain.driveInFeet(2, 90, 0.5))
+			
 				return true;
+			}
 		}
 
 		return false;
 	}
 	public boolean defenseFourToRightShootingSpot() {
-		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+		if (driveTrain.driveInFeet(14, 0, 0.5)) {
+			if (driveTrain.driveInFeet(4, -45, 0.5))
 				return true;
 		}
 
@@ -309,7 +315,7 @@ public class AutonHelper extends ShakerHelper {
 	}
 	public boolean defenseFiveToShootingSpot() {
 		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(-60))
+			if (driveTrain.driveInFeet(8, -60, 0.5))
 				return true;
 		}
 
