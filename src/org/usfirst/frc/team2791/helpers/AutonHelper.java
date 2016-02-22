@@ -37,9 +37,11 @@ public class AutonHelper extends ShakerHelper {
 		// 1 is all the way left 5 is all the way right
 		SmartDashboard.putData("Auton Starting Position", defenseNumber);
 		defenseNumber.addObject("1", "1");
-		defenseNumber.addObject("2", "2");
+		defenseNumber.addObject("2 Center", "2");//to center goal
+		defenseNumber.addObject("2 Left", "14");// to the side goal
 		defenseNumber.addObject("3", "3");
-		defenseNumber.addObject("4", "4");
+		defenseNumber.addObject("4 Center", "4");
+		defenseNumber.addObject("4 Right", "15");// to side goal
 		defenseNumber.addObject("5", "5");
 		defenseNumber = new SendableChooser();// 1 is all the way left 5 is all
 												// the way right
@@ -60,46 +62,64 @@ public class AutonHelper extends ShakerHelper {
 		// cases 6-10 will be how to act from after finishing defense
 		int defenseStartPos = Integer.parseInt(defenseNumber.getSelected().toString());
 		// 1-5 will decide how to maneuver the defense
-		int defenseType = Integer.parseInt(defenseNumber.getSelected().toString());
+		int defenseType = Integer.parseInt(defenseToCross.getSelected().toString());
 		switch (counter) {// auton state machine
 		case 0:// this state resets everything
 			driveTrain.setLowGear();
 			driveTrain.resetGyro();
 			driveTrain.resetEncoders();
 			intake.extendIntake();
-			counter = defenseType;
+			counter = defenseStartPos;
 			microCounter = 0;
 			break;
 		// these first five cases will traverse the designated defense type
 		case 1:
-			if (traverseLowBar()){
-				counter = defenseStartPos;
+			if (defenseOneToShootingSpot()){
+				counter = defenseType;
 				driveTrain.resetEncoders();
 			}
 			break;
 		case 2:
-			if (traverseUnevenTerrain())
-				counter = defenseStartPos;
+			if (defenseTwoToCenterShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
 			break;
 		case 3:
-			if (traverseFunBridges())
-				counter = defenseStartPos;
+			if (defenseThreeToShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
 			break;
 		case 4:
-			if (traversePortCullis())
-				counter = defenseStartPos;
+			if (defenseFourToCenterShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
 			break;
 		case 5:
-			if (traverseGate())
-				counter = defenseStartPos;
+			if (defenseFiveToShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
 			break;
 		
 		// These next 5 choose where to move after crossing the defense
 		case 6:
-			if(defenseOneToShootingSpot())
+			if(traverseLowBar())
 				counter = 11;
 		case 7:
-			
+			if(traverseUnevenTerrain())
+				counter = 11;
+		case 8:
+			if(traverseFunBridges())
+				counter = 11;
+		case 9:
+			if(traversePortCullis())
+				counter = 11;
+		case 10:
+			if(traverseGate())
+				counter = 11;
 			
 		case 11://11-13 are the auto shooting procedure
 			shooter.setShooterHigh();
@@ -116,6 +136,16 @@ public class AutonHelper extends ShakerHelper {
 			if (!shooter.getIfAutoFire())
 				counter = 999;
 			break;
+		case 14:
+			if (defenseTwoToLeftShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
+		case 15:
+			if (defenseFourToRightShootingSpot()){
+				counter = defenseType;
+				driveTrain.resetEncoders();
+			}
 			// case 1://next few cases are working low bar
 			// if (driveTrain.driveInFeet(20, 0, 0.75))
 			// counter++;
@@ -250,8 +280,7 @@ public class AutonHelper extends ShakerHelper {
 	}
 	public boolean defenseThreeToShootingSpot() {
 		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
-				return true;
+			return true;
 		}
 
 		return false;
@@ -274,7 +303,7 @@ public class AutonHelper extends ShakerHelper {
 	}
 	public boolean defenseFiveToShootingSpot() {
 		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-			if (driveTrain.setAngle(60))
+			if (driveTrain.setAngle(-60))
 				return true;
 		}
 
