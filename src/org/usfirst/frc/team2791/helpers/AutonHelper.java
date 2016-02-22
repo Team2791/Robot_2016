@@ -43,7 +43,8 @@ public class AutonHelper extends ShakerHelper {
 		defenseNumber.addObject("4 Center", "4");
 		defenseNumber.addObject("4 Right", "15");// to side goal
 		defenseNumber.addObject("5", "5");
-		defenseNumber.addObject("test", "16");
+		defenseNumber.addObject("test moving", "16");
+		defenseNumber.addObject("test stationary", "17");
 		defenseNumber = new SendableChooser();// 1 is all the way left 5 is all
 												// the way right
 
@@ -183,10 +184,9 @@ public class AutonHelper extends ShakerHelper {
 			// if (!shooter.getIfAutoFire())
 			// counter = 999;
 			// break;
-			// // case 15: //This is for testing the stationary angle pid
-			// // driveTrain.setAngle(SmartDashboard.getNumber("Angle
-			// setpoint"));
-			// // break;
+		case 17: //This is for testing the stationary angle pid
+		driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"));
+			 break;
 		default:
 		case 999:
 			driveTrain.setLeftRight(0, 0);
@@ -269,7 +269,7 @@ public class AutonHelper extends ShakerHelper {
 		return false;
 	}
 	public boolean defenseTwoToLeftShootingSpot() {
-		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
+		if (driveTrain.driveInFeet(14, 0, 0.5)) {
 			if (driveTrain.setAngle(60))
 				return true;
 		}
@@ -285,7 +285,7 @@ public class AutonHelper extends ShakerHelper {
 		return false;
 	}
 	public boolean defenseThreeToShootingSpot() {
-		if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
+		if (driveTrain.driveInFeet(12, 0, 0.5)) {
 			return true;
 		}
 
