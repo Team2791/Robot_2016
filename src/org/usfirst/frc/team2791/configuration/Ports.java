@@ -7,8 +7,8 @@ public class Ports {
     // DIO
     public static final int LEFT_DRIVE_ENCODER_PORT_A = 2;
     public static final int LEFT_DRIVE_ENCODER_PORT_B = 3;
-    public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 0;
-    public static final int RIGHT_DRIVE_ENCODER_PORT_B = 1;
+    public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 5;
+    public static final int RIGHT_DRIVE_ENCODER_PORT_B = 4;
     public static final int RIGHT_INTAKE_LIMIT_SWITCH = 8;
     public static final int LEFT_INTAKE_LIMIT_SWITCH = 9;
     // PWM PORTS

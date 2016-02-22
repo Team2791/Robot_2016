@@ -25,6 +25,8 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	private double drivePIDOutput;
 	private double anglePIDOutput;
 	private double driveEncoderTicks = 128;
+	private double driveTimePIDGoodTime = 0;
+	private double angleTimePIDGoodTime = 0;
 
 	public ShakerDriveTrain() {
 
@@ -48,6 +50,9 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 
 		anglePID.setMaxOutput(0.5);
 		anglePID.setMinOutput(-0.5);
+		distancePID.setInvertOutput(true);
+		anglePID.setInvertOutput(true);
+		anglePID.setIZone(15);
 	}
 
 	public boolean driveInFeet(double distance, double angle, double maxOutput) {
@@ -55,43 +60,49 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		setLowGear();
 		distancePID.setSetPoint(distance);
 		anglePID.setSetPoint(angle);
-		distancePID.setMaxOutput(maxOutput);
-		distancePID.setMinOutput(-maxOutput);
+		distancePID.setMaxOutput(.7);
+		distancePID.setMinOutput(-.7);
 		anglePID.setMaxOutput(maxOutput);
 		anglePID.setMinOutput(-maxOutput);
 		anglePID.changeGains(PID.DRIVE_ANGLE_P, PID.DRIVE_ANGLE_I, PID.DRIVE_ANGLE_D);
 		distancePID.changeGains(PID.DRIVE_DISTANCE_P, PID.DRIVE_DISTANCE_I, PID.DRIVE_DISTANCE_D);
-		drivePIDOutput = -distancePID.updateAndGetOutput(this.getAvgDist());
+		drivePIDOutput = distancePID.updateAndGetOutput(this.getRightDistance());
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
 		setLeftRight(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
 		SmartDashboard.putNumber("Left Encoder Position", getLeftDistance());
 		SmartDashboard.putNumber("Right Encoder Position", getRightDistance());
 		SmartDashboard.putNumber("drivePID output", drivePIDOutput);
 		SmartDashboard.putNumber("drive error", distancePID.getError());
-
-		return (Math.abs(distancePID.getError()) < 0.5) && (Math.abs(anglePID.getError()) < 2.5)
-				&& (Math.abs(getAvgSpeed()) < 0.1);
+		if (!(Math.abs(distancePID.getError()) < 1) && (Math.abs(anglePID.getError()) < 2.5)) {
+			driveTimePIDGoodTime = Timer.getFPGATimestamp();
+			// if error is greater than the values reset the timestamp
+		} else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.5)
+			// if the error is good for certain time then drivetrain has reached
+			// the dist
+			return true;
+		return false;
 
 	}
 
 	public boolean setAngle(double angle) {
 		setLowGear();
 		anglePID.setSetPoint(angle);
-		anglePID.changeGains(PID.DRIVE_ANGLE_P, PID.DRIVE_ANGLE_I, PID.DRIVE_ANGLE_D);
-		distancePID.changeGains(PID.DRIVE_DISTANCE_P, PID.DRIVE_DISTANCE_I, PID.DRIVE_DISTANCE_D);
+		anglePID.setMaxOutput(0.5);
+		anglePID.setMinOutput(-0.5);
+		anglePID.changeGains(PID.STATIONARY_ANGLE_P, PID.STATIONARY_ANGLE_I, PID.STATIONARY_ANGLE_D);
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
-		// add in a 0.18 % feed forward because there is a minimum amount of
-		// power
-		// needed to turn the robot at all when standing still
-		if (anglePIDOutput > 0.02) {
-			anglePIDOutput += 0.15;
-		} else if (anglePIDOutput < -0.02) {
-			anglePIDOutput -= 0.15;
-		}
+
 		setLeftRight(anglePIDOutput, -anglePIDOutput);
 		// System.out.println("PID VALUES"+ PID.DRIVE_ANGLE_P+
 		// PID.DRIVE_ANGLE_I+ PID.DRIVE_ANGLE_D);
-		return (Math.abs(anglePID.getError()) < 2.5);
+		if (!(Math.abs(anglePID.getError()) < 2.5)) {
+			driveTimePIDGoodTime = Timer.getFPGATimestamp();
+			// if error is greater than the values reset the timestamp
+		} else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.5)
+			// if the error is good for certain time then drivetrain has reached
+			// the angle
+			return true;
+		return false;
 
 	}
 
@@ -123,7 +134,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 		SmartDashboard.putNumber("PID OUTPUT: ", anglePIDOutput);
 		SmartDashboard.putNumber("Average dist", getAvgDist());
 		SmartDashboard.putNumber("drivePID output", drivePIDOutput);
-
 		SmartDashboard.putNumber("encoder left", getLeftDistance());
 		SmartDashboard.putNumber("encoder right", getRightDistance());
 
@@ -142,7 +152,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 	public void setArcadeDrive(double left, double right) {
 		roboDrive.arcadeDrive(left, right);
 	}
-
 
 	public boolean isHighGear() {
 
@@ -185,6 +194,10 @@ public class ShakerDriveTrain extends ShakerSubsystem {
 
 	public void resetGyro() {
 		gyro.reset();
+	}
+
+	public double getGyroRate() {
+		return gyro.getRate();
 	}
 
 	public double getRightDistance() {

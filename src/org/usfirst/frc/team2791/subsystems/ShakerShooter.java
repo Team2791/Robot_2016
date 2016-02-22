@@ -16,7 +16,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	// to speed
 	private final double delayTimeForServo = 0.8;// time for servo to push
 	private final int encoderTicks = 128 * 4;
-	private double fireSpeed;
 	private boolean autoFire;
 	private CANTalon leftShooterTalon;
 	private CANTalon rightShooterTalon;
@@ -169,8 +168,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		SmartDashboard.putNumber("right speed", rightShooterTalon.getEncVelocity());
 		SmartDashboard.putNumber("Right error", rightShooterTalon.getError());
 		SmartDashboard.putNumber("Left error", leftShooterTalon.getError());
-		SmartDashboard.putBoolean("Shooter at speed",
-				leftShooterTalon.getSpeed() == SmartDashboard.getNumber("SetPoint"));
+		
 
 	}
 
@@ -216,9 +214,8 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 //		System.out.println("Im being told to Reset!!");
 	}
 
-	public void autoFire(double speed) {
+	public void autoFire() {
 		autoFire = true;
-		fireSpeed = speed;
 	}
 
 	public ShooterHeight getShooterHeight() {
