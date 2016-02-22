@@ -93,8 +93,8 @@ public class Robot extends IterativeRobot {
 		cam = new ShakerCameras();
 
 		// PDP = new PowerDistributionPanel(30);
-		autonHelper = new AutonHelper();
-		teleopHelper = new TeleopHelper();
+        autonHelper = new AutonHelper(defenseToCross);
+        teleopHelper = new TeleopHelper();
 
 		compressor = new Compressor(Ports.PCM_MODULE);
 		acc = new ShakerAccelerometer();

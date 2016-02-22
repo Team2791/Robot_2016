@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2791.subsystems;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,13 +48,13 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public void retractIntake() {
         // bring intake back behind bumpers
-        intakeSolenoid.set(false);
+        intakeSolenoid.set(true);
 
     }
 
     public void extendIntake() {
         // extends the intake for ball pickup
-        intakeSolenoid.set(true);
+        intakeSolenoid.set(false);
 
     }
 
