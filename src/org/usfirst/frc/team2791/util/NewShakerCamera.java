@@ -88,6 +88,12 @@ public class NewShakerCamera {
                             (par.BoundingRectLeft - par.BoundingRectRight)));
                     NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.DRAW_VALUE,
                             NIVision.ShapeMode.SHAPE_RECT, 125f);
+                    par.CenterOfMassX = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+                            NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
+                    par.CenterOfMassY = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+                            NIVision.MeasurementType.MT_CENTER_OF_MASS_Y);
+                    //using center of mass calculate the distance between the two points ..theoretically......
+                    output += "Theta diff: " + Math.atan2(480 / 2 - par.CenterOfMassY, 640 / 2 - par.CenterOfMassX) * 180 / Math.PI;
                     SmartDashboard.putString("Image output:", output);
                 }
             }
@@ -104,6 +110,8 @@ public class NewShakerCamera {
         double BoundingRectTop;
         double BoundingRectRight;
         double BoundingRectBottom;
+        double CenterOfMassX;
+        double CenterOfMassY;
 
         public int compareTo(ParticleReport r) {
             return (int) (r.Area - this.Area);
