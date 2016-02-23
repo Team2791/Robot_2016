@@ -15,7 +15,7 @@ import org.usfirst.frc.team2791.subsystems.ShakerIntake;
 import org.usfirst.frc.team2791.subsystems.ShakerShooter;
 import org.usfirst.frc.team2791.util.RoboClock;
 import org.usfirst.frc.team2791.util.ShakerAccelerometer;
-import org.usfirst.frc.team2791.util.ShakerCameras;
+import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
 	// modes
@@ -35,8 +35,8 @@ public class Robot extends IterativeRobot {
 	public static RoboClock teleopTimer;
 	public static RoboClock powerTimer;
 	public static PowerDistributionPanel PDP;
-	public static ShakerCameras cam;
-	public Thread shooterThread;
+    public static ShakerCamera cam;
+    public Thread shooterThread;
 	// public DigitalOutput ledDio;
 	// helpers
 	private TeleopHelper teleopHelper;
@@ -90,7 +90,7 @@ public class Robot extends IterativeRobot {
 		intake = new ShakerIntake();
 		// ledDio = new DigitalOutput(9);
 		claw = new ShakerClaw();
-		cam = new ShakerCameras();
+        cam = new ShakerCamera();
 
 		// PDP = new PowerDistributionPanel(30);
         autonHelper = new AutonHelper();
