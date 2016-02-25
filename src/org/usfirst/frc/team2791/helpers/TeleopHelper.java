@@ -15,7 +15,6 @@ public class TeleopHelper extends ShakerHelper {
     private Toggle clawToggle;
     private Toggle extendIntakeToggle;
     private Toggle useArmAttachmentToggle;
-    private Toggle operatorOverride;
 
     public TeleopHelper() {
         // init
@@ -30,7 +29,6 @@ public class TeleopHelper extends ShakerHelper {
         clawToggle = new Toggle(false);
         extendIntakeToggle = new Toggle(false);
         useArmAttachmentToggle = new Toggle(false);
-        operatorOverride = new Toggle(false);
     }
 
     public void run() {
