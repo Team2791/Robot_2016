@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerClaw;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerDriveTrain;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
-import org.usfirst.frc.team2791.subsystems.ShakerClaw;
-import org.usfirst.frc.team2791.subsystems.ShakerDriveTrain;
-import org.usfirst.frc.team2791.subsystems.ShakerIntake;
-import org.usfirst.frc.team2791.subsystems.ShakerShooter;
 import org.usfirst.frc.team2791.util.Constants;
 
 public class Robot extends IterativeRobot {
@@ -20,11 +20,15 @@ public class Robot extends IterativeRobot {
     public static Driver driverJoystick;
     public static Operator operatorJoystick;
     // operator subsystems
-    public static ShakerShooter shooter;
-    public static ShakerIntake intake;
-    public static ShakerClaw claw;
-    // driver subsystems
-    public static ShakerDriveTrain driveTrain;
+//    public static ShakerShooter shooter;
+//    public static ShakerIntake intake;
+//    public static ShakerClaw claw;
+//    public static ShakerDriveTrain driveTrain;
+
+    public static PracticeShakerShooter shooter;
+    public static PracticeShakerIntake intake;
+    public static PracticeShakerClaw claw;
+    public static PracticeShakerDriveTrain driveTrain;
     // other
     public static Compressor compressor;
     public Thread shooterThread;
@@ -39,13 +43,19 @@ public class Robot extends IterativeRobot {
 
         driverJoystick = new Driver();
         operatorJoystick = new Operator();
-        driveTrain = new ShakerDriveTrain();
 
-        shooter = new ShakerShooter();
+//        driveTrain = new ShakerDriveTrain();
+//        intake = new ShakerIntake();
+//        claw = new ShakerClaw();
+//        shooter = new ShakerShooter();
+
+        driveTrain = new PracticeShakerDriveTrain();
+        intake = new PracticeShakerIntake();
+        claw = new PracticeShakerClaw();
+        shooter = new PracticeShakerShooter();
         shooterThread = new Thread(shooter);
         shooterThread.start();
-        intake = new ShakerIntake();
-        claw = new ShakerClaw();
+
         autonHelper = new AutonHelper();
         teleopHelper = new TeleopHelper();
 

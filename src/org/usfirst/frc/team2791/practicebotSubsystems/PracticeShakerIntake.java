@@ -1,24 +1,26 @@
-package org.usfirst.frc.team2791.subsystems;
+package org.usfirst.frc.team2791.practicebotSubsystems;
 
-import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.util.Constants;
+import org.usfirst.frc.team2791.subsystems.ShakerSubsystem;
 
-public class ShakerIntake extends ShakerSubsystem {
+public class PracticeShakerIntake extends ShakerSubsystem {
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
-    private Solenoid intakeSolenoid;
-    private Relay armAttachment;
+    private DoubleSolenoid intakeSolenoid;
+    private DoubleSolenoid armAttachment;
 
-    public ShakerIntake() {
+    public PracticeShakerIntake() {
         // init
-        this.leftIntakeMotor = new Talon(Constants.INTAKE_TALON_LEFT_PORT);
-        this.rightIntakeMotor = new Talon(Constants.INTAKE_TALON_RIGHT_PORT);
+        this.leftIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_LEFT_PORT);
+        this.rightIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_RIGHT_PORT);
         leftIntakeMotor.setInverted(true);
-        this.intakeSolenoid = new Solenoid(Constants.PCM_MODULE, Constants.INTAKE_PISTON);
-        armAttachment = new Relay(3);
+        this.intakeSolenoid = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.INTAKE_PISTON_CHANNEL_FORWARD,
+                PracticePorts.INTAKE_PISTON_CHANNEL_REVERSE);
+
+        armAttachment = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.INTAKE_ARM_CHANNEL_FORWARD,
+                PracticePorts.INTAKE_ARM_CHANNEL_REVERSE);
 
     }
 
@@ -46,22 +48,22 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public void retractIntake() {
         // bring intake back behind bumpers
-        intakeSolenoid.set(true);
+        intakeSolenoid.set(PracticeConstants.INTAKE_RECTRACTED_VALUE);
 
     }
 
     public void extendIntake() {
         // extends the intake for ball pickup
-        intakeSolenoid.set(false);
+        intakeSolenoid.set(PracticeConstants.INTAKE_EXTENDED_VALUE);
 
     }
 
     public IntakeState getIntakeState() {
         // returns state of intake in form of the enum IntakeState
 //        System.out.println("intake extended: " + intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE));
-        if (intakeSolenoid.get())
+        if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE))
             return IntakeState.RETRACTED;
-        else if (!intakeSolenoid.get())
+        else if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_EXTENDED_VALUE))
             return IntakeState.EXTENDED;
         else
             return IntakeState.EXTENDED;
@@ -75,23 +77,23 @@ public class ShakerIntake extends ShakerSubsystem {
 
     public void pullBall() {
         // runs intake inward
-        leftIntakeMotor.set(Constants.INTAKE_SPEED);
-        rightIntakeMotor.set(Constants.INTAKE_SPEED);
+        leftIntakeMotor.set(PracticeConstants.INTAKE_SPEED);
+        rightIntakeMotor.set(PracticeConstants.INTAKE_SPEED);
     }
 
     public void pushBall() {
         // runs intake outward
-        leftIntakeMotor.set(-Constants.INTAKE_SPEED);
-        rightIntakeMotor.set(-Constants.INTAKE_SPEED);
+        leftIntakeMotor.set(-PracticeConstants.INTAKE_SPEED);
+        rightIntakeMotor.set(-PracticeConstants.INTAKE_SPEED);
 
     }
 
     public void setArmAttachmentUp() {
-        armAttachment.set(Relay.Value.kForward);
+        armAttachment.set(PracticeConstants.INTAKE_ARM_UP_VALUE);
     }
 
     public void setArmAttachmentDown() {
-        armAttachment.set(Relay.Value.kReverse);
+        armAttachment.set(PracticeConstants.INTAKE_ARM_DOWN_VALUE);
     }
 
     public enum IntakeState {

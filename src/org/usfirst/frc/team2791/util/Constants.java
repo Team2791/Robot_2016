@@ -52,7 +52,7 @@ public class Constants {
     public static final int SHORT_PISTON_REVERSE = 5;
     public static final int CLAW_HIGHER_CHANNEL = 0;
     public static final int CLAW_LOWER_CHANNEL = 1;
-    // CAN Ports
+    // CAN PracticePorts
     public static final int PCM_MODULE = 20;
     public static final int SHOOTER_TALON_RIGHT_PORT = 10;
     public static final int SHOOTER_TALON_LEFT_PORT = 11;

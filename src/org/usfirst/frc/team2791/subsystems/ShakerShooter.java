@@ -74,7 +74,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 				if (autoFire) {
 					closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
 					farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-					double setPoint = getShooterHeight().equals(ShooterHeight.MID)?farShotSetpoint:closeShotSetPoint;
+					double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
 					setShooterSpeeds(setPoint, true);
 					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 					while (Timer.getFPGATimestamp()
@@ -157,7 +157,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		SmartDashboard.putNumber("right speed", rightShooterTalon.getEncVelocity());
 		SmartDashboard.putNumber("Right error", rightShooterTalon.getError());
 		SmartDashboard.putNumber("Left error", leftShooterTalon.getError());
-		
+
 
 	}
 
