@@ -40,7 +40,7 @@ public class TeleopHelper extends ShakerHelper {
 		operatorRun();// runs the operator controls
 		driverRun();// runs the
 		sharedRun();
-		camera.update(false, false, true);
+		camera.update(false, false, false);
 	}
 
 	private void driverRun() {

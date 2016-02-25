@@ -5,6 +5,8 @@ import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ImageType;
 import com.ni.vision.NIVision.Range;
 import com.ni.vision.NIVision.StructuringElement;
+import com.ni.vision.VisionException;
+
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,25 +57,28 @@ public class ShakerCamera {
 	public void update(boolean doTargetting, boolean displayTargettingToDash, boolean drawBasicLine) {
 		try {
 			cam.getImage(frame);
-		} catch (NullPointerException npe) {
+			if (frame != null) {
+				if (doTargetting) {// if targetting should be done it will
+									// measure
+									// the targets if found
+					measureImage(frame);
+				}
+				if (drawBasicLine)// if a basic line for lineup should be drawn
+									// then
+									// draw line
+					NIVision.imaqDrawLineOnImage(frame, frame, NIVision.DrawMode.DRAW_VALUE,
+							new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
+							new NIVision.Point(320, CAMERA_HEIGHT_PIXELS), 130.0f);
+				// if should display the modified image to the smartdashboard
+				if (displayTargettingToDash)
+					CameraServer.getInstance().setImage(binaryFrame);
+				else
+					CameraServer.getInstance().setImage(frame);
+			}
+		} catch (VisionException npe) {
 			System.out.println("ERROR: " + npe);
 		}
-		if (frame != null) {
-			if (doTargetting) {// if targetting should be done it will measure
-								// the targets if found
-				measureImage(frame);
-			}
-			if (drawBasicLine)// if a basic line for lineup should be drawn then
-								// draw line
-				NIVision.imaqDrawLineOnImage(frame, frame, NIVision.DrawMode.DRAW_VALUE,
-						new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0), new NIVision.Point(320, CAMERA_HEIGHT_PIXELS),
-						130.0f);
-			// if should display the modified image to the smartdashboard
-			if (displayTargettingToDash)
-				CameraServer.getInstance().setImage(binaryFrame);
-			else
-				CameraServer.getInstance().setImage(frame);
-		}
+
 	}
 
 	public void measureImage(Image image) {
