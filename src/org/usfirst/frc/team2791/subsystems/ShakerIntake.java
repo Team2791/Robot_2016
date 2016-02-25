@@ -1,26 +1,24 @@
 package org.usfirst.frc.team2791.subsystems;
 
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.configuration.Constants;
-import org.usfirst.frc.team2791.configuration.Ports;
+import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerIntake extends ShakerSubsystem {
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private Solenoid intakeSolenoid;
-//    private DoubleSolenoid armAttachment;
+    private Relay armAttachment;
 
     public ShakerIntake() {
         // init
-        this.leftIntakeMotor = new Talon(Ports.INTAKE_TALON_LEFT_PORT);
-        this.rightIntakeMotor = new Talon(Ports.INTAKE_TALON_RIGHT_PORT);
+        this.leftIntakeMotor = new Talon(Constants.INTAKE_TALON_LEFT_PORT);
+        this.rightIntakeMotor = new Talon(Constants.INTAKE_TALON_RIGHT_PORT);
         leftIntakeMotor.setInverted(true);
-        this.intakeSolenoid = new Solenoid(Ports.PCM_MODULE,Ports.INTAKE_PISTON);
-
-//        armAttachment = new DoubleSolenoid(Ports.PCM_MODULE, Ports.INTAKE_ARM_CHANNEL_FORWARD,
-//                Ports.INTAKE_ARM_CHANNEL_REVERSE);
+        this.intakeSolenoid = new Solenoid(Constants.PCM_MODULE, Constants.INTAKE_PISTON);
+        armAttachment = new Relay(3);
 
     }
 
@@ -88,13 +86,13 @@ public class ShakerIntake extends ShakerSubsystem {
 
     }
 
-//    public void setArmAttachmentUp() {
-//        armAttachment.set(Constants.INTAKE_ARM_UP_VALUE);
-//    }
-//
-//    public void setArmAttachmentDown() {
-//        armAttachment.set(Constants.INTAKE_ARM_DOWN_VALUE);
-//    }
+    public void setArmAttachmentUp() {
+        armAttachment.set(Relay.Value.kForward);
+    }
+
+    public void setArmAttachmentDown() {
+        armAttachment.set(Relay.Value.kReverse);
+    }
 
     public enum IntakeState {
         RETRACTED, EXTENDED

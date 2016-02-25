@@ -4,9 +4,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.configuration.Constants;
-import org.usfirst.frc.team2791.configuration.PID;
-import org.usfirst.frc.team2791.configuration.Ports;
+import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
@@ -29,29 +27,25 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private boolean overrideShot = false;
 
 	public ShakerShooter() {
-		leftShooterTalon = new CANTalon(Ports.SHOOTER_TALON_LEFT_PORT);
-		rightShooterTalon = new CANTalon(Ports.SHOOTER_TALON_RIGHT_PORT);
-		ballAidServo = new Servo(Ports.BALL_AID_SERVO_PORT);
-		longPiston = new DoubleSolenoid(Ports.PCM_MODULE, Ports.LONG_PISTON_FORWARD, Ports.LONG_PISTON_REVERSE);
-		shortPiston = new DoubleSolenoid(Ports.PCM_MODULE, Ports.SHORT_PISTON_FORWARD, Ports.SHORT_PISTON_REVERSE);
-		ballDistanceSensor = new AnalogInput(Ports.BALL_DISTANCE_SENSOR_PORT);
+		leftShooterTalon = new CANTalon(Constants.SHOOTER_TALON_LEFT_PORT);
+		rightShooterTalon = new CANTalon(Constants.SHOOTER_TALON_RIGHT_PORT);
+		ballAidServo = new Servo(Constants.BALL_AID_SERVO_PORT);
+		longPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.LONG_PISTON_FORWARD, Constants.LONG_PISTON_REVERSE);
+		shortPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.SHORT_PISTON_FORWARD, Constants.SHORT_PISTON_REVERSE);
+		ballDistanceSensor = new AnalogInput(Constants.BALL_DISTANCE_SENSOR_PORT);
 		rightShooterTalon.setInverted(false);
-		// true, false, true, false // right sensor correct, direction wrong,
-		// left vis versa
-		// false false true true // was working correctly maybe
 		rightShooterTalon.reverseOutput(false);
 		leftShooterTalon.reverseOutput(false);
 		leftShooterTalon.reverseSensor(true);
 		rightShooterTalon.reverseSensor(false);
 		leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
 		rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-		//
-		SmartDashboard.putNumber("Shooter p", PID.SHOOTER_P);
-		SmartDashboard.putNumber("Shooter i", PID.SHOOTER_I);
-		SmartDashboard.putNumber("Shooter d", PID.SHOOTER_D);
-		PID.SHOOTER_P = SmartDashboard.getNumber("Shooter p");
-		PID.SHOOTER_I = SmartDashboard.getNumber("Shooter i");
-		PID.SHOOTER_D = SmartDashboard.getNumber("Shooter d");
+		SmartDashboard.putNumber("Shooter p", Constants.SHOOTER_P);
+		SmartDashboard.putNumber("Shooter i", Constants.SHOOTER_I);
+		SmartDashboard.putNumber("Shooter d", Constants.SHOOTER_D);
+		Constants.SHOOTER_P = SmartDashboard.getNumber("Shooter p");
+		Constants.SHOOTER_I = SmartDashboard.getNumber("Shooter i");
+		Constants.SHOOTER_D = SmartDashboard.getNumber("Shooter d");
 		SmartDashboard.putNumber("FeedForward", feedForward);
 		SmartDashboard.putNumber("closeShotSetpoint", closeShotSetPoint);
 		SmartDashboard.putNumber("farShotSetpoint", farShotSetpoint);
@@ -82,11 +76,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 					farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
 					double setPoint = getShooterHeight().equals(ShooterHeight.MID)?farShotSetpoint:closeShotSetPoint;
 					setShooterSpeeds(setPoint, true);
-//					System.out.println("my setpoint is " + setPoint);
-
-//					System.out.println("Talons think the setpoint is " + leftShooterTalon.getSetpoint() + " and "
-//							+ rightShooterTalon.getSetpoint());
-
 					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 					while (Timer.getFPGATimestamp()
 							- whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
@@ -94,7 +83,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 							break;
 						if (!(Math.abs(leftShooterTalon.getError()) < 50
 								&& Math.abs(rightShooterTalon.getError()) < 50)) {
-							// if the wheels aren't at speed reset the count
 							whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 						}
 						Thread.sleep(10);
@@ -140,11 +128,12 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 			rightShooterTalon.setD(SmartDashboard.getNumber("Shooter d"));
 			leftShooterTalon.setF(SmartDashboard.getNumber("FeedForward"));
 			rightShooterTalon.setF(SmartDashboard.getNumber("FeedForward"));
+			//set the speeds (THEY ARE IN RPMS)
 			leftShooterTalon.set(targetSpeed);
-			rightShooterTalon.set(targetSpeed);// these values are in rpms
+			rightShooterTalon.set(targetSpeed);
 
 		} else if (!autoFire) {
-
+			//if shooters is not autofiring then use inputs given, including 0
 			leftShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			rightShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			leftShooterTalon.set(targetSpeed);
