@@ -2,13 +2,12 @@ package org.usfirst.frc.team2791.practicebotSubsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.subsystems.ShakerSubsystem;
 import org.usfirst.frc.team2791.util.BasicPID;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerGyro;
 import org.usfirst.frc.team2791.util.Util;
 
-public class PracticeShakerDriveTrain extends ShakerSubsystem {
+public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     private static BasicPID anglePID;
     private static BasicPID distancePID;
     private Talon leftTalonA;

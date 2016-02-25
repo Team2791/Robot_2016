@@ -1,7 +1,7 @@
 package org.usfirst.frc.team2791.shakerJoystick;
 
 import edu.wpi.first.wpilibj.Joystick;
-import org.usfirst.frc.team2791.configuration.Constants;
+import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.Util;
 
 public class OverriddenJoystick extends Joystick {

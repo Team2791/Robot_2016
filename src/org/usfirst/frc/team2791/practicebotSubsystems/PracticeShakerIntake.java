@@ -3,9 +3,8 @@ package org.usfirst.frc.team2791.practicebotSubsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.subsystems.ShakerSubsystem;
 
-public class PracticeShakerIntake extends ShakerSubsystem {
+public class PracticeShakerIntake extends PracticeShakerSubsystem {
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private DoubleSolenoid intakeSolenoid;

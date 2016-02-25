@@ -1,6 +1,6 @@
 package org.usfirst.frc.team2791.shakerJoystick;
 
-import org.usfirst.frc.team2791.configuration.Constants;
+import org.usfirst.frc.team2791.util.Constants;
 
 public class Operator extends OverriddenJoystick {
 

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
-import org.usfirst.frc.team2791.util.NewShakerCamera;
+import org.usfirst.frc.team2791.util.ShakerCamera;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
@@ -196,7 +196,7 @@ public class AutonHelper extends ShakerHelper {
             // automatic vision code
             case 30:// still in testing phases
                 //THE NEW CAMERA CLASS HAS NOT BEEN INITIALIZED!!!!!!!!!!!
-                double setPoint = angleWhenShooterSetHigh + NewShakerCamera.ParticleReport.ThetaDifference.getValue();
+                double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference.getValue();
                 driveTrain.setAngle(setPoint);
             default:
                 break;
