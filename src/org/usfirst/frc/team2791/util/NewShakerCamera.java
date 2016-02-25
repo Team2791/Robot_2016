@@ -15,21 +15,14 @@ import edu.wpi.first.wpilibj.vision.USBCamera;
 public class NewShakerCamera {
 
     private final double CAMERA_WIDTH_DEGREES = 53;
-    private final double CAMERA_WIDTH_PIXELS = 320;
+    private final int CAMERA_WIDTH_PIXELS = 320;
+    private final int CAMERA_HEIGHT_PIXELS = 240;
     private NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
     private NIVision.ParticleFilterOptions2 filterOptions = new NIVision.ParticleFilterOptions2(0, 0, 1, 1);
-    private double AREA_MINIMUM = 0.5; // Min area (probably best if gotten from
-    // practice field or target)
-    private double WID_RATIO = 2.22; // Tote long side = 26.9 / Tote height =
-    // 12.1 = 2.22
-    // private double HEIGHT_RATIO = 1.4; //Tote short side = 16.9 / Tote height
-    // = 12.1 = 1.4
-    private double SCORE_MIN = 75.0; // min rectangularity score
-    private double VIEW_ANGLE = 49.4; // Angle width of camera
+    private double AREA_MINIMUM = 0.5;
     private Image frame;
     private Image binaryFrame;
     private int imaqError;
-    private int session;
     private Image filteredImage;
     private Image particleBinaryFrame;
     private StructuringElement box;
@@ -56,24 +49,25 @@ public class NewShakerCamera {
         SmartDashboard.putNumber("L max", 255);
     }
 
-    public void update(boolean doTargetting, boolean displayTargettingToDash) {// displaying
-        // targetting
-        // is
-        // very
+    public void update(boolean doTargetting, boolean displayTargettingToDash, boolean drawBasicLine) {
         cam.getImage(frame);
-        if (doTargetting) {// if targetting should be done, this is here so we
-            measureImage(frame);
-        }
 
-        if (frame != null)
+        if (frame != null) {
+            if (doTargetting) {// if targetting should be done it will measure the targets if found
+                measureImage(frame);
+            }
+            if (drawBasicLine)//if a basic line for lineup should be drawn then draw line
+                NIVision.imaqDrawLineOnImage(frame, frame, NIVision.DrawMode.DRAW_VALUE, new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
+                        new NIVision.Point(320, CAMERA_HEIGHT_PIXELS), 130.0f);
+            //if should display the modified image to the smartdashboard
             if (displayTargettingToDash)
                 CameraServer.getInstance().setImage(binaryFrame);
             else
                 CameraServer.getInstance().setImage(frame);
+        }
     }
 
     public void measureImage(Image image) {
-        // wont always have targetting on
         String output = "";
         NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL,
                 new Range((int) SmartDashboard.getNumber("H min"), (int) SmartDashboard.getNumber("H max")),
@@ -83,6 +77,7 @@ public class NewShakerCamera {
         imaqError = NIVision.imaqParticleFilter4(particleBinaryFrame, binaryFrame, criteria, filterOptions, null);
         int numParticles = NIVision.imaqCountParticles(particleBinaryFrame, 1);// finds
         if (numParticles > 0) {
+            output += "The number of particles: " + numParticles;
             // Measure particles and sort by particle size
             for (int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
                 // iterates through each particle ... in future should
