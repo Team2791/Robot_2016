@@ -18,7 +18,8 @@ public class TeleopHelper extends ShakerHelper {
     private Toggle extendIntakeToggle;
     private Toggle useArmAttachmentToggle;
     private Toggle cameraServoPosToggle;
-    private Boolean autoLineUp = false;
+    private int autoLineUpCounter = 0;
+    private double angleWhenAutoLineUp;
 
     public TeleopHelper() {
         // init
@@ -135,8 +136,22 @@ public class TeleopHelper extends ShakerHelper {
             intake.setArmAttachmentDown();
         else
             intake.setArmAttachmentUp();
-        if (operatorJoystick.getButtonSt())
-            autoLineUp= true;
+        double target;
+        switch (autoLineUpCounter) {//auto lineup and fire
+            default:
+            case 0:
+                if (operatorJoystick.getButtonLB())//if operator hits start begin
+                    autoLineUpCounter++;
+                angleWhenAutoLineUp = driveTrain.getAngle();//set the last known angle when
+                break;
+            case 1://use the angle of the target and the angle of driveTrain just before this
+                //to find and lineup with the target
+                target = angleWhenAutoLineUp + camera.getTarget().ThetaDifference;
+                if (driveTrain.setAngle(target))
+                    autoLineUpCounter = 0;
+                break;
+
+        }
 
     }
 
