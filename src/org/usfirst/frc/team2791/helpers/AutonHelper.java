@@ -196,7 +196,7 @@ public class AutonHelper extends ShakerHelper {
             // automatic vision code
             case 30:// still in testing phases
                 //THE NEW CAMERA CLASS HAS NOT BEEN INITIALIZED!!!!!!!!!!!
-                double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference.getValue();
+                double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference;
                 driveTrain.setAngle(setPoint);
             default:
                 break;
