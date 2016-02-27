@@ -55,10 +55,10 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
         setLowGear();
         distancePID.setSetPoint(distance);
         anglePID.setSetPoint(angle);
-        distancePID.setMaxOutput(.7);
-        distancePID.setMinOutput(-.7);
-        anglePID.setMaxOutput(maxOutput);
-        anglePID.setMinOutput(-maxOutput);
+        distancePID.setMaxOutput(maxOutput);
+        distancePID.setMinOutput(-maxOutput);
+        anglePID.setMaxOutput(maxOutput / 2);
+        anglePID.setMinOutput(-maxOutput / 2);
         anglePID.changeGains(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
         distancePID.changeGains(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
         drivePIDOutput = distancePID.updateAndGetOutput(this.getRightDistance());
@@ -78,11 +78,11 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
     }
 
-    public boolean setAngle(double angle) {
+    public boolean setAngle(double angle, double maxOutput) {
         setLowGear();
         anglePID.setSetPoint(angle);
-        anglePID.setMaxOutput(0.5);
-        anglePID.setMinOutput(-0.5);
+        anglePID.setMaxOutput(maxOutput);
+        anglePID.setMinOutput(-maxOutput);
         anglePID.changeGains(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
         anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
         setLeftRight(anglePIDOutput, -anglePIDOutput);

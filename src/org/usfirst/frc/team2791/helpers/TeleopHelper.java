@@ -3,6 +3,7 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.util.Toggle;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
@@ -136,7 +137,7 @@ public class TeleopHelper extends ShakerHelper {
             intake.setArmAttachmentDown();
         else
             intake.setArmAttachmentUp();
-        double target;
+
         switch (autoLineUpCounter) {//auto lineup and fire
             default:
             case 0:
@@ -146,11 +147,24 @@ public class TeleopHelper extends ShakerHelper {
                 break;
             case 1://use the angle of the target and the angle of driveTrain just before this
                 //to find and lineup with the target
-                target = angleWhenAutoLineUp + camera.getTarget().ThetaDifference;
-                if (driveTrain.setAngle(target))
-                    autoLineUpCounter = 0;
+                if (driveTrain.setAngle(angleWhenAutoLineUp + camera.getTarget().ThetaDifference, 0.1)) {
+                    autoLineUpCounter = 3;
+                    driveTrain.resetEncoders();
+                }
                 break;
-
+            case 2:
+                //line up in the y dir
+                if (shooter.getShooterHeight().equals(PracticeShakerShooter.ShooterHeight.HIGH)) {
+                    driveTrain.setLowGear();
+                    if (camera.getTarget().CenterOfMassY > 180)
+                        //if the center of mass in the y dir is greater than 180
+                        //pixels the bot is too far away and should drive straight a little bit more
+                        if (driveTrain.driveInFeet(0.1, angleWhenAutoLineUp + camera.getTarget().ThetaDifference, 0.1))
+                            autoLineUpCounter++;
+                } else autoLineUpCounter = 0;
+                break;
+            case 3:
+                shooter.autoFire();
         }
 
     }
@@ -166,7 +180,7 @@ public class TeleopHelper extends ShakerHelper {
         intake.updateSmartDash();
         shooter.updateSmartDash();
         driveTrain.updateSmartDash();
-
+        SmartDashboard.putNumber("Auto Line Up step: ", autoLineUpCounter);
         SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
         SmartDashboard.putBoolean("Is Gyro calibrating: ", driveTrain.isGyroCalibrating());
         SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());

@@ -163,12 +163,12 @@ public class AutonHelper extends ShakerHelper {
             case 16:
                 previousCase = counter;
                 driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
-                        SmartDashboard.getNumber("Angle setpoint"), 0.5);
+                        SmartDashboard.getNumber("Angle setpoint"), 0.7);
                 break;
 
             case 17: // This is for testing the stationary angle pid
                 previousCase = counter;
-                driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"));
+                driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"),0.5);
                 break;
 
             case 20:// 20-23 are the auto shooting procedure
@@ -197,7 +197,7 @@ public class AutonHelper extends ShakerHelper {
             case 30:// still in testing phases
                 //THE NEW CAMERA CLASS HAS NOT BEEN INITIALIZED!!!!!!!!!!!
                 double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference;
-                driveTrain.setAngle(setPoint);
+                driveTrain.setAngle(setPoint, 0.5);
             default:
                 break;
 
