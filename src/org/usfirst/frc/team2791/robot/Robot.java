@@ -66,6 +66,7 @@ public class Robot extends IterativeRobot {
 
         compressor = new Compressor(Constants.PCM_MODULE);
         camera = new ShakerCamera("cam0");
+        SmartDashboard.putBoolean("Display vision targetting to dash" , false);
     }
 
     @Override
@@ -96,6 +97,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         super.teleopPeriodic();
         camera.update(true);
+        camera.displayTargettingImageToDash(SmartDashboard.getBoolean("Display vision targetting to dash"));
         teleopHelper.run();
         teleopHelper.updateSmartDash();
 

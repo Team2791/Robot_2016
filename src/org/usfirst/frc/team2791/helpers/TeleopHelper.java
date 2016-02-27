@@ -165,6 +165,8 @@ public class TeleopHelper extends ShakerHelper {
                 break;
             case 3:
                 shooter.autoFire();
+                autoLineUpCounter = 0;
+                break;
         }
 
     }
