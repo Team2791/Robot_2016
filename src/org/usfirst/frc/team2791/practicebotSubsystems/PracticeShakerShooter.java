@@ -219,22 +219,29 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	public ShooterHeight getShooterHeight() {
 		// get current shooter height by determining which solenoid are true
 		if (shortPiston.get().equals(PracticeConstants.SMALL_PISTON_HIGH_STATE)
-				&& longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE))
+				&& longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)){
+//			System.out.println("I think that the shooter is in the high pos");
 			return ShooterHeight.HIGH;
-		else if (longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE))
+			}
+		else if (longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)){
+//			System.out.println("I think that the shooter is in the mid pos");
 			return ShooterHeight.MID;
+			}
 		else
-			return ShooterHeight.LOW;
+		{
 
+//			System.out.println("I think that the shooter is in the low pos");
+			return ShooterHeight.LOW;
+		}
 	}
 
 	public void setShooterLow() {
 		// both pistons will be set to true to get max height
-		shortPiston.set(PracticeConstants.SMALL_PISTON_HIGH_STATE); // was
+		shortPiston.set(PracticeConstants.SMALL_PISTON_LOW_STATE); // was
 																	// reverse
 		// //this is short
 		// one
-		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
+		longPiston.set(PracticeConstants.LARGE_PISTON_LOW_STATE);
 
 	}
 
@@ -246,10 +253,11 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 
 	public void setShooterHigh() {
 		// set shooter height to low , set both pistons to false
-		shortPiston.set(PracticeConstants.SMALL_PISTON_LOW_STATE);
-		longPiston.set(PracticeConstants.LARGE_PISTON_LOW_STATE);
+		shortPiston.set(PracticeConstants.SMALL_PISTON_HIGH_STATE);
+		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
 		// short needs to switch
 	}
+	
 
 	public void overrideAutoShot() {
 		overrideShot = true;
