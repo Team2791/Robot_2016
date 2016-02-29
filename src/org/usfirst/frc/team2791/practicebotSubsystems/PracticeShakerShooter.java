@@ -25,6 +25,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	private double closeShotSetPoint = 590;
 	private double farShotSetpoint = 850;
 	private boolean overrideShot = false;
+	private boolean prepShot = false;
 
 	public PracticeShakerShooter() {
 		leftShooterTalon = new CANTalon(PracticePorts.SHOOTER_TALON_LEFT_PORT);
@@ -74,11 +75,14 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	public void run() {
 		try {
 			while (true) {
+				closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
+				farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
+				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+				if (prepShot) {
+					setShooterSpeeds(setPoint, true);
+				}
 				if (autoFire) {
-					closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
-					farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-					double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint
-							: closeShotSetPoint;
+
 					setShooterSpeeds(setPoint, true);
 					// System.out.println("my setpoint is " + setPoint);
 
@@ -219,18 +223,16 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	public ShooterHeight getShooterHeight() {
 		// get current shooter height by determining which solenoid are true
 		if (shortPiston.get().equals(PracticeConstants.SMALL_PISTON_HIGH_STATE)
-				&& longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)){
-//			System.out.println("I think that the shooter is in the high pos");
+				&& longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)) {
+			// System.out.println("I think that the shooter is in the high
+			// pos");
 			return ShooterHeight.HIGH;
-			}
-		else if (longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)){
-//			System.out.println("I think that the shooter is in the mid pos");
+		} else if (longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)) {
+			// System.out.println("I think that the shooter is in the mid pos");
 			return ShooterHeight.MID;
-			}
-		else
-		{
+		} else {
 
-//			System.out.println("I think that the shooter is in the low pos");
+			// System.out.println("I think that the shooter is in the low pos");
 			return ShooterHeight.LOW;
 		}
 	}
@@ -257,7 +259,6 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
 		// short needs to switch
 	}
-	
 
 	public void overrideAutoShot() {
 		overrideShot = true;

@@ -13,6 +13,7 @@ import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 
 public class Robot extends IterativeRobot {
 	// modes
@@ -73,7 +74,7 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor(Constants.PCM_MODULE);
 
-		SmartDashboard.putNumber("shooter offset", commands.AutoLineUpShot.shootOffset);
+		SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
 	}
 
 	@Override

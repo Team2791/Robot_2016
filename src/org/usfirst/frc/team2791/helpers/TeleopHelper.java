@@ -6,8 +6,7 @@ import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
-
-import commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
@@ -22,8 +21,6 @@ public class TeleopHelper extends ShakerHelper {
 	private Toggle extendIntakeToggle;
 	private Toggle useArmAttachmentToggle;
 	private Toggle cameraServoPosToggle;
-	private double angleHoldPos;
-	private boolean angleHoldOnlyOnce = false;
 
 	public TeleopHelper() {
 		// init
@@ -51,8 +48,9 @@ public class TeleopHelper extends ShakerHelper {
 
 	private void driverRun() {
 		// Reads the current drive type to chooser what layout should be used
-		if (!driverJoystick.getDpadUp()) {
-			if (!commands.AutoLineUpShot.isRunning())
+		if (!(driverJoystick.getDpadUp() || driverJoystick.getDpadDown() || driverJoystick.getDpadLeft()
+				|| driverJoystick.getDpadRight())) {
+			if (!AutoLineUpShot.isRunning())
 				switch (getDriveType()) {
 				case TANK:
 					driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightY());
@@ -68,6 +66,15 @@ public class TeleopHelper extends ShakerHelper {
 					driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
 					break;
 				}
+			// driver control for pid movement
+			if (driverJoystick.getDpadDown())//drive back 2 feet
+				driveTrain.driveInFeet(driveTrain.getLeftDistance() - 2.0, driveTrain.getAngle(), 0.4);
+			else if (driverJoystick.getDpadUp())//drive forward 2 feet
+				driveTrain.driveInFeet(driveTrain.getLeftDistance() + 2.0, driveTrain.getAngle(), 0.4);
+			else if (driverJoystick.getDpadLeft())//turn 90 deg clockwise
+				driveTrain.setAngle(driveTrain.getAngle() + 90, 0.4);
+			else if (driverJoystick.getDpadRight())//
+				driveTrain.setAngle(driveTrain.getAngle() - 90, 0.4);
 			// gear switching, defaults to high gear
 			if (driverJoystick.getButtonB())
 				driveTrain.setHighGear();
@@ -82,15 +89,7 @@ public class TeleopHelper extends ShakerHelper {
 			intake.retractIntake();
 		clawToggle.giveToggleInput(driverJoystick.getButtonX());
 		claw.set(clawToggle.get());
-		if (driverJoystick.getDpadUp()) {
-			if (!angleHoldOnlyOnce) {
-				angleHoldPos = driveTrain.getAngle();
-			}
-			driveTrain.setAngle(angleHoldPos, 0.4);
-			driveTrain.setLeftRight(driverJoystick.getAxisRT(), driverJoystick.getAxisRT());
-			
-		} else
-			angleHoldOnlyOnce = false;
+
 	}
 
 	private void operatorRun() {
@@ -150,17 +149,17 @@ public class TeleopHelper extends ShakerHelper {
 			camera.cameraUp();
 		}
 
-		if (shooter.getIfAutoFire() || commands.AutoLineUpShot.isRunning())
+		if (shooter.getIfAutoFire() || AutoLineUpShot.isRunning())
 			compressor.stop();
 		else
 			compressor.start();
 
-		if (operatorJoystick.getButtonA() || commands.AutoLineUpShot.isRunning()) {
+		if (operatorJoystick.getButtonA() || AutoLineUpShot.isRunning()) {
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt())
-				commands.AutoLineUpShot.reset();
+				AutoLineUpShot.reset();
 			else {
-				commands.AutoLineUpShot.run();
+				AutoLineUpShot.run();
 			}
 		}
 

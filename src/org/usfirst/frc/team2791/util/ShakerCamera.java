@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
-
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -41,10 +41,12 @@ public class ShakerCamera implements Runnable {
 	private boolean cameraServoUp = false;
 	private boolean cameraValsOnlyOnce = false;
 	private TreeMap<Double, Double> rangeTable;
+	private boolean alreadyMeasuredImage = false;
 	private double rangeOffset = 0.0;
 	private double targetHeightIn = 0;
 	private double cameraHeightIn = 0;
 	private double cameraPitchDeg = 45;
+	ArrayList<ParticleReport> particles;
 
 	public ShakerCamera(String camPort) {
 		cam = new USBCamera(camPort);
@@ -77,13 +79,14 @@ public class ShakerCamera implements Runnable {
 		while (true) {
 			try {
 				cam.getImage(frame);
+				alreadyMeasuredImage = false;
 				if (frame != null) {
 					// if should display the modified image to the
 					// smartdashboard
 					if (SmartDashboard.getBoolean("display targetting")) {
 						measureAndGetParticles();
 						CameraServer.getInstance().setImage(particleBinaryFrame);
-					} else if (SmartDashboard.getBoolean("Debug Image") || commands.AutoLineUpShot.isRunning()) {
+					} else if (SmartDashboard.getBoolean("Debug Image") || AutoLineUpShot.isRunning()) {
 						measureAndGetParticles();
 						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
 								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
@@ -172,114 +175,101 @@ public class ShakerCamera implements Runnable {
 	}
 
 	private ArrayList<ParticleReport> measureAndGetParticles() {
-		// does a bunch of measurements on the image and its particles
-		String output = "";
-		// particle information is stored into the arraylist particles
-		ArrayList<ParticleReport> particles = new ArrayList<ParticleReport>();
-		// create and apply an hsl threshold on the current fame
-		NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL,
-				new Range((int) SmartDashboard.getNumber("H min"), (int) SmartDashboard.getNumber("H max")),
-				new Range((int) SmartDashboard.getNumber("S min"), (int) SmartDashboard.getNumber("S max")),
-				new Range((int) SmartDashboard.getNumber("L min"), (int) SmartDashboard.getNumber("L max")));
-		// set the lower threshold on area in the criteria filter
-		criteria[0].lower = 0.3f;
-		// use particle filter to remove unwanted particles
-		imaqError = NIVision.imaqParticleFilter4(particleBinaryFrame, binaryFrame, criteria, filterOptions, null);
-		// System.out.println("I just did a filter to remove noise");
-		// count the number of viable particles
-		int numParticles = NIVision.imaqCountParticles(particleBinaryFrame, 1);
-		// System.out.println("I just counted the number of particles "+
-		// numParticles );
-		// checks to make sure there is at least one particle
+		if (!alreadyMeasuredImage) {
+			// does a bunch of measurements on the image and its particles
+			String output = "";
+			// particle information is stored into the arraylist particles
+			particles = new ArrayList<ParticleReport>();
+			// create and apply an hsl threshold on the current fame
+			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL,
+					new Range((int) SmartDashboard.getNumber("H min"), (int) SmartDashboard.getNumber("H max")),
+					new Range((int) SmartDashboard.getNumber("S min"), (int) SmartDashboard.getNumber("S max")),
+					new Range((int) SmartDashboard.getNumber("L min"), (int) SmartDashboard.getNumber("L max")));
+			// set the lower threshold on area in the criteria filter
+			criteria[0].lower = 0.3f;
+			// use particle filter to remove unwanted particles
+			imaqError = NIVision.imaqParticleFilter4(particleBinaryFrame, binaryFrame, criteria, filterOptions, null);
+			// System.out.println("I just did a filter to remove noise");
+			// count the number of viable particles
+			int numParticles = NIVision.imaqCountParticles(particleBinaryFrame, 1);
+			// System.out.println("I just counted the number of particles "+
+			// numParticles );
+			// checks to make sure there is at least one particle
 
-		if (numParticles > 0) {
-			// creates an ouput string with all the data that has been collected
-			output += "The number of particles: " + numParticles;
-			// Measure each of the particles
-			// System.out.println("Measuring the particles");
-			for (int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
-				// System.out.println("im about to do convex hull");
-				// NIVision.imaqConvexHull(particleBinaryFrame, binaryFrame,0);
-				// System.out.println("i did the convex hull");
-				// iterates through each particle
-				// creates a particle report and then adds it to the arraylist
-				ParticleReport par = new ParticleReport();
-				particles.add(par);
+			if (numParticles > 0) {
+				// creates an ouput string with all the data that has been
+				// collected
+				output += "The number of particles: " + numParticles;
+				// Measure each of the particles
+				// System.out.println("Measuring the particles");
+				for (int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
+					// System.out.println("im about to do convex hull");
+					// NIVision.imaqConvexHull(particleBinaryFrame,
+					// binaryFrame,0);
+					// System.out.println("i did the convex hull");
+					// iterates through each particle
+					// creates a particle report and then adds it to the
+					// arraylist
+					ParticleReport par = new ParticleReport();
+					particles.add(par);
 
-				// System.out.println("im about to measure;");
-				// finds how much of the particle covers the frame
-				par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
-				// System.out.println("I did the first are measure;");
-				// adds the value to the output line with all its information
-				output += "PercentAreaToImageArea: " + par.PercentAreaToImageArea + "\n";
-				// measures the area of the particle and adds to the output
-				par.Area = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_AREA);
-				// System.out.println("I did the second are calculation");
-				output += "Area: " + par.Area + "\n";
-				// System.out.println("measured the area");
-				// measures the upper width of the particle
-				par.BoundingRectTop = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
-				output += "BoundingRectTop: " + par.BoundingRectTop + "\n";
-				// measures the left height of the particle
-				par.BoundingRectLeft = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
-				output += "BoundingRectLeft: " + par.BoundingRectTop + "\n";
-				// measures the bottom width of the particle
-				par.BoundingRectBottom = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
-				output += "BoundingRectBottom: " + par.BoundingRectTop + "\n";
-				// measures the bottom height of the particle
-				par.BoundingRectRight = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
-				output += "BoundingRectRight: " + par.BoundingRectTop + "\n";
-				// System.out.println("Measured the bounding boxes");
-				par.CenterOfMassX = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
-						NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
-				// System.out.println("measured the center of mass");
-				// finds the center of mass in x coordinates of the particle
-				// par.CenterOfMassX =
-				// NIVision.imaqMeasureParticle(particleBinaryFrame,
-				// particleIndex, 0,
-				// NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
-				// par.CenterOfMassX = (par.BoundingRectLeft +
-				// par.BoundingRectRight)/2;
-				// par.CenterOfMassX /= 2;
-				// // finds the center of mass in the y direction of the paricle
-				// par.CenterOfMassY =
-				// NIVision.imaqMeasureParticle(particleBinaryFrame,
-				// particleIndex, 0,
-				// NIVision.MeasurementType.MT_FIRST_PIXEL_Y) +
-				// par.BoundingRectLeft;
-				// par.CenterOfMassY /= 2;
-				// output += "Center of Mass Y: " + par.CenterOfMassY + "\n";
-				// using center of mass calculate the distance between the
-				// two points ..theoretically......
-				output += "Normalized center of mass x " + getNormalizedCenterOfMass(par.CenterOfMassX);
-				output += "Normalized center of mass y " + getNormalizedCenterOfMass(par.CenterOfMassY);
-				double angleFromMiddle = CAMERA_WIDTH_DEGREES * getNormalizedCenterOfMass(par.CenterOfMassX);
-				par.ThetaDifference = angleFromMiddle / 2;
-				output += "Theta diff: " + par.ThetaDifference;
-				// System.out.println("Measured the theata diff");
-				SmartDashboard.putNumber("Theta diff", par.ThetaDifference);
-				SmartDashboard.putNumber("center of mass x", par.CenterOfMassX);
-				SmartDashboard.putNumber("Boudnding rect top", par.BoundingRectTop);
-				SmartDashboard.putNumber("Normalized center of mass x", getNormalizedCenterOfMass(par.CenterOfMassX));
+					// System.out.println("im about to measure;");
+					// finds how much of the particle covers the frame
+					par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
+					// System.out.println("I did the first are measure;");
+					// adds the value to the output line with all its
+					// information
+					output += "PercentAreaToImageArea: " + par.PercentAreaToImageArea + "\n";
+					// measures the area of the particle and adds to the output
+					par.Area = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_AREA);
+					// System.out.println("I did the second are calculation");
+					output += "Area: " + par.Area + "\n";
+					// System.out.println("measured the area");
+					// measures the upper width of the particle
+					par.BoundingRectTop = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
+					output += "BoundingRectTop: " + par.BoundingRectTop + "\n";
+					// measures the left height of the particle
+					par.BoundingRectLeft = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
+					output += "BoundingRectLeft: " + par.BoundingRectTop + "\n";
+					// measures the bottom width of the particle
+					par.BoundingRectBottom = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
+					output += "BoundingRectBottom: " + par.BoundingRectTop + "\n";
+					// measures the bottom height of the particle
+					par.BoundingRectRight = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
+					output += "BoundingRectRight: " + par.BoundingRectTop + "\n";
+					// System.out.println("Measured the bounding boxes");
+					par.CenterOfMassX = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
 
-				// creates a rectangle to cover the target
-				NIVision.Rect r = new NIVision.Rect((int) par.BoundingRectTop, (int) par.BoundingRectLeft,
-						Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom)),
-						Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight)));
-				// draws the rectangle on the binary image
-				NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.DRAW_VALUE,
-						NIVision.ShapeMode.SHAPE_RECT, 125f);
+					output += "Normalized center of mass x " + getNormalizedCenterOfMass(par.CenterOfMassX);
+					output += "Normalized center of mass y " + getNormalizedCenterOfMass(par.CenterOfMassY);
+					double angleFromMiddle = CAMERA_WIDTH_DEGREES * getNormalizedCenterOfMass(par.CenterOfMassX);
+					par.ThetaDifference = angleFromMiddle / 2;
+					output += "Theta diff: " + par.ThetaDifference;
+					// System.out.println("Measured the theata diff");
+					SmartDashboard.putNumber("Theta diff", par.ThetaDifference);
+					SmartDashboard.putNumber("center of mass x", par.CenterOfMassX);
+					SmartDashboard.putNumber("Boudnding rect top", par.BoundingRectTop);
+					SmartDashboard.putNumber("Normalized center of mass x",
+							getNormalizedCenterOfMass(par.CenterOfMassX));
 
+					// creates a rectangle to cover the target
+					NIVision.Rect r = new NIVision.Rect((int) par.BoundingRectTop, (int) par.BoundingRectLeft,
+							Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom)),
+							Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight)));
+					// draws the rectangle on the binary image
+					NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.DRAW_VALUE,
+							NIVision.ShapeMode.SHAPE_RECT, 125f);
+					SmartDashboard.putString("Image output:", output);
+				}
 			}
-
 		}
-		SmartDashboard.putString("Image output:", output);
 		return particles;
 	}
 

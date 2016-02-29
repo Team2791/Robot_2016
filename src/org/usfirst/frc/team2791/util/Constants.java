@@ -44,10 +44,10 @@ public class Constants {
 	// First Pcm module
 	public static final int DRIVE_SHIFTING_PISTON = 6;
 	public static final int INTAKE_PISTON = 7;
-	// public static final int LONG_PISTON_FORWARD = 2;
-	// public static final int LONG_PISTON_REVERSE = 3;
-	// public static final int SHORT_PISTON_FORWARD = 4;
-	// public static final int SHORT_PISTON_REVERSE = 5;
+	public static final int LONG_PISTON_FORWARD = 2;
+	public static final int LONG_PISTON_REVERSE = 3;
+	public static final int SHORT_PISTON_FORWARD = 4;
+	public static final int SHORT_PISTON_REVERSE = 5;
 	public static final int CLAW_HIGHER_CHANNEL = 0;
 	public static final int CLAW_LOWER_CHANNEL = 1;
 	// CAN PracticePorts
