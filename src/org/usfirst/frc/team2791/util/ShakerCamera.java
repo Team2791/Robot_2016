@@ -8,6 +8,7 @@ import com.ni.vision.NIVision.StructuringElement;
 import com.ni.vision.VisionException;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
@@ -78,7 +79,10 @@ public class ShakerCamera implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				// calculate the time it takes to get the image
+				double imageGetTime = Timer.getFPGATimestamp();
 				cam.getImage(frame);
+				SmartDashboard.putNumber("Image get Time", imageGetTime = Timer.getFPGATimestamp() - imageGetTime);
 				alreadyMeasuredImage = false;
 				if (frame != null) {
 					// if should display the modified image to the
@@ -87,15 +91,26 @@ public class ShakerCamera implements Runnable {
 						measureAndGetParticles();
 						CameraServer.getInstance().setImage(particleBinaryFrame);
 					} else if (SmartDashboard.getBoolean("Debug Image") || AutoLineUpShot.isRunning()) {
+						double processingTime = Timer.getFPGATimestamp();
 						measureAndGetParticles();
+						processingTime = Timer.getFPGATimestamp() - processingTime;
 						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
 								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
 								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, CAMERA_HEIGHT_PIXELS), 125f);
+						NIVision.imaqOverlayText(binaryFrame, new NIVision.Point(0, 0),
+								"Processing FPS: " + 1000 / (processingTime + imageGetTime), NIVision.RGB_BLUE,
+								new NIVision.OverlayTextOptions(), "Default");
+						SmartDashboard.putNumber("FPS with processing", 1000 / (processingTime + imageGetTime));
 						CameraServer.getInstance().setImage(binaryFrame);
 					}
 
-					else
+					else {
+						SmartDashboard.putNumber("FPS without processing", 1000 / (imageGetTime));
+						NIVision.imaqOverlayText(frame, new NIVision.Point(0, 0), "FPS: " + 1000 / imageGetTime,
+								NIVision.RGB_BLUE, new NIVision.OverlayTextOptions(), "Default");
 						CameraServer.getInstance().setImage(frame);
+
+					}
 				}
 				if (cameraAutoSettings && !cameraValsOnlyOnce) {
 					// set the exposure and the brightness for when vision
@@ -146,8 +161,8 @@ public class ShakerCamera implements Runnable {
 		return 850;
 	}
 
-	public double getRange() {// make sure to only call this if we know a target
-								// exists
+	public double getRange() {
+		// make sure to only call this if we know a target exists
 		double range = (targetHeightIn - cameraHeightIn) / Math
 				.tan(getNormalizedCenterOfMass(getTarget().CenterOfMassY) * (CAMERA_WIDTH_DEGREES / 2) + cameraPitchDeg)
 				* (Math.PI / 180);
@@ -161,23 +176,33 @@ public class ShakerCamera implements Runnable {
 			System.out.println("The camera reports are empty");
 			return null;
 		}
+
 		int targetLoc = 0;
-		double maxPercentArea = 0;
-		int counter = 0;
-		for (ParticleReport par : reports) {
-			if (maxPercentArea < par.PercentAreaToImageArea) {
-				maxPercentArea = par.PercentAreaToImageArea;
-				targetLoc = counter;
+		if (reports.size() != 1) {
+			double maxPercentArea = 0;
+			int counter = 0;
+			for (ParticleReport par : reports) {
+				if (maxPercentArea < par.PercentAreaToImageArea) {
+					maxPercentArea = par.PercentAreaToImageArea;
+					targetLoc = counter;
+				}
+				counter++;
 			}
-			counter++;
 		}
+		ParticleReport par = reports.get(targetLoc);
+		// creates a rectangle to cover the target
+		NIVision.Rect r = new NIVision.Rect((int) par.BoundingRectTop, (int) par.BoundingRectLeft,
+				Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom)),
+				Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight)));
+		// draws the rectangle on the binary image
+		NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.PAINT_VALUE,
+				NIVision.ShapeMode.SHAPE_RECT, 10f);//highlight the choosen target in a different color
 		return reports.get(targetLoc);
 	}
 
 	private ArrayList<ParticleReport> measureAndGetParticles() {
 		if (!alreadyMeasuredImage) {
 			// does a bunch of measurements on the image and its particles
-			String output = "";
 			// particle information is stored into the arraylist particles
 			particles = new ArrayList<ParticleReport>();
 			// create and apply an hsl threshold on the current fame
@@ -195,78 +220,55 @@ public class ShakerCamera implements Runnable {
 			// System.out.println("I just counted the number of particles "+
 			// numParticles );
 			// checks to make sure there is at least one particle
-
 			if (numParticles > 0) {
-				// creates an ouput string with all the data that has been
-				// collected
-				output += "The number of particles: " + numParticles;
 				// Measure each of the particles
-				// System.out.println("Measuring the particles");
+				// first do a convex hull to fill in the pariticle
+				NIVision.imaqConvexHull(binaryFrame, binaryFrame, 8);
 				for (int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
-					// System.out.println("im about to do convex hull");
-					// NIVision.imaqConvexHull(particleBinaryFrame,
-					// binaryFrame,0);
-					// System.out.println("i did the convex hull");
-					// iterates through each particle
-					// creates a particle report and then adds it to the
-					// arraylist
+					// iterates through the particles and measures them
 					ParticleReport par = new ParticleReport();
+					// adds the particle report to the arraylist
 					particles.add(par);
-
-					// System.out.println("im about to measure;");
-					// finds how much of the particle covers the frame
+					// area / total image area
 					par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
-					// System.out.println("I did the first are measure;");
-					// adds the value to the output line with all its
-					// information
-					output += "PercentAreaToImageArea: " + par.PercentAreaToImageArea + "\n";
-					// measures the area of the particle and adds to the output
+					// area of the particle
 					par.Area = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_AREA);
-					// System.out.println("I did the second are calculation");
-					output += "Area: " + par.Area + "\n";
-					// System.out.println("measured the area");
-					// measures the upper width of the particle
+					// Y value of the upper part of box
 					par.BoundingRectTop = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
-					output += "BoundingRectTop: " + par.BoundingRectTop + "\n";
-					// measures the left height of the particle
+					// X value of the left part of box
 					par.BoundingRectLeft = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
-					output += "BoundingRectLeft: " + par.BoundingRectTop + "\n";
-					// measures the bottom width of the particle
+					// Y value of the bottom part of box
 					par.BoundingRectBottom = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
-					output += "BoundingRectBottom: " + par.BoundingRectTop + "\n";
-					// measures the bottom height of the particle
+					// X value of the right part of box
 					par.BoundingRectRight = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
-					output += "BoundingRectRight: " + par.BoundingRectTop + "\n";
-					// System.out.println("Measured the bounding boxes");
+					// measure the center of mass in the x dir
 					par.CenterOfMassX = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
 							NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
-
-					output += "Normalized center of mass x " + getNormalizedCenterOfMass(par.CenterOfMassX);
-					output += "Normalized center of mass y " + getNormalizedCenterOfMass(par.CenterOfMassY);
+					// measure the center of mass in the y dir
+					par.CenterOfMassY = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
+							NIVision.MeasurementType.MT_CENTER_OF_MASS_Y);
+					// calculate the angle from the middle
 					double angleFromMiddle = CAMERA_WIDTH_DEGREES * getNormalizedCenterOfMass(par.CenterOfMassX);
 					par.ThetaDifference = angleFromMiddle / 2;
-					output += "Theta diff: " + par.ThetaDifference;
-					// System.out.println("Measured the theata diff");
+					// put the important values to the dashboard
 					SmartDashboard.putNumber("Theta diff", par.ThetaDifference);
 					SmartDashboard.putNumber("center of mass x", par.CenterOfMassX);
 					SmartDashboard.putNumber("Boudnding rect top", par.BoundingRectTop);
 					SmartDashboard.putNumber("Normalized center of mass x",
 							getNormalizedCenterOfMass(par.CenterOfMassX));
-
 					// creates a rectangle to cover the target
 					NIVision.Rect r = new NIVision.Rect((int) par.BoundingRectTop, (int) par.BoundingRectLeft,
 							Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom)),
 							Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight)));
 					// draws the rectangle on the binary image
-					NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.DRAW_VALUE,
+					NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, r, NIVision.DrawMode.PAINT_VALUE,
 							NIVision.ShapeMode.SHAPE_RECT, 125f);
-					SmartDashboard.putString("Image output:", output);
 				}
 			}
 		}
@@ -319,5 +321,6 @@ public class ShakerCamera implements Runnable {
 		public static double BoundingRectBottom;
 		public static double CenterOfMassX;
 		public static double CenterOfMassY;
+		public static double Range;
 	}
 }

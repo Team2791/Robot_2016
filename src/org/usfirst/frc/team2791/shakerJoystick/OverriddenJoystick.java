@@ -8,7 +8,7 @@ public class OverriddenJoystick extends Joystick {
     public OverriddenJoystick(int port) {
         super(port);
     }
-
+    
     public double getXVal() {
         return Util.deadzone(Constants.DEADZONE, super.getX(), 1.0);
     }
