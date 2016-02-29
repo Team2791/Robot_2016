@@ -22,6 +22,8 @@ public class TeleopHelper extends ShakerHelper {
 	private Toggle extendIntakeToggle;
 	private Toggle useArmAttachmentToggle;
 	private Toggle cameraServoPosToggle;
+	private double angleHoldPos;
+	private boolean angleHoldOnlyOnce = false;
 
 	public TeleopHelper() {
 		// init
@@ -32,6 +34,7 @@ public class TeleopHelper extends ShakerHelper {
 		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
 		driveTypeChooser.addDefault("GTA Drive", "GTA");
 		driveTypeChooser.addObject("Single Arcade", "SINGLE_ARCADE");
+
 		// toggles, to prevent sending a subsystem a value too many times
 		clawToggle = new Toggle(false);
 		extendIntakeToggle = new Toggle(false);
@@ -48,35 +51,46 @@ public class TeleopHelper extends ShakerHelper {
 
 	private void driverRun() {
 		// Reads the current drive type to chooser what layout should be used
-		if (!commands.AutoLineUpShot.isRunning())
-			switch (getDriveType()) {
-			case TANK:
-				driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightY());
-				break;
-			default:
-			case GTA:
-				driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
-				break;
-			case ARCADE:
-				driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightX());
-				break;
-			case SINGLE_ARCADE:
-				driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
-				break;
-			}
-		// gear switching, defaults to high gear
-		if (driverJoystick.getButtonB())
-			driveTrain.setHighGear();
-		else
-			driveTrain.setLowGear();
+		if (!driverJoystick.getDpadUp()) {
+			if (!commands.AutoLineUpShot.isRunning())
+				switch (getDriveType()) {
+				case TANK:
+					driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightY());
+					break;
+				default:
+				case GTA:
+					driveTrain.setLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
+					break;
+				case ARCADE:
+					driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightX());
+					break;
+				case SINGLE_ARCADE:
+					driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
+					break;
+				}
+			// gear switching, defaults to high gear
+			if (driverJoystick.getButtonB())
+				driveTrain.setHighGear();
+			else
+				driveTrain.setLowGear();
+		}
 		// intake extension toggle
-		extendIntakeToggle.giveToggleInput(driverJoystick.getButtonA()|| operatorJoystick.getDpadLeft());
+		extendIntakeToggle.giveToggleInput(driverJoystick.getButtonA() || operatorJoystick.getDpadLeft());
 		if (extendIntakeToggle.getToggleOutput())// Extend intake
 			intake.extendIntake();
 		else// Retract intake
 			intake.retractIntake();
 		clawToggle.giveToggleInput(driverJoystick.getButtonX());
 		claw.set(clawToggle.get());
+		if (driverJoystick.getDpadUp()) {
+			if (!angleHoldOnlyOnce) {
+				angleHoldPos = driveTrain.getAngle();
+			}
+			driveTrain.setAngle(angleHoldPos, 0.4);
+			driveTrain.setLeftRight(driverJoystick.getAxisRT(), driverJoystick.getAxisRT());
+			
+		} else
+			angleHoldOnlyOnce = false;
 	}
 
 	private void operatorRun() {
@@ -146,10 +160,9 @@ public class TeleopHelper extends ShakerHelper {
 			if (operatorJoystick.getButtonSt())
 				commands.AutoLineUpShot.reset();
 			else {
-				camera.displayTargettingImageToDash(true);
 				commands.AutoLineUpShot.run();
 			}
-		} else camera.displayTargettingImageToDash(false);
+		}
 
 	}
 

@@ -72,6 +72,8 @@ public class Robot extends IterativeRobot {
 		teleopHelper = new TeleopHelper();
 
 		compressor = new Compressor(Constants.PCM_MODULE);
+
+		SmartDashboard.putNumber("shooter offset", commands.AutoLineUpShot.shootOffset);
 	}
 
 	@Override

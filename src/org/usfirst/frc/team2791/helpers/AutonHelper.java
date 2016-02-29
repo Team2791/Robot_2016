@@ -167,6 +167,7 @@ public class AutonHelper extends ShakerHelper {
 //                driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
 //                        SmartDashboard.getNumber("Angle setpoint"), 0.7);
 //                break;
+
         driveTrain.setAngle( SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
 //            case 17: // This is for testing the stationary angle pid
 //                previousCase = counter;

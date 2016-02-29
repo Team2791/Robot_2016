@@ -87,6 +87,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		anglePID.setSetPoint(angle);
 		anglePID.setMaxOutput(maxOutput);
 		anglePID.setMinOutput(-maxOutput);
+		anglePID.setIZone(4);
 		anglePID.changeGains(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
 		setLeftRightVoltage(anglePIDOutput, -anglePIDOutput);
