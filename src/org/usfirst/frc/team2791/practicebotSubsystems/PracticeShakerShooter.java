@@ -80,6 +80,8 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
 				if (prepShot) {
 					setShooterSpeeds(setPoint, true);
+					if (overrideShot || autoFire)
+						prepShot = false;
 				}
 				if (autoFire) {
 
@@ -146,8 +148,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 			leftShooterTalon.set(targetSpeed);
 			rightShooterTalon.set(targetSpeed);// these values are in rpms
 
-		} else if (!autoFire) {
-
+		} else if (!autoFire || !prepShot) {
 			leftShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			rightShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			leftShooterTalon.set(targetSpeed);
@@ -262,6 +263,10 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 
 	public void overrideAutoShot() {
 		overrideShot = true;
+	}
+
+	public void prepShot() {
+		prepShot = true;
 	}
 
 	public boolean getIfAutoFire() {

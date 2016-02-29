@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerShooter extends ShakerSubsystem implements Runnable {
@@ -25,13 +27,16 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	private double closeShotSetPoint = 590;
 	private double farShotSetpoint = 850;
 	private boolean overrideShot = false;
+	private boolean prepShot = false;
 
 	public ShakerShooter() {
 		leftShooterTalon = new CANTalon(Constants.SHOOTER_TALON_LEFT_PORT);
 		rightShooterTalon = new CANTalon(Constants.SHOOTER_TALON_RIGHT_PORT);
 		ballAidServo = new Servo(Constants.BALL_AID_SERVO_PORT);
-		longPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.LONG_PISTON_FORWARD, Constants.LONG_PISTON_REVERSE);
-		shortPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.SHORT_PISTON_FORWARD, Constants.SHORT_PISTON_REVERSE);
+		longPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.LONG_PISTON_FORWARD,
+				Constants.LONG_PISTON_REVERSE);
+		shortPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.SHORT_PISTON_FORWARD,
+				Constants.SHORT_PISTON_REVERSE);
 		ballDistanceSensor = new AnalogInput(Constants.BALL_DISTANCE_SENSOR_PORT);
 		rightShooterTalon.setInverted(false);
 		rightShooterTalon.reverseOutput(false);
@@ -71,11 +76,23 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				if (autoFire) {
-					closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
-					farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-					double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+				closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
+				farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
+				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+				if (prepShot) {
 					setShooterSpeeds(setPoint, true);
+					if (overrideShot || autoFire)
+						prepShot = false;
+				}
+				if (autoFire) {
+
+					setShooterSpeeds(setPoint, true);
+					// System.out.println("my setpoint is " + setPoint);
+
+					// System.out.println("Talons think the setpoint is " +
+					// leftShooterTalon.getSetpoint() + " and "
+					// + rightShooterTalon.getSetpoint());
+
 					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 					while (Timer.getFPGATimestamp()
 							- whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
@@ -83,6 +100,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 							break;
 						if (!(Math.abs(leftShooterTalon.getError()) < 50
 								&& Math.abs(rightShooterTalon.getError()) < 50)) {
+							// if the wheels aren't at speed reset the count
 							whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
 						}
 						Thread.sleep(10);
@@ -128,12 +146,12 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 			rightShooterTalon.setD(SmartDashboard.getNumber("Shooter d"));
 			leftShooterTalon.setF(SmartDashboard.getNumber("FeedForward"));
 			rightShooterTalon.setF(SmartDashboard.getNumber("FeedForward"));
-			//set the speeds (THEY ARE IN RPMS)
+			// set the speeds (THEY ARE IN RPMS)
 			leftShooterTalon.set(targetSpeed);
 			rightShooterTalon.set(targetSpeed);
 
-		} else if (!autoFire) {
-			//if shooters is not autofiring then use inputs given, including 0
+		} else if (!autoFire || !prepShot) {
+			// if shooters is not autofiring then use inputs given, including 0
 			leftShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			rightShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			leftShooterTalon.set(targetSpeed);
@@ -157,7 +175,6 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 		SmartDashboard.putNumber("right speed", rightShooterTalon.getEncVelocity());
 		SmartDashboard.putNumber("Right error", rightShooterTalon.getError());
 		SmartDashboard.putNumber("Left error", leftShooterTalon.getError());
-
 
 	}
 
@@ -193,14 +210,14 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 	public void pushBall() {
 		// will be used to push ball toward the shooter
 		ballAidServo.set(0.5);
-//		System.out.println("Im being told to push the ball");
+		// System.out.println("Im being told to push the ball");
 
 	}
 
 	public void resetServoAngle() {
 		// bring servo back to original position
 		ballAidServo.set(1);
-//		System.out.println("Im being told to Reset!!");
+		// System.out.println("Im being told to Reset!!");
 	}
 
 	public void autoFire() {
@@ -243,6 +260,10 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
 
 	public void overrideAutoShot() {
 		overrideShot = true;
+	}
+
+	public void prepShot() {
+		prepShot = true;
 	}
 
 	public boolean getIfAutoFire() {
