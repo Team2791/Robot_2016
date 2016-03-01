@@ -19,7 +19,7 @@ import java.util.TreeMap;
 public class ShakerCamera implements Runnable {
 
     private final double CAMERA_WIDTH_DEGREES = 53;
-    private final double TARGET_HT_INCHES = 0;
+    private final double TARGET_HT_INCHES = 88;
     private final double CAMERA_HT_INCHES = 0;
     private final double CAMERA_PITCH_DEG = 45;
     ArrayList<ParticleReport> particles;
@@ -237,17 +237,20 @@ public class ShakerCamera implements Runnable {
                     // X value of the right part of box
                     par.BoundingRectRight = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
                             NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
+
+                    par.Height = Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom));
+                    par.Width = Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight));
                     // measure the center of mass in the x dir
                     par.CenterOfMassX = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
                             NIVision.MeasurementType.MT_CENTER_OF_MASS_X);
+                    par.CenterOfMassX = par.Width / 2;
+
                     // measure the center of mass in the y dir
                     par.CenterOfMassY = NIVision.imaqMeasureParticle(particleBinaryFrame, particleIndex, 0,
                             NIVision.MeasurementType.MT_CENTER_OF_MASS_Y);
                     // calculate the angle from the middle
                     double angleFromMiddle = CAMERA_WIDTH_DEGREES * getNormalizedCenterOfMass(par.CenterOfMassX);
                     par.ThetaDifference = angleFromMiddle / 2;
-                    par.Width = Math.abs((int) (par.BoundingRectTop - par.BoundingRectBottom));
-                    par.Height = Math.abs((int) (par.BoundingRectLeft - par.BoundingRectRight));
                     par.Range = getRange();
                     // put the important values to the dashboard
                     SmartDashboard.putNumber("Theta diff", par.ThetaDifference);
