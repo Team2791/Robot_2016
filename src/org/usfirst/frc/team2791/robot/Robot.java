@@ -3,6 +3,7 @@ package org.usfirst.frc.team2791.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerClaw;
@@ -13,7 +14,6 @@ import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
-import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 
 public class Robot extends IterativeRobot {
 	// modes
@@ -65,7 +65,6 @@ public class Robot extends IterativeRobot {
 		shooterThread.start();
 
 		camera = new ShakerCamera("cam0");
-//		SmartDashboard.putBoolean("Display vision targetting to dash", false);
 		cameraThread = new Thread(camera);
 		cameraThread.start();
 
