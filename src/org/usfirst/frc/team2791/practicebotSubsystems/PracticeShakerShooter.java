@@ -30,25 +30,25 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
     private boolean prepShot = false;
     private boolean shooterArmMoving = false;
     private double timeWhenShooterArmMoved;
-    private boolean delayedArmMove = false;
+    public static boolean delayedArmMove = false;
     private ShooterHeight delayedShooterPos;
 
     public PracticeShakerShooter() {
-        leftShooterTalon = new CANTalon(Constants.SHOOTER_TALON_LEFT_PORT);
-        rightShooterTalon = new CANTalon(Constants.SHOOTER_TALON_RIGHT_PORT);
-        ballAidServo = new Servo(Constants.BALL_AID_SERVO_PORT);
-        longPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.LONG_PISTON_FORWARD,
-                Constants.LONG_PISTON_REVERSE);
-        shortPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.SHORT_PISTON_FORWARD,
-                Constants.SHORT_PISTON_REVERSE);
-        ballDistanceSensor = new AnalogInput(Constants.BALL_DISTANCE_SENSOR_PORT);
-        rightShooterTalon.setInverted(false);
-        rightShooterTalon.reverseOutput(false);
-        leftShooterTalon.reverseOutput(false);
-        leftShooterTalon.reverseSensor(true);
-        rightShooterTalon.reverseSensor(false);
-        leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-        rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
+    	leftShooterTalon = new CANTalon(PracticePorts.SHOOTER_TALON_LEFT_PORT);
+		rightShooterTalon = new CANTalon(PracticePorts.SHOOTER_TALON_RIGHT_PORT);
+		ballAidServo = new Servo(PracticePorts.BALL_AID_SERVO_PORT);
+		longPiston = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.LONG_PISTON_FORWARD,
+				PracticePorts.LONG_PISTON_REVERSE);
+		shortPiston = new DoubleSolenoid(21, 0, 1);
+		ballDistanceSensor = new AnalogInput(PracticePorts.BALL_DISTANCE_SENSOR_PORT);
+		rightShooterTalon.setInverted(false);
+		// true, false, true, false // right sensor correct,
+		rightShooterTalon.reverseOutput(false);
+		leftShooterTalon.reverseOutput(false);
+		leftShooterTalon.reverseSensor(true);
+		rightShooterTalon.reverseSensor(false);
+		leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
+		rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
         SmartDashboard.putNumber("Shooter p", Constants.SHOOTER_P);
         SmartDashboard.putNumber("Shooter i", Constants.SHOOTER_I);
         SmartDashboard.putNumber("Shooter d", Constants.SHOOTER_D);
@@ -100,7 +100,7 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
                     shooterArmMoving = false;
                 }
                 if (delayedArmMove) {
-                    Thread.sleep(1000);
+                    Thread.sleep(2500);
                     switch (delayedShooterPos) {
                         case LOW:
                             setShooterLow();
@@ -217,6 +217,7 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 
     public void delayedShooterPosition(ShooterHeight pos) {
         delayedArmMove = true;
+        delayedShooterPos = pos;
     }
 
     @Override

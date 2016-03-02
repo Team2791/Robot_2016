@@ -274,7 +274,7 @@ public class ShakerCamera implements Runnable {
 
     public void cameraUp() {
         // bring servo arm up
-        cameraServo.set(0.4);
+        cameraServo.set(0.3902);
     }
 
     public void cameraDown() {

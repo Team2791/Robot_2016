@@ -63,7 +63,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		anglePID.setMinOutput(-maxOutput / 2);
 		anglePID.changeGains(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
 		distancePID.changeGains(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
-		drivePIDOutput = distancePID.updateAndGetOutput(this.getRightDistance());
+		drivePIDOutput = distancePID.updateAndGetOutput(this.getLeftDistance());
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
 		setLeftRightVoltage(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
 		SmartDashboard.putNumber("Left Encoder Position", getLeftDistance());
