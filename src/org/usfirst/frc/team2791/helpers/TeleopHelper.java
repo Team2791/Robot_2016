@@ -106,34 +106,45 @@ public class TeleopHelper extends ShakerHelper {
 			intake.stopMotors();
 		}
 		// autofire shooter
-		if (operatorJoystick.getButtonLB())
-			shooter.autoFire();// does complete shot
+		if (operatorJoystick.getButtonA())
+			if (!shooter.prepShot)
+				shooter.prepShot();
+			else
+				shooter.autoFire();// does complete shot
 
-		if (intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.EXTENDED)) {
-			// check if the intake is up before doing anything
-			// set shooter to spot accordingly
-			if (operatorJoystick.getDpadUp()) {
-				shooter.setShooterHigh();
-				camera.setCameraValues(1, 1);
-			}
-			if (operatorJoystick.getDpadRight()) {
-				useArmAttachmentToggle.setManual(true);
-				shooter.setShooterMiddle();
-				camera.setCameraValues(1, 1);
-			}
-			if (operatorJoystick.getDpadDown()) {
-				camera.setCameraValuesAutomatic();
-				shooter.setShooterLow();
-			}
-		} else if (intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.RETRACTED)) {
+		// if
+		// (!intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.EXTENDED))
+		// {
+		// // check if the intake is up before doing anything
+		// // set shooter to spot accordingly
+		// if (operatorJoystick.getDpadUp()) {
+		// intake.extendIntake();
+		// shooter.setShooterHigh();
+		// camera.setCameraValues(1, 1);
+		// }
+		// if (operatorJoystick.getDpadRight()) {
+		// intake.extendIntake();
+		// useArmAttachmentToggle.setManual(true);
+		// shooter.setShooterMiddle();
+		// camera.setCameraValues(1, 1);
+		// }
+		// if (operatorJoystick.getDpadDown()) {
+		// intake.extendIntake();
+		// camera.setCameraValuesAutomatic();
+		// shooter.setShooterLow();
+		// }
+		// }
+		if (intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.RETRACTED)) {
 			// if the intake is up first set the intake down
 			// then run the delayed shooter movement that waits one second
 			// before moving the arm
 			// this allows time for the intake to go down to prevent collision
-			extendIntakeToggle.setManual(true);
+
 			if (operatorJoystick.getDpadUp()) {
+				useArmAttachmentToggle.setManual(false);
 				intake.extendIntake();
-				shooter.delayedShooterPosition(ShooterHeight.HIGH);
+				shooter.setShooterHigh();
+				// shooter.delayedShooterPosition(ShooterHeight.HIGH);
 				camera.setCameraValues(1, 1);
 			}
 			if (operatorJoystick.getDpadRight()) {
@@ -144,6 +155,7 @@ public class TeleopHelper extends ShakerHelper {
 			}
 			if (operatorJoystick.getDpadDown()) {
 				intake.extendIntake();
+				useArmAttachmentToggle.setManual(false);
 				camera.setCameraValuesAutomatic();
 				shooter.delayedShooterPosition(ShooterHeight.LOW);
 			}
@@ -174,7 +186,7 @@ public class TeleopHelper extends ShakerHelper {
 		else
 			compressor.start();
 
-		if (operatorJoystick.getButtonA() || AutoLineUpShot.isRunning()) {
+		if (operatorJoystick.getButtonLB() || AutoLineUpShot.isRunning()) {
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt())
 				AutoLineUpShot.reset();
