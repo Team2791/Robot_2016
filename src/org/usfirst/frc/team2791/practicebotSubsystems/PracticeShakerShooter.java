@@ -79,17 +79,7 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				// update the setPoints from the dashboard
-				closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
-				farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-				// choose the setpoint by getting arm pos
-				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
-				// this to allow the shooters to give sometime to speed up
-				if (prepShot) {
-					setShooterSpeeds(setPoint, true);
-					if (overrideShot || autoFire)
-						prepShot = false;
-				}
+
 				// if the shooter arm is moving just run the intake slightly to
 				// pull the ball in
 
@@ -115,7 +105,22 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 					delayedArmMove = false;
 				}
 				// if run auto fire (run shooter wheels, and run servo)
+				// update the setPoints from the dashboard
+				closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
+				farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
+				// choose the setpoint by getting arm pos
+				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+				// this to allow the shooters to give sometime to speed up
+				if (prepShot) {
+					System.out.println("I am currently prepping the shot");
+					setShooterSpeeds(setPoint, true);
+					if (overrideShot || autoFire){
+						System.out.println("finished prepping the shot");
+						prepShot = false;
+						}
+				}
 				if (autoFire) {
+					System.out.println("Auto Firing starting");
 					// set the shooter speeds to the set point
 					setShooterSpeeds(setPoint, true);
 					// Just a variable to make sure that pid is good for a
@@ -151,6 +156,7 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 					}
 					// resets everything
 					resetServoAngle();
+					setShooterSpeeds(0, true);
 					stopMotors();
 					overrideShot = false;
 				}
@@ -194,7 +200,8 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 			rightShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
 			leftShooterTalon.set(targetSpeed);
 			rightShooterTalon.set(targetSpeed);
-		}
+		} else
+			stopMotors();
 	}
 
 	@Override

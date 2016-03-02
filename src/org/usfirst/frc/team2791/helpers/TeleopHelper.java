@@ -30,6 +30,7 @@ public class TeleopHelper extends ShakerHelper {
 		driveTypeChooser.addObject("Arcade Drive", "ARCADE");
 		driveTypeChooser.addDefault("GTA Drive", "GTA");
 		driveTypeChooser.addObject("Single Arcade", "SINGLE_ARCADE");
+		SmartDashboard.putNumber("Shooter Speeds Setpoint", 0);
 
 		// toggles, to prevent sending a subsystem a value too many times
 		clawToggle = new Toggle(false);
@@ -99,41 +100,23 @@ public class TeleopHelper extends ShakerHelper {
 			// Run reverse if button pressed
 			shooter.setShooterSpeeds(0.85, false);
 			intake.pushBall();
+
 		} else {
 			// else run the manual controls, if it is autofiring this will do
 			// nothing
-			shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(), false);
+			shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint"), true);
+			// shooter.setShooterSpeeds(operatorJoystick.getAxisRT() -
+			// operatorJoystick.getAxisLT(), false);
 			intake.stopMotors();
 		}
-		// autofire shooter
-		if (operatorJoystick.getButtonA())
-			if (!shooter.prepShot)
-				shooter.prepShot();
-			else
-				shooter.autoFire();// does complete shot
 
-		// if
-		// (!intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.EXTENDED))
-		// {
-		// // check if the intake is up before doing anything
-		// // set shooter to spot accordingly
-		// if (operatorJoystick.getDpadUp()) {
-		// intake.extendIntake();
-		// shooter.setShooterHigh();
-		// camera.setCameraValues(1, 1);
-		// }
-		// if (operatorJoystick.getDpadRight()) {
-		// intake.extendIntake();
-		// useArmAttachmentToggle.setManual(true);
-		// shooter.setShooterMiddle();
-		// camera.setCameraValues(1, 1);
-		// }
-		// if (operatorJoystick.getDpadDown()) {
-		// intake.extendIntake();
-		// camera.setCameraValuesAutomatic();
-		// shooter.setShooterLow();
-		// }
-		// }
+		if (operatorJoystick.getButtonRS()) {
+			shooter.prepShot();
+		}
+		if (operatorJoystick.getButtonA()) {
+			shooter.autoFire();
+		}
+
 		if (intake.getIntakeState().equals(PracticeShakerIntake.IntakeState.RETRACTED)) {
 			// if the intake is up first set the intake down
 			// then run the delayed shooter movement that waits one second
@@ -143,8 +126,7 @@ public class TeleopHelper extends ShakerHelper {
 			if (operatorJoystick.getDpadUp()) {
 				useArmAttachmentToggle.setManual(false);
 				intake.extendIntake();
-				shooter.setShooterHigh();
-				// shooter.delayedShooterPosition(ShooterHeight.HIGH);
+				shooter.delayedShooterPosition(ShooterHeight.HIGH);
 				camera.setCameraValues(1, 1);
 			}
 			if (operatorJoystick.getDpadRight()) {
@@ -161,7 +143,9 @@ public class TeleopHelper extends ShakerHelper {
 			}
 		}
 
-		if (operatorJoystick.getButtonRB()) {// actuation of servo arm
+		if (operatorJoystick.getButtonRB())
+
+		{// actuation of servo arm
 			if (shooter.getIfAutoFire())// if is currently autofiring will
 				// override the auto fire
 				shooter.overrideAutoShot();
@@ -172,11 +156,9 @@ public class TeleopHelper extends ShakerHelper {
 			// previous cases apply
 			shooter.resetServoAngle();
 
-		if (shooter.getShooterHeight().equals(ShooterHeight.LOW)) {
-			if (operatorJoystick.getButtonSel())
-				camera.cameraUp();
-			else
-				camera.cameraDown();
+		if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel())
+				|| operatorJoystick.getDpadLeft()) {
+			camera.cameraDown();
 		} else {
 			camera.cameraUp();
 		}
@@ -186,7 +168,9 @@ public class TeleopHelper extends ShakerHelper {
 		else
 			compressor.start();
 
-		if (operatorJoystick.getButtonLB() || AutoLineUpShot.isRunning()) {
+		if (operatorJoystick.getButtonLB() || AutoLineUpShot.isRunning())
+
+		{
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt())
 				AutoLineUpShot.reset();

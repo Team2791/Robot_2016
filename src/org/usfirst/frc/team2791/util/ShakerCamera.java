@@ -87,16 +87,13 @@ public class ShakerCamera implements Runnable {
 						double processingTime = Timer.getFPGATimestamp();
 						measureAndGetParticles();
 						processingTime = Timer.getFPGATimestamp() - processingTime;
-						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
-								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
-								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, CAMERA_HEIGHT_PIXELS), 125f);
-						NIVision.imaqOverlayText(binaryFrame, new NIVision.Point(0, 0),
-								"Processing FPS: " + 1000 / (processingTime + imageGetTime), NIVision.RGB_BLUE,
-								new NIVision.OverlayTextOptions(), "Default");
+//						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
+//								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, 0),
+//								new NIVision.Point(CAMERA_WIDTH_PIXELS / 2, CAMERA_HEIGHT_PIXELS), 125f);
 						SmartDashboard.putNumber("FPS with processing", 1000 / (processingTime + imageGetTime));
 						CameraServer.getInstance().setImage(binaryFrame);
 					} else {
-						SmartDashboard.putNumber("FPS without processing", 10000 / (imageGetTime));
+						SmartDashboard.putNumber("FPS without processing",  (imageGetTime)*100);
 						CameraServer.getInstance().setImage(frame);
 
 					}
