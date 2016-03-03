@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerClaw;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerDriveTrain;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
@@ -16,124 +15,121 @@ import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
-	// modes
-	public static GamePeriod gamePeriod;
-	// Joysticks
-	public static Driver driverJoystick;
-	public static Operator operatorJoystick;
-	// operator subsystems
-	// public static ShakerShooter shooter;
-	// public static ShakerIntake intake;
-	// public static ShakerClaw claw;
-	// public static ShakerDriveTrain driveTrain;
+    // modes
+    public static GamePeriod gamePeriod;
+    // Joysticks
+    public static Driver driverJoystick;
+    public static Operator operatorJoystick;
+    // operator subsystems
+    // public static ShakerShooter shooter;
+    // public static ShakerIntake intake;
+    // public static ShakerClaw claw;
+    // public static ShakerDriveTrain driveTrain;
 
-	public static PracticeShakerShooter shooter;
-	public static PracticeShakerIntake intake;
-	public static PracticeShakerClaw claw;
-	public static PracticeShakerDriveTrain driveTrain;
+    public static PracticeShakerShooter shooter;
+    public static PracticeShakerIntake intake;
+    public static PracticeShakerDriveTrain driveTrain;
 
-	// camera
-	public static ShakerCamera camera;
+    // camera
+    public static ShakerCamera camera;
 
-	// other
-	public static Compressor compressor;
-	public Thread shooterThread;
-	public Thread cameraThread;
-	// helpers
-	private TeleopHelper teleopHelper;
-	private AutonHelper autonHelper;
+    // other
+    public static Compressor compressor;
+    public Thread shooterThread;
+    public Thread cameraThread;
+    // helpers
+    private TeleopHelper teleopHelper;
+    private AutonHelper autonHelper;
 
-	// MAIN ROBOT CODE
-	@Override
-	public void robotInit() {
-		gamePeriod = GamePeriod.DISABLED;
+    // MAIN ROBOT CODE
+    @Override
+    public void robotInit() {
+        gamePeriod = GamePeriod.DISABLED;
 
-		driverJoystick = new Driver();
-		operatorJoystick = new Operator();
+        driverJoystick = new Driver();
+        operatorJoystick = new Operator();
 
-		// driveTrain = new ShakerDriveTrain();
-		// intake = new ShakerIntake();
-		// claw = new ShakerClaw();
-		// shooter = new ShakerShooter();
+        // driveTrain = new ShakerDriveTrain();
+        // intake = new ShakerIntake();
+        // shooter = new ShakerShooter();
 
-		driveTrain = new PracticeShakerDriveTrain();
-		intake = new PracticeShakerIntake();
-		claw = new PracticeShakerClaw();
-		shooter = new PracticeShakerShooter();
+        driveTrain = new PracticeShakerDriveTrain();
+        intake = new PracticeShakerIntake();
+        shooter = new PracticeShakerShooter();
 
-		shooterThread = new Thread(shooter);
-		shooterThread.start();
+        shooterThread = new Thread(shooter);
+        shooterThread.start();
 
-		camera = new ShakerCamera("cam0");
-		cameraThread = new Thread(camera);
-		cameraThread.start();
+        camera = new ShakerCamera("cam0");
+        cameraThread = new Thread(camera);
+        cameraThread.start();
 
-		autonHelper = new AutonHelper();
-		teleopHelper = new TeleopHelper();
+        autonHelper = new AutonHelper();
+        teleopHelper = new TeleopHelper();
 
-		compressor = new Compressor(Constants.PCM_MODULE);
+        compressor = new Compressor(Constants.PCM_MODULE);
 
-		SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
-	}
+        SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
+    }
 
-	@Override
-	public void autonomousInit() {
-		gamePeriod = GamePeriod.AUTONOMOUS;
-	}
+    @Override
+    public void autonomousInit() {
+        gamePeriod = GamePeriod.AUTONOMOUS;
+    }
 
-	@Override
-	public void teleopInit() {
-		gamePeriod = GamePeriod.TELEOP;
+    @Override
+    public void teleopInit() {
+        gamePeriod = GamePeriod.TELEOP;
 
-	}
+    }
 
-	@Override
-	public void disabledInit() {
-		gamePeriod = GamePeriod.DISABLED;
+    @Override
+    public void disabledInit() {
+        gamePeriod = GamePeriod.DISABLED;
 
-	}
+    }
 
-	@Override
-	public void autonomousPeriodic() {
-		super.autonomousPeriodic();
-		autonHelper.run();
-		autonHelper.updateSmartDash();
-	}
+    @Override
+    public void autonomousPeriodic() {
+        super.autonomousPeriodic();
+        autonHelper.run();
+        autonHelper.updateSmartDash();
+    }
 
-	@Override
-	public void teleopPeriodic() {
-		super.teleopPeriodic();
-		teleopHelper.run();
-		teleopHelper.updateSmartDash();
-		
-		SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-		SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+    @Override
+    public void teleopPeriodic() {
+        super.teleopPeriodic();
+        teleopHelper.run();
+        teleopHelper.updateSmartDash();
 
-	}
+        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
+        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
 
-	@Override
-	public void disabledPeriodic() {
-		super.disabledPeriodic();
-		teleopHelper.disableRun();
-		compressor.stop();
-		autonHelper.disableRun();
+    }
 
-		SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-		SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+    @Override
+    public void disabledPeriodic() {
+        super.disabledPeriodic();
+        teleopHelper.disableRun();
+        compressor.stop();
+        autonHelper.disableRun();
 
-		if (operatorJoystick.getButtonSt())
-			driveTrain.calibrateGyro();
+        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
+        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
 
-		if (operatorJoystick.getButtonSel()) {
-			System.out.println("Resetting Auton step counter...");
-			autonHelper.resetAutonStepCounter();
-			System.out.println("Done...");
-		}
-	}
+        if (operatorJoystick.getButtonSt())
+            driveTrain.calibrateGyro();
 
-	// ENUMS
-	public enum GamePeriod {
-		AUTONOMOUS, TELEOP, DISABLED
-	}
+        if (operatorJoystick.getButtonSel()) {
+            System.out.println("Resetting Auton step counter...");
+            autonHelper.resetAutonStepCounter();
+            System.out.println("Done...");
+        }
+    }
+
+    // ENUMS
+    public enum GamePeriod {
+        AUTONOMOUS, TELEOP, DISABLED
+    }
 
 }
