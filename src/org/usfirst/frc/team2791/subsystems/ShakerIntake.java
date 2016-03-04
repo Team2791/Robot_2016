@@ -94,11 +94,11 @@ public class ShakerIntake extends ShakerSubsystem {
     }
 
     public void setArmAttachmentUp() {
-        armAttachment.set(Relay.Value.kForward);
+        armAttachment.set(Relay.Value.kReverse);
     }
 
     public void setArmAttachmentDown() {
-        armAttachment.set(Relay.Value.kReverse);
+        armAttachment.set(Relay.Value.kForward);
     }
 
     public enum IntakeState {
