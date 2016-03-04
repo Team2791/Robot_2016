@@ -1,17 +1,17 @@
 package org.usfirst.frc.team2791.helpers;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
-import org.usfirst.frc.team2791.util.ShakerCamera;
 
-import static org.usfirst.frc.team2791.robot.Robot.*;
+import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
+import static org.usfirst.frc.team2791.robot.Robot.intake;
 
 /**
  * Created by Akhil on 1/28/2016.
  */
 public class AutonHelper extends ShakerHelper {
+    private static AutonHelper auton;
     private int counter = 0;
     private double setPoint = 0;
     private double timeSinceShooterHigh = 0;
@@ -20,11 +20,10 @@ public class AutonHelper extends ShakerHelper {
     private SendableChooser defenseToCross;
     private double angleWhenShooterSetHigh;
 
-    public AutonHelper() {
-
-        SmartDashboard.putNumber("Stationary Angle P", Constants.STATIONARY_ANGLE_P);
-        SmartDashboard.putNumber("Stationary Angle I", Constants.STATIONARY_ANGLE_I);
-        SmartDashboard.putNumber("Stationary Angle D", Constants.STATIONARY_ANGLE_D);
+    private AutonHelper() {
+        SmartDashboard.putNumber("Stat Angle P", Constants.STATIONARY_ANGLE_P);
+        SmartDashboard.putNumber("Stat Angle I", Constants.STATIONARY_ANGLE_I);
+        SmartDashboard.putNumber("Stat Angle D", Constants.STATIONARY_ANGLE_D);
         SmartDashboard.putNumber("Angle P", Constants.DRIVE_ANGLE_P);
         SmartDashboard.putNumber("Angle I", Constants.DRIVE_ANGLE_I);
         SmartDashboard.putNumber("Angle D", Constants.DRIVE_ANGLE_D);
@@ -32,6 +31,7 @@ public class AutonHelper extends ShakerHelper {
         SmartDashboard.putNumber("DISTANCE I", Constants.DRIVE_DISTANCE_I);
         SmartDashboard.putNumber("Distance D", Constants.DRIVE_DISTANCE_D);
         SmartDashboard.putNumber("Angle setpoint", setPoint);
+        SmartDashboard.putNumber("max speed", 0.5);
         SmartDashboard.putNumber("pid distance travel", 1.0);
         SmartDashboard.getNumber("pid distance travel");
         SmartDashboard.putNumber("Auton step counter", counter);
@@ -62,189 +62,195 @@ public class AutonHelper extends ShakerHelper {
         previousCase = counter;
     }
 
+    public static AutonHelper getInstance() {
+        if (auton == null)
+            auton = new AutonHelper();
+        return auton;
+    }
+
     public void run() {
         double pidSweetSpotEnterTime = 0;
-        // cases 6-10 will be how to act from after finishing defense
-        int defenseStartPos = Integer.parseInt(defenseNumber.getSelected().toString());
-        // 1-5 will decide how to maneuver the defense
-        int defenseType = Integer.parseInt(defenseToCross.getSelected().toString());
-        switch (counter) {// auton state machine
-            case 0:// this state resets everything
-                driveTrain.setLowGear();
-                driveTrain.resetGyro();
-                driveTrain.resetEncoders();
-                intake.extendIntake();
-                previousCase = counter;
-                counter = defenseType;
-                break;
-            // these first five cases will traverse the designated defense type
-            case 1:
-                if (traverseLowBar()) {
-                    previousCase = counter;
-                    counter = defenseStartPos;
-                }
-                break;
-            case 2:
-                if (traverseUnevenTerrain()) {
-                    previousCase = counter;
-                    counter = defenseStartPos;
-                }
-                break;
-            case 3:
-                if (traverseFunBridges()) {
-                    previousCase = counter;
-                    counter = defenseStartPos;
-                }
-                break;
-            case 4:
-                if (traversePortCullis()) {
-                    previousCase = counter;
-                    counter = defenseStartPos;
-                }
-                break;
-            case 5:
-                if (traverseGate()) {
-                    previousCase = counter;
-                    counter = defenseStartPos;
-                }
-                break;
+//        // cases 6-10 will be how to act from after finishing defense
+//        int defenseStartPos = Integer.parseInt(defenseNumber.getSelected().toString());
+//        // 1-5 will decide how to maneuver the defense
+//        int defenseType = Integer.parseInt(defenseToCross.getSelected().toString());
 
-            // These next 5 choose where to move after crossing the defense
-            case 6:
-                if (defenseOneToShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 7:
-                if (defenseTwoToCenterShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 8:
-                if (defenseThreeToShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 9:
-                if (defenseFourToCenterShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 10:
-                if (defenseFiveToShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 11:
-                if (defenseTwoToLeftShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            case 12:
-                if (defenseFourToRightShootingSpot()) {
-                    previousCase = counter;
-                    counter = 20;
-                    driveTrain.resetEncoders();
-                }
-                break;
-            // For pid testing and tuning of dist pid
-            case 16:
-                previousCase = counter;
-                driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
-                        SmartDashboard.getNumber("Angle setpoint"), 0.5);
-                break;
+        //        switch (counter) {// auton state machine
+//            case 0:// this state resets everything
+//                driveTrain.setLowGear();
+//                driveTrain.resetGyro();
+//                driveTrain.resetEncoders();
+//                intake.extendIntake();
+//                previousCase = counter;
+//                counter = defenseType;
+//                break;
+//            // these first five cases will traverse the designated defense type
+//            case 1:
+//                if (traverseLowBar()) {
+//                    previousCase = counter;
+//                    counter = defenseStartPos;
+//                }
+//                break;
+//            case 2:
+//                if (traverseUnevenTerrain()) {
+//                    previousCase = counter;
+//                    counter = defenseStartPos;
+//                }
+//                break;
+//            case 3:
+//                if (traverseFunBridges()) {
+//                    previousCase = counter;
+//                    counter = defenseStartPos;
+//                }
+//                break;
+//            case 4:
+//                if (traversePortCullis()) {
+//                    previousCase = counter;
+//                    counter = defenseStartPos;
+//                }
+//                break;
+//            case 5:
+//                if (traverseGate()) {
+//                    previousCase = counter;
+//                    counter = defenseStartPos;
+//                }
+//                break;
+//
+//            // These next 5 choose where to move after crossing the defense
+//            case 6:
+//                if (defenseOneToShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 7:
+//                if (defenseTwoToCenterShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 8:
+//                if (defenseThreeToShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 9:
+//                if (defenseFourToCenterShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 10:
+//                if (defenseFiveToShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 11:
+//                if (defenseTwoToLeftShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            case 12:
+//                if (defenseFourToRightShootingSpot()) {
+//                    previousCase = counter;
+//                    counter = 20;
+//                    driveTrain.resetEncoders();
+//                }
+//                break;
+//            // For pid testing and tuning of dist pid
+//            case 16:
+//                previousCase = counter;
+//                driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
+//                        SmartDashboard.getNumber("Angle setpoint"), 0.7);
+//                break;
 
-            case 17: // This is for testing the stationary angle pid
-                previousCase = counter;
-                driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"));
-                break;
+        driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
+//            case 17: // This is for testing the stationary angle pid
+//                previousCase = counter;
+//                driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"),0.5);
+//                break;
+//
+//            case 20:// 20-23 are the auto shooting procedure
+//                shooter.setShooterHigh();
+//                angleWhenShooterSetHigh = driveTrain.getAngle();
+//                timeSinceShooterHigh = Timer.getFPGATimestamp();
+//                counter++;
+//                break;
+//            case 21:
+//                if (Timer.getFPGATimestamp() - timeSinceShooterHigh > 0.7) {
+//                    shooter.autoFire();
+//                    counter++;
+//                }
+//                break;
+//            case 22:
+//                if (!shooter.getIfAutoFire())
+//                    counter = 999;
+//                break;
+//            case 999:
+//                driveTrain.setLeftRight(0, 0);
+//                System.out.println("Yea!!!!!!!! im done with auton");
+//                System.out.println("Last Known case before end of auton " + previousCase);
+//                counter++;
+//                break;
+//            // automatic vision code
+//            case 30:// still in testing phases
+//                //THE NEW CAMERA CLASS HAS NOT BEEN INITIALIZED!!!!!!!!!!!
+//                double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference;
+//                driveTrain.setAngle(setPoint, 0.5);
+//            default:
+//                break;
 
-            case 20:// 20-23 are the auto shooting procedure
-                shooter.setShooterHigh();
-                angleWhenShooterSetHigh = driveTrain.getAngle();
-                timeSinceShooterHigh = Timer.getFPGATimestamp();
-                counter++;
-                break;
-            case 21:
-                if (Timer.getFPGATimestamp() - timeSinceShooterHigh > 0.7) {
-                    shooter.autoFire();
-                    counter++;
-                }
-                break;
-            case 22:
-                if (!shooter.getIfAutoFire())
-                    counter = 999;
-                break;
-            case 999:
-                driveTrain.setLeftRight(0, 0);
-                System.out.println("Yea!!!!!!!! im done with auton");
-                System.out.println("Last Known case before end of auton " + previousCase);
-                counter++;
-                break;
-            // automatic vision code
-            case 30:// still in testing phases
-                //THE NEW CAMERA CLASS HAS NOT BEEN INITIALIZED!!!!!!!!!!!
-                double setPoint = angleWhenShooterSetHigh + ShakerCamera.ParticleReport.ThetaDifference.getValue();
-                driveTrain.setAngle(setPoint);
-            default:
-                break;
+        // case 1://next few cases are working low bar
+        // if (driveTrain.driveInFeet(20, 0, 0.75))
+        // counter++;
+        // break;
+        // case 2:
+        // if (driveTrain.setAngle(60)) {
+        // counter++;
+        // driveTrain.resetEncoders();
+        // }
+        // break;
+        // case 3:
+        // if (driveTrain.driveInFeet(8, 60, 0.75)) {
+        // counter++;
+        // }
+        // break;
+        //
+        // case 4:
+        // shooter.setShooterHigh();
+        // timeSinceShooterHigh = Timer.getFPGATimestamp();
+        // counter++;
+        // break;
+        // case 5:
+        // if (Timer.getFPGATimestamp() - timeSinceShooterHigh > 0.7) {
+        // shooter.autoFire();
+        // counter++;
+        // }
+        // break;
+        // case 6:
+        // if (!shooter.getIfAutoFire())
+        // counter = 999;
+        // break;
 
-            // case 1://next few cases are working low bar
-            // if (driveTrain.driveInFeet(20, 0, 0.75))
-            // counter++;
-            // break;
-            // case 2:
-            // if (driveTrain.setAngle(60)) {
-            // counter++;
-            // driveTrain.resetEncoders();
-            // }
-            // break;
-            // case 3:
-            // if (driveTrain.driveInFeet(8, 60, 0.75)) {
-            // counter++;
-            // }
-            // break;
-            //
-            // case 4:
-            // shooter.setShooterHigh();
-            // timeSinceShooterHigh = Timer.getFPGATimestamp();
-            // counter++;
-            // break;
-            // case 5:
-            // if (Timer.getFPGATimestamp() - timeSinceShooterHigh > 0.7) {
-            // shooter.autoFire();
-            // counter++;
-            // }
-            // break;
-            // case 6:
-            // if (!shooter.getIfAutoFire())
-            // counter = 999;
-            // break;
-
-        }
+//        }
         // counter = (int) SmartDashboard.getNumber("Auton step counter");
         SmartDashboard.putNumber("Auton step counter", counter);
     }
 
-    @Override
     public void disableRun() {
         driveTrain.disable();
         counter = 0;
     }
 
-    @Override
     public void updateSmartDash() {
 
         Constants.STATIONARY_ANGLE_P = SmartDashboard.getNumber("Stat Angle P");
@@ -261,7 +267,6 @@ public class AutonHelper extends ShakerHelper {
         driveTrain.updateSmartDash();
     }
 
-    @Override
     public void reset() {
 
     }
@@ -355,10 +360,8 @@ public class AutonHelper extends ShakerHelper {
         return false;
     }
 
-
     public void resetAutonStepCounter() {
         counter = 0;
     }
-
 
 }
