@@ -11,6 +11,7 @@ import static org.usfirst.frc.team2791.robot.Robot.intake;
  * Created by Akhil on 1/28/2016.
  */
 public class AutonHelper extends ShakerHelper {
+    private static AutonHelper auton;
     private int counter = 0;
     private double setPoint = 0;
     private double timeSinceShooterHigh = 0;
@@ -19,8 +20,7 @@ public class AutonHelper extends ShakerHelper {
     private SendableChooser defenseToCross;
     private double angleWhenShooterSetHigh;
 
-    public AutonHelper() {
-
+    private AutonHelper() {
         SmartDashboard.putNumber("Stat Angle P", Constants.STATIONARY_ANGLE_P);
         SmartDashboard.putNumber("Stat Angle I", Constants.STATIONARY_ANGLE_I);
         SmartDashboard.putNumber("Stat Angle D", Constants.STATIONARY_ANGLE_D);
@@ -60,6 +60,12 @@ public class AutonHelper extends ShakerHelper {
         defenseToCross.addObject("Gate", "5");
         counter = 0;
         previousCase = counter;
+    }
+
+    public static AutonHelper getInstance() {
+        if (auton == null)
+            auton = new AutonHelper();
+        return auton;
     }
 
     public void run() {
@@ -240,13 +246,11 @@ public class AutonHelper extends ShakerHelper {
         SmartDashboard.putNumber("Auton step counter", counter);
     }
 
-    @Override
     public void disableRun() {
         driveTrain.disable();
         counter = 0;
     }
 
-    @Override
     public void updateSmartDash() {
 
         Constants.STATIONARY_ANGLE_P = SmartDashboard.getNumber("Stat Angle P");
@@ -263,7 +267,6 @@ public class AutonHelper extends ShakerHelper {
         driveTrain.updateSmartDash();
     }
 
-    @Override
     public void reset() {
 
     }

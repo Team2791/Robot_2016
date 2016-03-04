@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class ShakerCamera implements Runnable {
-
+    private static ShakerCamera cameraInstance;
     private final double CAMERA_WIDTH_DEGREES = 53;
     private final double TARGET_HT_INCHES = 88;
     private final double CAMERA_HT_INCHES = 0;
@@ -40,7 +40,7 @@ public class ShakerCamera implements Runnable {
     private boolean alreadyMeasuredImage = false;
     private double rangeOffset = 0.0;
 
-    public ShakerCamera(String camPort) {
+    private ShakerCamera(String camPort) {
         cam = new USBCamera(camPort);
         cam.startCapture();
         cameraServo = new Servo(Constants.CAMERA_SERVO_PORT);
@@ -66,6 +66,12 @@ public class ShakerCamera implements Runnable {
         SmartDashboard.putNumber("L max", 184);
         rangeTable = new TreeMap<Double, Double>();
         // rangeTable.put(, );//distance , rpm
+    }
+
+    public static ShakerCamera getInstance() {
+        if (cameraInstance == null)
+            cameraInstance = new ShakerCamera("cam0");
+        return cameraInstance;
     }
 
     public void run() {

@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PracticeShakerIntake extends PracticeShakerSubsystem {
+    private static PracticeShakerIntake practiceIntake;
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private DoubleSolenoid intakeSolenoid;
     private DoubleSolenoid armAttachment;
 
-    public PracticeShakerIntake() {
+    private PracticeShakerIntake() {
         // init
         this.leftIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_LEFT_PORT);
         this.rightIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_RIGHT_PORT);
@@ -23,23 +24,29 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
 
     }
 
-    @Override
+    public static PracticeShakerIntake getInstance() {
+        if (practiceIntake == null)
+            practiceIntake = new PracticeShakerIntake();
+        return practiceIntake;
+    }
+
     public void run() {
     }
 
-    @Override
+
     public void updateSmartDash() {
+    }
+
+    public void debug() {
         SmartDashboard.putString("Intake state", getIntakeState().toString());
     }
 
-    @Override
     public void reset() {
         // runs methods to bring back to original position
         retractIntake();
         stopMotors();
     }
 
-    @Override
     public void disable() {
         // when disabled makes sure that motors are stopped
         stopMotors();
@@ -59,7 +66,6 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
 
     public IntakeState getIntakeState() {
         // returns state of intake in form of the enum IntakeState
-//        System.out.println("intake extended: " + intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE));
         if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE))
             return IntakeState.RETRACTED;
         else if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_EXTENDED_VALUE))

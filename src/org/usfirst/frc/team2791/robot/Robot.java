@@ -15,24 +15,25 @@ import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
-    // modes
+    public static boolean debuggingMode = false;
+    // Modes
     public static GamePeriod gamePeriod;
     // Joysticks
     public static Driver driverJoystick;
     public static Operator operatorJoystick;
-    // operator subsystems
+
+    //Subsystems
+    //Competition robot subsystems
     // public static ShakerShooter shooter;
     // public static ShakerIntake intake;
-    // public static ShakerClaw claw;
     // public static ShakerDriveTrain driveTrain;
-
+    //Practice Robot susbsystems
     public static PracticeShakerShooter shooter;
     public static PracticeShakerIntake intake;
     public static PracticeShakerDriveTrain driveTrain;
 
     // camera
     public static ShakerCamera camera;
-
     // other
     public static Compressor compressor;
     public Thread shooterThread;
@@ -42,80 +43,78 @@ public class Robot extends IterativeRobot {
     private AutonHelper autonHelper;
 
     // MAIN ROBOT CODE
-    @Override
     public void robotInit() {
+        //game period changed when ever game mode changes (TELOP,AUTON,DISABLED,ETC.)
         gamePeriod = GamePeriod.DISABLED;
 
-        driverJoystick = new Driver();
-        operatorJoystick = new Operator();
+        //Singletons - only one instance of them is created
+        //Shaker joysticks
+        driverJoystick = Driver.getInstance();
+        operatorJoystick = Operator.getInstance();
 
-        // driveTrain = new ShakerDriveTrain();
-        // intake = new ShakerIntake();
-        // shooter = new ShakerShooter();
+        //subsystems
+        //practice robot
+        driveTrain = PracticeShakerDriveTrain.getInstance();
+        intake = PracticeShakerIntake.getInstance();
+        shooter = PracticeShakerShooter.getInstance();
 
-        driveTrain = new PracticeShakerDriveTrain();
-        intake = new PracticeShakerIntake();
-        shooter = new PracticeShakerShooter();
+        //competition robot
+        //driveTrain = ShakerDriveTrain.getInstance();
+        //intake = ShakerIntake.getInstance();
+        //shooter = ShakerShooter.getInstance();
 
+        //Camera and shooter are put on their own thread to prevent
+        //interference with main robot code
         shooterThread = new Thread(shooter);
         shooterThread.start();
 
-        camera = new ShakerCamera("cam0");
+        camera = ShakerCamera.getInstance();
         cameraThread = new Thread(camera);
         cameraThread.start();
 
-        autonHelper = new AutonHelper();
-        teleopHelper = new TeleopHelper();
+        autonHelper = AutonHelper.getInstance();
+        teleopHelper = TeleopHelper.getInstance();
 
         compressor = new Compressor(Constants.PCM_MODULE);
 
         SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
+        SmartDashboard.putBoolean("DEBUGGING MODE", debuggingMode);
     }
 
-    @Override
     public void autonomousInit() {
         gamePeriod = GamePeriod.AUTONOMOUS;
+
     }
 
-    @Override
     public void teleopInit() {
         gamePeriod = GamePeriod.TELEOP;
-
     }
 
-    @Override
     public void disabledInit() {
         gamePeriod = GamePeriod.DISABLED;
-
     }
 
-    @Override
     public void autonomousPeriodic() {
         super.autonomousPeriodic();
         autonHelper.run();
         autonHelper.updateSmartDash();
+        alwaysUpdatedSmartDashValues();
     }
 
-    @Override
     public void teleopPeriodic() {
         super.teleopPeriodic();
         teleopHelper.run();
         teleopHelper.updateSmartDash();
-
-        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+        alwaysUpdatedSmartDashValues();
 
     }
 
-    @Override
     public void disabledPeriodic() {
         super.disabledPeriodic();
         teleopHelper.disableRun();
         compressor.stop();
         autonHelper.disableRun();
-
-        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+        alwaysUpdatedSmartDashValues();
 
         if (operatorJoystick.getButtonSt())
             driveTrain.calibrateGyro();
@@ -124,6 +123,18 @@ public class Robot extends IterativeRobot {
             System.out.println("Resetting Auton step counter...");
             autonHelper.resetAutonStepCounter();
             System.out.println("Done...");
+        }
+    }
+
+    private void alwaysUpdatedSmartDashValues() {
+        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
+        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+        debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
+        AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
+        if (debuggingMode) {
+            driveTrain.debug();
+            intake.debug();
+            shooter.debug();
         }
     }
 

@@ -9,4 +9,6 @@ public abstract class PracticeShakerSubsystem {
     abstract public void reset();
 
     abstract public void disable();
+
+    abstract public void debug();
 }

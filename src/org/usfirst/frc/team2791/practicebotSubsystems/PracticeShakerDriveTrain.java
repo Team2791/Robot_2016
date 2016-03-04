@@ -8,6 +8,7 @@ import org.usfirst.frc.team2791.util.ShakerGyro;
 import org.usfirst.frc.team2791.util.Util;
 
 public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
+    private static PracticeShakerDriveTrain practiceDrive;
     private static BasicPID anglePID;
     private static BasicPID distancePID;
     private Talon leftTalonA;
@@ -25,20 +26,25 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     private double driveTimePIDGoodTime = 0;
     private double angleTimePIDGoodTime = 0;
 
-    public PracticeShakerDriveTrain() {
-
-        this.leftTalonA = new Talon(PracticePorts.DRIVE_TALON_LEFT_PORT_FRONT);
-        this.leftTalonB = new Talon(PracticePorts.DRIVE_TALON_LEFT_PORT_BACK);
-        this.rightTalonA = new Talon(PracticePorts.DRIVE_TALON_RIGHT_PORT_FRONT);
-        this.rightTalonB = new Talon(PracticePorts.DRIVE_TALON_RIGHT_PORT_BACK);
+    private PracticeShakerDriveTrain() {
+        // instanciate the four talons for the drive train
+        this.leftTalonA = new Talon(Constants.DRIVE_TALON_LEFT_PORT_FRONT);
+        this.leftTalonB = new Talon(Constants.DRIVE_TALON_LEFT_PORT_BACK);
+        this.rightTalonA = new Talon(Constants.DRIVE_TALON_RIGHT_PORT_FRONT);
+        this.rightTalonB = new Talon(Constants.DRIVE_TALON_RIGHT_PORT_BACK);
+        // use the talons to create a roboDrive (it has methods that allow for
+        // easier control)
         this.roboDrive = new RobotDrive(leftTalonA, leftTalonB, rightTalonA, rightTalonB);
+        // stop all motors right away just in case
         roboDrive.stopMotor();
+        // shifting solenoid
         this.driveSolenoid = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.DRIVE_PISTON_FORWARD,
                 PracticePorts.DRIVE_PISTON_REVERSE);
         this.leftDriveEncoder = new Encoder(PracticePorts.LEFT_DRIVE_ENCODER_PORT_A,
                 PracticePorts.LEFT_DRIVE_ENCODER_PORT_B);
         this.rightDriveEncoder = new Encoder(PracticePorts.RIGHT_DRIVE_ENCOODER_PORT_A,
                 PracticePorts.RIGHT_DRIVE_ENCODER_PORT_B);
+        // clear the drive encoders
         leftDriveEncoder.reset();
         rightDriveEncoder.reset();
         leftDriveEncoder.setDistancePerPulse(Util.tickToFeet(driveEncoderTicks, 8));
@@ -50,6 +56,12 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
         anglePID.setMaxOutput(0.5);
         anglePID.setMinOutput(-0.5);
+    }
+
+    public static PracticeShakerDriveTrain getInstance() {
+        if (practiceDrive == null)
+            practiceDrive = new PracticeShakerDriveTrain();
+        return practiceDrive;
     }
 
     public boolean driveInFeet(double distance, double angle, double maxOutput) {
@@ -66,10 +78,6 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
         drivePIDOutput = distancePID.updateAndGetOutput(this.getLeftDistance());
         anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
         setLeftRightVoltage(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
-        SmartDashboard.putNumber("Left Encoder Position", getLeftDistance());
-        SmartDashboard.putNumber("Right Encoder Position", getRightDistance());
-        SmartDashboard.putNumber("drivePID output", drivePIDOutput);
-        SmartDashboard.putNumber("drive error", distancePID.getError());
         if (!(Math.abs(distancePID.getError()) < 1) && (Math.abs(anglePID.getError()) < 2.5))
             // Makes sure pid is good error is minimal
             driveTimePIDGoodTime = Timer.getFPGATimestamp();
@@ -102,41 +110,37 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
     }
 
-    @Override
     public void run() {
         // nothing here?
     }
 
-    @Override
     public void reset() {
         this.disable();
         this.setLowGear();
         this.rightDriveEncoder.reset();
         this.leftDriveEncoder.reset();
-
-        // this.setDriveType((String) driveTypeChooser.getSelected());
     }
 
-    @Override
     public void updateSmartDash() {
         // put values on the smart dashboard
         SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
-        SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
-        SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
-        SmartDashboard.putNumber("Auton drive PID error", distancePID.getError());
-        SmartDashboard.putNumber("Auton drive angle PID error", anglePID.getError());
-        SmartDashboard.putNumber("Current gyro angle", getAngle());
-        SmartDashboard.putNumber("Current angle pid error", anglePID.getError());
-        SmartDashboard.putNumber("PID OUTPUT: ", anglePIDOutput);
-        SmartDashboard.putNumber("Average dist", getAvgDist());
-        SmartDashboard.putNumber("drivePID output", drivePIDOutput);
-        SmartDashboard.putNumber("encoder left", getLeftDistance());
-        SmartDashboard.putNumber("encoder right", getRightDistance());
-
     }
 
-    @Override
+    public void debug() {
+        SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
+        SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
+        SmartDashboard.putNumber("Gyro Angle", getAngle());
+        SmartDashboard.putNumber("Angle PID Error", anglePID.getError());
+        SmartDashboard.putNumber("Angle PID Output", anglePIDOutput);
+        SmartDashboard.putNumber("Average Encoder Distance", getAvgDist());
+        SmartDashboard.putNumber("Left Encoder Distance", getLeftDistance());
+        SmartDashboard.putNumber("Right Encoder Distance", getRightDistance());
+        SmartDashboard.putNumber("Distance PID output", drivePIDOutput);
+        SmartDashboard.putNumber("Distance PID error", distancePID.getError());
+    }
+
     public void disable() {
+        // Stops all the motors
         roboDrive.stopMotor();
     }
 
@@ -159,7 +163,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     }
 
     public boolean isHighGear() {
-
+        // check the gear state, whether it is high or low
         switch (getCurrentGear()) {
             case HIGH:
                 return true;
@@ -179,13 +183,13 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     }
 
     public void setHighGear() {
+        // put the gear into the high state
         driveSolenoid.set(PracticeConstants.DRIVE_HIGH_GEAR);
-
     }
 
     public void setLowGear() {
+        // put gear into the low state
         driveSolenoid.set(PracticeConstants.DRIVE_LOW_GEAR);
-
     }
 
     public void resetEncoders() {
@@ -242,5 +246,4 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     private enum GearState {
         HIGH, LOW
     }
-
 }

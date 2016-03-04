@@ -8,30 +8,43 @@ import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerShooter extends ShakerSubsystem implements Runnable {
     private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
-    // private final double[] speed = {0.25, 0.5, 0.75, 1.0};
-    private final double delayTimeBeforeShooting = 0.5;// time for wheels to
-    // get
-    // to speed
+    //time that the shooter wheels have to be at the proper speed
+    private static final double delayTimeBeforeShooting = 0.5;
+    private static ShakerShooter shooterInstance;
     private final double delayTimeForServo = 0.8;// time for servo to push
+    //how many ticks the encoder has
     private final int encoderTicks = 128 * 4;
-    private boolean autoFire;
+    //shooter can talons
     private CANTalon leftShooterTalon;
     private CANTalon rightShooterTalon;
+    //shooter arm positiion pistons
     private DoubleSolenoid shortPiston;
     private DoubleSolenoid longPiston;
+    //servo that pushes ball into the shooter
     private Servo ballAidServo;
+    //sensor that allows us to know that the ball is in the shooter
     private AnalogInput ballDistanceSensor;
+    //feed forward of the shooter wheel pid
     private double feedForward = 0.4;
+    //setpoints to acheicve target depending on the pos of the shooter arm
     private double closeShotSetPoint = 590;
     private double farShotSetpoint = 850;
+    //boolean that decides weahter autofiring should occur
+    private boolean autoFire = false;
+    //manual override boolean for the autofire
     private boolean overrideShot = false;
+    //prepshot decides whether to run the shooter wheels before hand to save time
     private boolean prepShot = false;
+    //check is shooter arm is moving
     private boolean shooterArmMoving = false;
+    //time when the shooter arm last moved
     private double timeWhenShooterArmMoved;
+    //boolean that decides whether the arm should move in a delay motion
     private boolean delayedArmMove = false;
+    //shooter height setpoint
     private ShooterHeight delayedShooterPos;
 
-    public ShakerShooter() {
+    private ShakerShooter() {
         leftShooterTalon = new CANTalon(Constants.SHOOTER_TALON_LEFT_PORT);
         rightShooterTalon = new CANTalon(Constants.SHOOTER_TALON_RIGHT_PORT);
         ballAidServo = new Servo(Constants.BALL_AID_SERVO_PORT);
@@ -45,48 +58,61 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         leftShooterTalon.reverseOutput(false);
         leftShooterTalon.reverseSensor(true);
         rightShooterTalon.reverseSensor(false);
+        //sets limits in each direction such that shooters don't run reverse with pid
         leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
         rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
+        //put the shooter pid values on the dashboard
         SmartDashboard.putNumber("Shooter p", Constants.SHOOTER_P);
         SmartDashboard.putNumber("Shooter i", Constants.SHOOTER_I);
         SmartDashboard.putNumber("Shooter d", Constants.SHOOTER_D);
-        Constants.SHOOTER_P = SmartDashboard.getNumber("Shooter p");
-        Constants.SHOOTER_I = SmartDashboard.getNumber("Shooter i");
-        Constants.SHOOTER_D = SmartDashboard.getNumber("Shooter d");
         SmartDashboard.putNumber("FeedForward", feedForward);
+        //put setpoints on the dashboard
         SmartDashboard.putNumber("closeShotSetpoint", closeShotSetPoint);
         SmartDashboard.putNumber("farShotSetpoint", farShotSetpoint);
+        //izone for the talons
+        //izone is how close the shooter has to be to the setpoint before using i in pid
         leftShooterTalon.setIZone(500);
         rightShooterTalon.setIZone(500);
+        //choose the type of sensor attached to the talon
         leftShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
         rightShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+        //how many ticks are in the feed back device
         leftShooterTalon.configEncoderCodesPerRev(encoderTicks);
         rightShooterTalon.configEncoderCodesPerRev(encoderTicks);
-
+        //control mode - speed(rpms), voltage(how many volts to be sent to the talons)
+        //percentage(voltage sent/ 12 v)
         leftShooterTalon.changeControlMode(TalonControlMode.Speed);
         rightShooterTalon.changeControlMode(TalonControlMode.Speed);
+        //enable the talons
         leftShooterTalon.enableControl();
         rightShooterTalon.enableControl();
         leftShooterTalon.enable();
         rightShooterTalon.enable();
+
         leftShooterTalon.configNominalOutputVoltage(0, 0);
         rightShooterTalon.configNominalOutputVoltage(0, 0);
 
     }
 
-    @Override
+    public static ShakerShooter getInstance() {
+        if (shooterInstance == null)
+            shooterInstance = new ShakerShooter();
+        return shooterInstance;
+    }
+
     public void run() {
         try {
             while (true) {
                 // if the shooter arm is moving just run the intake slightly to
                 // pull the ball in
-
                 if (shooterArmMoving) {
                     while (Timer.getFPGATimestamp() - timeWhenShooterArmMoved < 0.9) {
                         setShooterSpeeds(-0.7, false);
                     }
                     shooterArmMoving = false;
                 }
+                //wait a few seconds before moving the arm
+                //this is used to allow the intake time before bringing the arm down
                 if (delayedArmMove) {
                     Thread.sleep(1000);
                     switch (delayedShooterPos) {
@@ -202,10 +228,15 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
             stopMotors();
     }
 
-    @Override
+
     public void updateSmartDash() {
         // update the smartdashbaord with values
         SmartDashboard.putBoolean("Does shooter have ball", hasBall());
+        SmartDashboard.putBoolean("Is auto firing", autoFire);
+        SmartDashboard.putBoolean("Is preparing shot", prepShot);
+    }
+
+    public void debug() {
         SmartDashboard.putNumber("LeftShooterSpeed", leftShooterTalon.getEncVelocity());
         SmartDashboard.putNumber("RightShooterSpeed", rightShooterTalon.getEncVelocity());
         SmartDashboard.putNumber("Left Shooter Error", leftShooterTalon.getClosedLoopError());
@@ -217,15 +248,16 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         SmartDashboard.putNumber("right speed", rightShooterTalon.getEncVelocity());
         SmartDashboard.putNumber("Right error", rightShooterTalon.getError());
         SmartDashboard.putNumber("Left error", leftShooterTalon.getError());
-
     }
 
     public void delayedShooterPosition(ShooterHeight pos) {
+        //set the values for delay movement
+        //waits a few seconds before bringing the arm down
         delayedArmMove = true;
         delayedShooterPos = pos;
     }
 
-    @Override
+
     public void reset() {
         // stop the motors
         stopMotors();
@@ -281,7 +313,7 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
     public void setShooterLow() {
         shooterArmMoving = true;
         timeWhenShooterArmMoved = Timer.getFPGATimestamp();
-        // both pistons will be set to true to get max height
+        // both pistons will be set to true to get low height
         shortPiston.set(Constants.SMALL_PISTON_HIGH_STATE); // was reverse
         // //this is short
         // one
@@ -314,6 +346,11 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
         prepShot = true;
     }
 
+    public boolean getIfPreppingShot() {
+        return prepShot;
+
+    }
+
     public boolean getIfAutoFire() {
         return autoFire;
 
@@ -322,5 +359,4 @@ public class ShakerShooter extends ShakerSubsystem implements Runnable {
     public enum ShooterHeight {
         LOW, MID, HIGH
     }
-
 }

@@ -3,7 +3,6 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
 
@@ -15,10 +14,11 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
  * Created by Akhil on 2/14/2016.
  */
 public class TeleopHelper extends ShakerHelper {
+    private static TeleopHelper teleop;
     private SendableChooser driveTypeChooser;
     private Toggle useArmAttachmentToggle;
 
-    public TeleopHelper() {
+    private TeleopHelper() {
         // init
         // smartdashboard drop down menu
         driveTypeChooser = new SendableChooser();
@@ -32,6 +32,12 @@ public class TeleopHelper extends ShakerHelper {
         // toggles, to prevent sending a subsystem a value too many times
         //this is sort of like a light switch
         useArmAttachmentToggle = new Toggle(false);
+    }
+
+    public static TeleopHelper getInstance() {
+        if (teleop == null)
+            teleop = new TeleopHelper();
+        return teleop;
     }
 
     public void run() {
@@ -169,7 +175,7 @@ public class TeleopHelper extends ShakerHelper {
 
     private void sharedRun() {
         // intake extension toggle
-        if (!PracticeShakerShooter.delayedArmMove)
+        if (!shooter.getIfPreppingShot())
             if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB())
                 //this runs if intakeing ball too
                 intake.extendIntake();
@@ -184,14 +190,14 @@ public class TeleopHelper extends ShakerHelper {
 
     }
 
-    @Override
     public void disableRun() {
         // runs disable methods of subsystems that fall under the driver
         driveTrain.disable();
+        shooter.disable();
+        intake.disable();
         AutoLineUpShot.reset();
     }
 
-    @Override
     public void updateSmartDash() {
         intake.updateSmartDash();
         shooter.updateSmartDash();
@@ -201,7 +207,6 @@ public class TeleopHelper extends ShakerHelper {
         SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());
     }
 
-    @Override
     public void reset() {
         shooter.reset();
         intake.reset();

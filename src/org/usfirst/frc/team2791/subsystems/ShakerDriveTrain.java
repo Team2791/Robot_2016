@@ -8,6 +8,7 @@ import org.usfirst.frc.team2791.util.ShakerGyro;
 import org.usfirst.frc.team2791.util.Util;
 
 public class ShakerDriveTrain extends ShakerSubsystem {
+    private static ShakerDriveTrain driveTrainInstance;
     private static BasicPID anglePID;
     private static BasicPID distancePID;
     private Talon leftTalonA;
@@ -25,7 +26,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     private double driveTimePIDGoodTime = 0;
     private double angleTimePIDGoodTime = 0;
 
-    public ShakerDriveTrain() {
+    private ShakerDriveTrain() {
         // instanciate the four talons for the drive train
         this.leftTalonA = new Talon(Constants.DRIVE_TALON_LEFT_PORT_FRONT);
         this.leftTalonB = new Talon(Constants.DRIVE_TALON_LEFT_PORT_BACK);
@@ -59,6 +60,12 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         anglePID.setIZone(15);
     }
 
+    public static ShakerDriveTrain getInstance() {
+        if (driveTrainInstance == null)
+            driveTrainInstance = new ShakerDriveTrain();
+        return driveTrainInstance;
+    }
+
     public boolean driveInFeet(double distance, double angle, double maxOutput) {
         distance *= 12;// convert distance from feet to inches
         setLowGear();
@@ -72,11 +79,7 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         distancePID.changeGains(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
         drivePIDOutput = distancePID.updateAndGetOutput(this.getRightDistance());
         anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
-        setLeftRight(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
-        SmartDashboard.putNumber("Left Encoder Position", getLeftDistance());
-        SmartDashboard.putNumber("Right Encoder Position", getRightDistance());
-        SmartDashboard.putNumber("drivePID output", drivePIDOutput);
-        SmartDashboard.putNumber("drive error", distancePID.getError());
+        setLeftRightVoltage(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
         if (!(Math.abs(distancePID.getError()) < 1) && (Math.abs(anglePID.getError()) < 2.5))
             // Makes sure pid is good error is minimal
             driveTimePIDGoodTime = Timer.getFPGATimestamp();
@@ -118,12 +121,14 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         this.setLowGear();
         this.rightDriveEncoder.reset();
         this.leftDriveEncoder.reset();
-
     }
 
     public void updateSmartDash() {
         // put values on the smart dashboard
         SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
+    }
+
+    public void debug() {
         SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
         SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
         SmartDashboard.putNumber("Auton drive PID error", distancePID.getError());
@@ -137,7 +142,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
         SmartDashboard.putNumber("encoder right", getRightDistance());
 
     }
-
 
     public void disable() {
         // Stops all the motors
@@ -190,7 +194,6 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     public void setLowGear() {
         // put gear into the low state
         driveSolenoid.set(false);
-
     }
 
     public void resetEncoders() {
@@ -247,5 +250,4 @@ public class ShakerDriveTrain extends ShakerSubsystem {
     private enum GearState {
         HIGH, LOW
     }
-
 }
