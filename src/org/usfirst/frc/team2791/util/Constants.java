@@ -29,8 +29,6 @@ public class Constants {
     public static final int LEFT_DRIVE_ENCODER_PORT_B = 3;
     public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 5;
     public static final int RIGHT_DRIVE_ENCODER_PORT_B = 4;
-    public static final int RIGHT_INTAKE_LIMIT_SWITCH = 8;
-    public static final int LEFT_INTAKE_LIMIT_SWITCH = 9;
     // PWM PORTS
     public static final int DRIVE_TALON_LEFT_PORT_FRONT = 5;
     public static final int DRIVE_TALON_LEFT_PORT_BACK = 4;
@@ -54,17 +52,23 @@ public class Constants {
     public static final int PCM_MODULE = 20;
     public static final int SHOOTER_TALON_RIGHT_PORT = 10;
     public static final int SHOOTER_TALON_LEFT_PORT = 11;
+
     // PID VALUES
-    // Shooter PID
+    /// Shooter PID
     public static double SHOOTER_P = 0.35;
     public static double SHOOTER_I = 0.002;
     public static double SHOOTER_D = 0;
+
+    ///Drive Train PID
+    ////Angle PID while robot is moving
     public static double DRIVE_ANGLE_P = 0.05;
     public static double DRIVE_ANGLE_I = 0;
     public static double DRIVE_ANGLE_D = 0.000;
+    ////Angle PID, to overcome static friction
     public static double STATIONARY_ANGLE_P = 0.05;
     public static double STATIONARY_ANGLE_I = 0.4;
     public static double STATIONARY_ANGLE_D = 0.0035;
+    ////Distance pid
     public static double DRIVE_DISTANCE_P = 0.1;
     public static double DRIVE_DISTANCE_I = 0;
     public static double DRIVE_DISTANCE_D = 0;

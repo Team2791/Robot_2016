@@ -17,12 +17,15 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class ShakerCamera implements Runnable {
+    //singleton instance of the camera
     private static ShakerCamera cameraInstance;
+    //camer
     private final double CAMERA_WIDTH_DEGREES = 53;
     private final double TARGET_HT_INCHES = 88;
     private final double CAMERA_HT_INCHES = 0;
     private final double CAMERA_PITCH_DEG = 45;
     ArrayList<ParticleReport> particles;
+    private double rangeOffset = 0.0;
     private int CAMERA_WIDTH_PIXELS = 720;
     private int CAMERA_HEIGHT_PIXELS = 480;
     private NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
@@ -38,7 +41,6 @@ public class ShakerCamera implements Runnable {
     private boolean cameraValsOnlyOnce = false;
     private TreeMap<Double, Double> rangeTable;
     private boolean alreadyMeasuredImage = false;
-    private double rangeOffset = 0.0;
 
     private ShakerCamera(String camPort) {
         cam = new USBCamera(camPort);

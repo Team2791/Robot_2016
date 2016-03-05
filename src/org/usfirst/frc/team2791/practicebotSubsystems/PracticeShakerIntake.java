@@ -94,10 +94,12 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
     }
 
     public void setArmAttachmentUp() {
+        //set the flipper up
         armAttachment.set(PracticeConstants.INTAKE_ARM_UP_VALUE);
     }
 
     public void setArmAttachmentDown() {
+        //set the flipper down
         armAttachment.set(PracticeConstants.INTAKE_ARM_DOWN_VALUE);
     }
 

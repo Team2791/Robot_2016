@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2791.util;
 
 public class Util {
+    //A class with a bunch of useful tools(methods)
     public static String newline = System.lineSeparator();
 
     private Util() {
