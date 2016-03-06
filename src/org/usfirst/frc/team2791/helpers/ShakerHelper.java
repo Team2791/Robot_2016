@@ -10,4 +10,5 @@ public abstract class ShakerHelper {
 
     abstract public void reset();
 
+    abstract public void debug();
 }

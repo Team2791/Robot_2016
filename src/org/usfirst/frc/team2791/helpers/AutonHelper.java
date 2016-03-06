@@ -252,12 +252,13 @@ public class AutonHelper extends ShakerHelper {
     }
 
     public void updateSmartDash() {
-
-      
-        driveTrain.updateSmartDash();
     }
 
     public void reset() {
+
+    }
+
+    public void debug() {
 
     }
 
