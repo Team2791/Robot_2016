@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PracticeShakerIntake extends PracticeShakerSubsystem {
-    private static PracticeShakerIntake practiceIntake;
+    private static PracticeShakerIntake practiceIntake = null;
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private DoubleSolenoid intakeSolenoid;

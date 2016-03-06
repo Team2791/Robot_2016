@@ -253,17 +253,7 @@ public class AutonHelper extends ShakerHelper {
 
     public void updateSmartDash() {
 
-        Constants.STATIONARY_ANGLE_P = SmartDashboard.getNumber("Stat Angle P");
-        Constants.STATIONARY_ANGLE_I = SmartDashboard.getNumber("Stat Angle I");
-        Constants.STATIONARY_ANGLE_D = SmartDashboard.getNumber("Stat Angle D");
-
-        Constants.DRIVE_ANGLE_P = SmartDashboard.getNumber("Angle P");
-        Constants.DRIVE_ANGLE_I = SmartDashboard.getNumber("Angle I");
-        Constants.DRIVE_ANGLE_D = SmartDashboard.getNumber("Angle D");
-
-        Constants.DRIVE_DISTANCE_P = SmartDashboard.getNumber("DISTANCE P");
-        Constants.DRIVE_DISTANCE_I = SmartDashboard.getNumber("DISTANCE I");
-        Constants.DRIVE_DISTANCE_D = SmartDashboard.getNumber("Distance D");
+      
         driveTrain.updateSmartDash();
     }
 
