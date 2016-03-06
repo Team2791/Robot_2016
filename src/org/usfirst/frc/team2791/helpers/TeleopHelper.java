@@ -141,7 +141,7 @@ public class TeleopHelper extends ShakerHelper {
     private void specialCaseRun() {
         //this is for things that fall into multiple categories and
         //should be grouped together
-        if (operatorJoystick.getButtonX() || operatorJoystick.getButtonB())
+        if (operatorJoystick.getButtonB())
             //if the intaking the ball then set intkaing ball to true
             intakingBall = true;
 
@@ -153,10 +153,6 @@ public class TeleopHelper extends ShakerHelper {
                 // Run intake inward with assistance of the shooter wheel
                 shooter.setToggledShooterSpeed(-0.85, false);
                 intake.pullBall();
-            } else if (operatorJoystick.getButtonX()) {
-                // Run reverse if button pressed
-                shooter.setToggledShooterSpeed(0.85, false);
-                intake.pushBall();
             } else {
                 shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"), true);
                 //shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(), false);
@@ -183,6 +179,10 @@ public class TeleopHelper extends ShakerHelper {
             } else if (operatorJoystick.getDpadLeft()) {
                 intake.extendIntake();
                 camera.cameraDown();
+            } else if (operatorJoystick.getButtonX()) {
+                // Run reverse if button pressed
+                shooter.setToggledShooterSpeed(0.85, false);
+                intake.pushBall();
             } else {
                 if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel()))
                     camera.cameraDown();
