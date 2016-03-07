@@ -21,8 +21,8 @@ public class ShakerCamera implements Runnable {
     private static Image particleBinaryFrame;
     private static USBCamera cam;
     // camera used usb logitech c210
-    private final double CAMERA_WIDTH_DEGREES = 54.6666;
-    private final double CAMERA_FOV_VERTICAL = 41;
+    private final double CAMERA_WIDTH_DEGREES = 44;
+    private final double CAMERA_FOV_VERTICAL = 35;
     private final double TARGET_HT_INCHES = 90.5;
     private final double CAMERA_HT_INCHES = 26;
     private final double CAMERA_PITCH_DEG = 24;
@@ -89,7 +89,6 @@ public class ShakerCamera implements Runnable {
         while (true) {
             try {
                 cam.getImage(frame);
-
 
                 alreadyMeasuredImage = false;
                 if (frame != null) {
