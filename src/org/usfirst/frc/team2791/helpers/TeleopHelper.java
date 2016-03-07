@@ -3,23 +3,20 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.commands.IntakingProcedure;
-import org.usfirst.frc.team2791.commands.MoveShooterArm;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
+//import org.usfirst.frc.team2791.subsystems.ShakerIntake;
+
 /**
  * Created by Akhil on 2/14/2016.
  */
 public class TeleopHelper extends ShakerHelper {
-	public static Toggle useArmAttachmentToggle;
 	private static TeleopHelper teleop;
-	public boolean changeArmLocations = false;
-	public ShooterHeight armSetpoint;
 	private SendableChooser driveTypeChooser;
-	private boolean cameraUp = true;
+	private Toggle useArmAttachmentToggle;
 
 	private TeleopHelper() {
 		// init
@@ -43,15 +40,11 @@ public class TeleopHelper extends ShakerHelper {
 		return teleop;
 	}
 
-	public void debug() {
-	}
-
-	public void disableRun() {
-		// runs disable methods of subsystems that fall under the driver
-		driveTrain.disable();
-		shooter.disable();
-		intake.disable();
-		AutoLineUpShot.reset();
+	public void run() {
+		// runs the three subsystems controls
+		operatorRun();// runs the operator controls
+		driverRun();// runs the driver controls
+		sharedRun();// runs the subsystems that are shared by both
 	}
 
 	private void driverRun() {
@@ -75,14 +68,150 @@ public class TeleopHelper extends ShakerHelper {
 				driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
 				break;
 			}
-
+			// driver control for pid movement
+			// if (driverJoystick.getDpadDown())// drive back 2 feet
+			// driveTrain.driveInFeet(driveTrain.getLeftDistance() - 2.0,
+			// driveTrain.getAngle(), 0.4);
+			// else if (driverJoystick.getDpadUp())// drive forward 2 feet
+			// driveTrain.driveInFeet(driveTrain.getLeftDistance() + 2.0,
+			// driveTrain.getAngle(), 0.4);
+			// else if (driverJoystick.getDpadLeft())// turn 90 deg clockwise
+			// driveTrain.setAngle(driveTrain.getAngle() + 90, 0.4);
+			// else if (driverJoystick.getDpadRight())// 90 degrees counter
+			// // clockwise
+			// driveTrain.setAngle(driveTrain.getAngle() - 90, 0.4);
+			// gear switching, defaults to low gear
 			if (driverJoystick.getButtonB())
 				driveTrain.setHighGear();
-			else if (driverJoystick.getButtonX())
-				driveTrain.setLowGear();
 			else
-				driveTrain.autoShift(!(driverJoystick.getGtaDriveLeft() == driverJoystick.getGtaDriveRight()));
+				driveTrain.setLowGear();
 		}
+	}
+
+	private void operatorRun() {
+		// Operator button layout
+		if (operatorJoystick.getButtonB()) {
+			// Run intake inward with assistance of the shooter wheel
+			shooter.setShooterSpeeds(-0.85, false);
+			intake.pullBall();
+		} else if (operatorJoystick.getButtonX()) {
+			// Run reverse if button pressed
+			shooter.setShooterSpeeds(0.85, false);
+			intake.pushBall();
+
+		} else if(!AutoLineUpShot.isRunning()&& !shooter.getIfAutoFire()) {
+			// else run the manual controls, if it is autofiring this will do
+			// nothing
+			 shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"), true);
+//			shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(), false);
+			intake.stopMotors();
+		}
+
+		if (operatorJoystick.getButtonRS()) {
+			shooter.prepShot();
+		}
+		if (operatorJoystick.getButtonA()) {
+			shooter.autoFire();
+		}
+
+		// if the intake is up first set the intake down
+		// then run the delayed shooter movement that waits one second
+		// before moving the arm
+		// this allows time for the intake to go down to prevent collision
+
+		if (operatorJoystick.getDpadUp()) {
+			useArmAttachmentToggle.setManual(false);
+			intake.extendIntake();
+			shooter.delayedShooterPosition(ShooterHeight.HIGH);
+//			camera.setCameraValues(1, 1);
+		}
+		if (operatorJoystick.getDpadRight()) {
+			intake.extendIntake();
+			useArmAttachmentToggle.setManual(true);
+			shooter.delayedShooterPosition(ShooterHeight.MID);
+			camera.setCameraValues(1, 1);
+		}
+		if (operatorJoystick.getDpadDown()) {
+			intake.extendIntake();
+			useArmAttachmentToggle.setManual(false);
+			camera.setCameraValuesAutomatic();
+			shooter.delayedShooterPosition(ShooterHeight.LOW);
+		}
+
+		if (operatorJoystick.getButtonRB()) {// actuation of servo arm for
+												// shooter
+			if (shooter.getIfAutoFire())// if is currently autofiring will
+				// override the auto fire
+				shooter.overrideAutoShot();
+			else
+				shooter.pushBall();
+		} else if (!shooter.getIfAutoFire())// this just brings the servo back
+			// to its place if none of the
+			// previous cases apply
+			shooter.resetServoAngle();
+		
+		if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel()
+				||useArmAttachmentToggle.get())) {
+			camera.cameraDown();
+		} else {
+			camera.cameraUp();
+		}
+
+		if (shooter.getIfAutoFire() || AutoLineUpShot.isRunning())
+			compressor.stop();
+		else
+			compressor.start();
+
+		if (operatorJoystick.getButtonLB() || AutoLineUpShot.isRunning()) {
+			// if operator hits start begin
+			if (operatorJoystick.getButtonSt()) {
+				shooter.reset();
+				AutoLineUpShot.reset();
+			} else {
+				AutoLineUpShot.run();
+			}
+		}
+
+	}
+
+	private void sharedRun() {
+		// intake extension toggle
+		if (!shooter.getIfPreppingShot())
+			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB()
+					|| shooter.delayedArmMove)
+				// this runs if intakeing ball too
+				intake.extendIntake();
+			else// Retract intake
+				intake.retractIntake();
+		// arm attachment
+		useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY() || operatorJoystick.getButtonY());
+		if (useArmAttachmentToggle.getToggleOutput())
+			intake.setArmAttachmentDown();
+		else
+			intake.setArmAttachmentUp();
+
+	}
+
+	public void disableRun() {
+		// runs disable methods of subsystems that fall under the driver
+		driveTrain.disable();
+		shooter.disable();
+		intake.disable();
+		AutoLineUpShot.reset();
+	}
+
+	public void updateSmartDash() {
+		intake.updateSmartDash();
+		shooter.updateSmartDash();
+		driveTrain.updateSmartDash();
+		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
+		SmartDashboard.putBoolean("Is Gyro calibrating: ", driveTrain.isGyroCalibrating());
+		SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());
+	}
+
+	public void reset() {
+		shooter.reset();
+		intake.reset();
 	}
 
 	public DriveType getDriveType() {
@@ -99,153 +228,6 @@ public class TeleopHelper extends ShakerHelper {
 		case "SINGLE_ARCADE":
 			return DriveType.SINGLE_ARCADE;
 		}
-	}
-
-	private void operatorRun() {
-		// Operator button layout
-
-		if (operatorJoystick.getButtonRS())
-			shooter.cancelAutoFire();
-		if (operatorJoystick.getButtonLS())
-			shooter.prepShot();
-		if (operatorJoystick.getButtonA())
-			shooter.autoFire();
-
-		if (operatorJoystick.getButtonRB()) {// actuation of servo arm for
-			// shooter
-			if (shooter.getIfAutoFire() || shooter.getIfPreppingShot())
-				// if is currently autofiring will override the auto fire
-				shooter.overrideAutoShot();
-			else
-				shooter.pushBall();
-		} else if (!shooter.getIfAutoFire() && !AutoLineUpShot.isRunning())
-			// this just brings the servo back
-			// to its place if none of the
-			// previous cases apply
-			shooter.resetServoAngle();
-
-		if (shooter.getIfAutoFire() || shooter.getIfPreppingShot() || AutoLineUpShot.isRunning())
-			compressor.stop();
-		else
-			compressor.start();
-
-		if (operatorJoystick.getButtonLB() || AutoLineUpShot.isRunning()) {
-			// if operator hits start begin
-			if (operatorJoystick.getButtonSt()) {
-				shooter.reset();
-				AutoLineUpShot.reset();
-			} else {
-				AutoLineUpShot.run();
-			}
-		}
-
-		if (operatorJoystick.getButtonB() || IntakingProcedure.isRunning()) {
-			IntakingProcedure.run();
-			cameraUp = true;
-		}
-		else if (operatorJoystick.getDpadLeft()) {
-			intake.extendIntake();
-			cameraUp = false;
-		} else {
-			MoveShooterArm.run();
-			if (!MoveShooterArm.isRunning()) {
-				double tempIntakeSpeedSetpoint = operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT();
-				shooter.setToggledShooterSpeed(tempIntakeSpeedSetpoint, false);
-				if (tempIntakeSpeedSetpoint > 0)
-					intake.pullBall();
-				else if (tempIntakeSpeedSetpoint < 0)
-					intake.pullBall();
-				else {
-					intake.stopMotors();
-					shooter.setToggledShooterSpeed(0, false);
-				}
-				intake.retractIntake();
-				cameraUp = true;
-			}
-		}
-		if (cameraUp)
-			camera.cameraUp();
-		else
-			camera.cameraDown();
-
-	}
-
-	public void reset() {
-		shooter.reset();
-		intake.reset();
-	}
-
-	public void run() {
-		// runs the three subsystems controls
-		operatorRun();// runs the operator controls
-		driverRun();// runs the driver controls
-		sharedRun();// runs the subsystems that are shared by both
-	}
-
-	private void sharedRun() {
-		// arm attachment
-		useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY() || operatorJoystick.getButtonY());
-		if (useArmAttachmentToggle.getToggleOutput())
-			intake.setArmAttachmentDown();
-		else
-			intake.setArmAttachmentUp();
-
-	}
-
-	// } else if (intake.getIntakeState().equals(IntakeState.EXTENDED) &&
-	// armSetpoint != null) {
-	// System.out.println("The arm setpoint is being set right
-	// now!!!!!!!!!!!!!");
-	// shooter.setShooterArm(armSetpoint);
-	// armSetpoint = null;
-	// } else if (intake.getIntakeState().equals(IntakeState.RETRACTED) &&
-	// armSetpoint != null) {
-	// System.out.println("I want to move the arm but i am going to wait on the
-	// intake");
-	// intake.extendIntake();
-	// } else if (operatorJoystick.getDpadLeft()) {
-	// intake.extendIntake();
-	// camera.cameraDown();
-	// } else if (operatorJoystick.getButtonX()) {
-	// // Run reverse if button pressed
-	// shooter.setToggledShooterSpeed(0.85, false);
-	// intake.pushBall();
-	// } else {
-	// if (shooter.getShooterHeight().equals(ShooterHeight.LOW) &&
-	// (operatorJoystick.getButtonSel()))
-	// camera.cameraDown();
-	// else
-	// camera.cameraUp();
-	// intake.stopMotors();
-	// shooter.setToggledShooterSpeed(0, false);
-	// if (!shooter.getShooterHeight().equals(ShooterHeight.MOVING) &&
-	// armSetpoint == null)
-	// intake.retractIntake();
-	// }
-
-	private ShooterHeight operatorWantsToMoveArmTo() {
-		if (operatorJoystick.getDpadUp()) {
-			useArmAttachmentToggle.setManual(false);
-			intake.extendIntake();
-			camera.setCameraValues(1, 1);
-			return ShooterHeight.HIGH;
-		} else if (operatorJoystick.getDpadRight()) {
-			intake.extendIntake();
-			useArmAttachmentToggle.setManual(true);
-			camera.setCameraValues(1, 1);
-			return (ShooterHeight.MID);
-		} else if (operatorJoystick.getDpadDown()) {
-			intake.extendIntake();
-			useArmAttachmentToggle.setManual(false);
-			camera.setCameraValuesAutomatic();
-			return (ShooterHeight.LOW);
-		}
-		return null;
-	}
-
-	public void updateSmartDash() {
-
-		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
 	}
 
 	public enum DriveType {
