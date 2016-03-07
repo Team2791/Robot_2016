@@ -123,7 +123,7 @@ public class TeleopHelper extends ShakerHelper {
 			useArmAttachmentToggle.setManual(false);
 			intake.extendIntake();
 			shooter.delayedShooterPosition(ShooterHeight.HIGH);
-			camera.setCameraValues(1, 1);
+//			camera.setCameraValues(1, 1);
 		}
 		if (operatorJoystick.getDpadRight()) {
 			intake.extendIntake();
@@ -149,9 +149,9 @@ public class TeleopHelper extends ShakerHelper {
 			// to its place if none of the
 			// previous cases apply
 			shooter.resetServoAngle();
-
-		if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel())
-				|| operatorJoystick.getDpadLeft()) {
+		
+		if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel()
+				||useArmAttachmentToggle.get())) {
 			camera.cameraDown();
 		} else {
 			camera.cameraUp();

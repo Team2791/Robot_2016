@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
+import org.usfirst.frc.team2791.robot.Robot;
+import org.usfirst.frc.team2791.robot.Robot.*;
 
 public class PracticeShakerShooter extends PracticeShakerSubsystem implements Runnable {
 	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
@@ -107,6 +109,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 			leftShooterTalon.configNominalOutputVoltage(0, 0);
 			rightShooterTalon.configNominalOutputVoltage(0, 0);
 			createOnce = true;
+			SmartDashboard.putNumber("ShooterSpeedExtraJuice", 0);
 		}
 	}
 
@@ -117,7 +120,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		}
 		return practiceShooter;
 	}
-	
+
 	public void run() {
 		try {
 			while (true) {
@@ -133,77 +136,19 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 				// this is used to allow the intake time before bringing the arm
 				// down
 				if (delayedArmMove) {
-					Thread.sleep(1000);
-					switch (delayedShooterPos) {
-					case LOW:
-						setShooterLow();
-						break;
-					case MID:
-						setShooterMiddle();
-						break;
-					case HIGH:
-						setShooterHigh();
-						break;
-					}
-					delayedArmMove = false;
+					delayArmMove();
 				}
-				// if run auto fire (run shooter wheels, and run servo)
-				// update the setPoints from the dashboard
-				closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
-				farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-				// choose the setpoint by getting arm pos
-				double setPoint = getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+
+				double setPoint = getSetPoint();
 				// this to allow the shooters to give sometime to speed up
 				if (prepShot) {
-					setShooterSpeeds(setPoint, true);
-					if (overrideShot || autoFire) {
-						System.out.println("finished prepping the shot");
-						prepShot = false;
-						
-					}
+					prepShot(setPoint);
 				}
 				if (autoFire) {
-					System.out.println("Auto Firing starting");
-					// set the shooter speeds to the set point
-					setShooterSpeeds(setPoint, true);
-					// Just a variable to make sure that pid is good for a
-					// certain amount of time
-					double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
-					// basically just wait for the difference in time to be
-					// greater than the delay
-					// this allows the shooter to get to speed
-					while (Timer.getFPGATimestamp()
-							- whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
-						// if manual override is activated then skip the delay
-						// and go straight to next step
-						if (overrideShot)
-							break;
-						// if there is sufficient error then stay in the while
-						// loop
-						if (!shooterAtSpeed()) {
-							// if the wheels aren't at speed reset the count
-							whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
-						}
-						Thread.sleep(10);
-						setShooterSpeeds(setPoint, true);
-					}
-					// this is used for the servo
-					double time = Timer.getFPGATimestamp();
-					// push ball
-					// the servo is run for a bit forward
-					System.out.println("starting autofire servo push");
-					while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-						Thread.sleep(10);
-						setShooterSpeeds(setPoint, true);
-						pushBall();
-					}
-					// resets everything
-					resetServoAngle();
-					stopMotors();
-					overrideShot = false;
-					System.out.println("Finishing autofire");
+					autoFire(setPoint);
 				}
 				// auto fire is done if it reaches here
+				overrideShot = false;
 				autoFire = false;
 
 				// slows down the rate at which this method is called(so it
@@ -215,9 +160,106 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 			e.printStackTrace();
 		}
 	}
-	
+
+	private void autoFire(double setPoint) {
+		System.out.println("Auto Firing starting");
+		// set the shooter speeds to the set point
+		setShooterSpeeds(setPoint, true);
+		// Just a variable to make sure that pid is good for a
+		// certain amount of time
+		double whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
+		// basically just wait for the difference in time to be
+		// greater than the delay
+		// this allows the shooter to get to speed
+		while (Timer.getFPGATimestamp() - whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
+			// if manual override is activated then skip the delay
+			// and go straight to next step
+			if (overrideShot)
+				break;
+			// if there is sufficient error then stay in the while
+			// loop
+			if (!shooterAtSpeed()) {
+				// if the wheels aren't at speed reset the count
+				whenTheWheelsStartedBeingTheRightSpeed = Timer.getFPGATimestamp();
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			setShooterSpeeds(setPoint, true);
+		}
+		// this is used for the servo
+		double time = Timer.getFPGATimestamp();
+		// push ball
+		// the servo is run for a bit forward
+		System.out.println("starting autofire servo push");
+		while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			setShooterSpeeds(setPoint, true);
+			pushBall();
+		}
+		// resets everything
+		resetServoAngle();
+		stopMotors();
+		overrideShot = false;
+		System.out.println("Finishing autofire");
+	}
+
+	private void prepShot(double setPoint) {
+		setShooterSpeeds(setPoint, true);
+		if (overrideShot || autoFire) {
+			System.out.println("finished prepping the shot");
+			prepShot = false;
+
+		}
+	}
+
+	private double getSetPoint() {
+		// if run auto fire (run shooter wheels, and run servo)
+		// update the setPoints from the dashboard
+		closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
+		farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
+		// choose the setpoint by getting arm pos
+//		if (getShooterHeight().equals(ShooterHeight.MID) && Robot.camera.getTarget()!=null)
+//			if (Robot.camera.getRange() > 165){
+//				System.out.println("IM adding some extra juice because of distance");
+//				return farShotSetpoint + SmartDashboard.getNumber("ShooterSpeedExtraJuice");}
+//			else
+//				return farShotSetpoint;
+//		else
+			return getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+	}
+
+	private void delayArmMove() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		switch (delayedShooterPos) {
+		case LOW:
+			setShooterLow();
+			break;
+		case MID:
+			setShooterMiddle();
+			break;
+		case HIGH:
+			setShooterHigh();
+			break;
+		}
+		delayedArmMove = false;
+	}
+
 	public boolean shooterAtSpeed() {
-		double total_error = Math.abs(leftShooterTalon.getError()) +  Math.abs(rightShooterTalon.getError());
+		double total_error = Math.abs(leftShooterTalon.getError()) + Math.abs(rightShooterTalon.getError());
 		return total_error < 50;
 	}
 
