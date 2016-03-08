@@ -35,6 +35,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	private boolean autoFire = false;
 	// manual override boolean for the autofire
 	private boolean overrideShot = false;
+	private boolean cancelShot = false;
 	// prepshot decides whether to run the shooter wheels before hand to save
 	// time
 	private boolean prepShot = false;
@@ -149,6 +150,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 				// auto fire is done if it reaches here
 				overrideShot = false;
 				autoFire = false;
+				cancelShot = false;
 				resetServoAngle();
 				// slows down the rate at which this method is called(so it
 				// doesn't run too fast)
@@ -184,20 +186,21 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	}
 
 	private void automaticServoMovement(double shooterSetPoint) {
-
-		// this is used for the servo
-		double time = Timer.getFPGATimestamp();
-		// push ball
-		// the servo is run for a bit forward
-		System.out.println("starting autofire servo push");
-		while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		if (!cancelShot) {
+			// this is used for the servo
+			double time = Timer.getFPGATimestamp();
+			// push ball
+			// the servo is run for a bit forward
+			System.out.println("starting autofire servo push");
+			while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				setShooterSpeeds(shooterSetPoint, true);
+				pushBall();
 			}
-			setShooterSpeeds(shooterSetPoint, true);
-			pushBall();
 		}
 	}
 
@@ -214,7 +217,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		while (Timer.getFPGATimestamp() - whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
 			// if manual override is activated then skip the delay
 			// and go straight to next step
-			if (overrideShot)
+			if (overrideShot || cancelShot)
 				break;
 			// if there is sufficient error then stay in the while
 			// loop
@@ -310,6 +313,10 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		// set the motors to 0 to stop
 		leftShooterTalon.set(0);
 		rightShooterTalon.set(0);
+	}
+
+	public void cancelAutoFire() {
+		cancelShot = true;
 	}
 
 	public void disable() {

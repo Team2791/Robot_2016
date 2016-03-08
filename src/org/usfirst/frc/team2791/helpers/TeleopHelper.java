@@ -3,6 +3,8 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.commands.IntakingProcedure;
+import org.usfirst.frc.team2791.commands.MoveShooterArm;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake.IntakeState;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
@@ -17,8 +19,8 @@ public class TeleopHelper extends ShakerHelper {
 	public boolean changeArmLocations = false;
 	public ShooterHeight armSetpoint;
 	private SendableChooser driveTypeChooser;
-	private Toggle useArmAttachmentToggle;
-	private boolean intakingBall = false;
+	public static Toggle useArmAttachmentToggle;
+	private boolean cameraUp = true;
 
 	private TeleopHelper() {
 		// init
@@ -101,12 +103,12 @@ public class TeleopHelper extends ShakerHelper {
 	private void operatorRun() {
 		// Operator button layout
 
-		if (operatorJoystick.getButtonRS()) {
+		if (operatorJoystick.getButtonRS())
+			shooter.cancelAutoFire();
+		if (operatorJoystick.getButtonLS())
 			shooter.prepShot();
-		}
-		if (operatorJoystick.getButtonA()) {
+		if (operatorJoystick.getButtonA())
 			shooter.autoFire();
-		}
 
 		if (operatorJoystick.getButtonRB()) {// actuation of servo arm for
 			// shooter
@@ -115,7 +117,7 @@ public class TeleopHelper extends ShakerHelper {
 				shooter.overrideAutoShot();
 			else
 				shooter.pushBall();
-		} else if (!shooter.getIfAutoFire() && !shooter.getIfPreppingShot())
+		} else if (!shooter.getIfAutoFire() && !AutoLineUpShot.isRunning())
 			// this just brings the servo back
 			// to its place if none of the
 			// previous cases apply
@@ -136,6 +138,33 @@ public class TeleopHelper extends ShakerHelper {
 			}
 		}
 
+		if (operatorJoystick.getButtonB() || IntakingProcedure.isRunning())
+			IntakingProcedure.run();
+
+		else if (operatorJoystick.getDpadLeft()) {
+			intake.extendIntake();
+			cameraUp = false;
+		} else {
+			MoveShooterArm.run();
+			if (!MoveShooterArm.isRunning()) {
+				double tempIntakeSpeedSetpoint = operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT();
+				shooter.setToggledShooterSpeed(tempIntakeSpeedSetpoint, false);
+				if (tempIntakeSpeedSetpoint > 0)
+					intake.pullBall();
+				else if (tempIntakeSpeedSetpoint < 0)
+					intake.pullBall();
+				else {
+					intake.stopMotors();
+					shooter.setToggledShooterSpeed(0, false);
+				}
+				intake.retractIntake();
+			}
+		}
+		if (cameraUp)
+			camera.cameraUp();
+		else
+			camera.cameraDown();
+
 	}
 
 	public void reset() {
@@ -148,7 +177,6 @@ public class TeleopHelper extends ShakerHelper {
 		operatorRun();// runs the operator controls
 		driverRun();// runs the driver controls
 		sharedRun();// runs the subsystems that are shared by both
-		specialCaseRun();// this is a special case for the intake
 	}
 
 	private void sharedRun() {
@@ -161,66 +189,36 @@ public class TeleopHelper extends ShakerHelper {
 
 	}
 
-	private void specialCaseRun() {
-		// this is for things that fall into multiple categories and
-		// should be grouped together
-		armSetpoint = operatorWantsToMoveArmTo();
-		if (armSetpoint != null)
-			System.out.println("The arm Setpoint is " + armSetpoint.toString());
-		if (operatorJoystick.getButtonB())
-			// if the intaking the ball then set intkaing ball to true
-			intakingBall = true;
-		System.out.println("The current intake state is " + intake.getIntakeState().toString()
-				+ " and the shooter position is " + shooter.getShooterHeight().toString());
-		if (intakingBall) {
-			System.out.println("I think that i want to intake");
-			// if intaking ball extend the intake until the ball is gotten or
-			// overriden by
-			// the operator
-			intake.extendIntake();
-			if (operatorJoystick.getButtonB()) {
-				// Run intake inward with assistance of the shooter wheel
-				shooter.setToggledShooterSpeed(-0.85, false);
-				intake.pullBall();
-			} else if (operatorJoystick.getButtonX()) {
-				// Run intake inward with assistance of the shooter wheel
-				shooter.setToggledShooterSpeed(0.85, false);
-				intake.pushBall();
-			} else {
-				// shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter
-				// Speeds Setpoint range table"), true);
-				// shooter.setShooterSpeeds(operatorJoystick.getAxisRT() -
-				// operatorJoystick.getAxisLT(), false);
-				shooter.setToggledShooterSpeed(0, false);
-				intake.stopMotors();
-			}
-			if (shooter.hasBall() || operatorJoystick.getDpadLeft())
-				intakingBall = false;
-		} else if (intake.getIntakeState().equals(IntakeState.EXTENDED) && armSetpoint != null) {
-			System.out.println("The arm setpoint is being set right now!!!!!!!!!!!!!");
-			shooter.setShooterArm(armSetpoint);
-			armSetpoint = null;
-		} else if (intake.getIntakeState().equals(IntakeState.RETRACTED) && armSetpoint != null) {
-			System.out.println("I want to move the arm but i am going to wait on the intake");
-			intake.extendIntake();
-		} else if (operatorJoystick.getDpadLeft()) {
-			intake.extendIntake();
-			camera.cameraDown();
-		} else if (operatorJoystick.getButtonX()) {
-			// Run reverse if button pressed
-			shooter.setToggledShooterSpeed(0.85, false);
-			intake.pushBall();
-		} else {
-			if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel()))
-				camera.cameraDown();
-			else
-				camera.cameraUp();
-			intake.stopMotors();
-			shooter.setToggledShooterSpeed(0, false);
-			if (!shooter.getShooterHeight().equals(ShooterHeight.MOVING) && armSetpoint == null)
-				intake.retractIntake();
-		}
-	}
+	// } else if (intake.getIntakeState().equals(IntakeState.EXTENDED) &&
+	// armSetpoint != null) {
+	// System.out.println("The arm setpoint is being set right
+	// now!!!!!!!!!!!!!");
+	// shooter.setShooterArm(armSetpoint);
+	// armSetpoint = null;
+	// } else if (intake.getIntakeState().equals(IntakeState.RETRACTED) &&
+	// armSetpoint != null) {
+	// System.out.println("I want to move the arm but i am going to wait on the
+	// intake");
+	// intake.extendIntake();
+	// } else if (operatorJoystick.getDpadLeft()) {
+	// intake.extendIntake();
+	// camera.cameraDown();
+	// } else if (operatorJoystick.getButtonX()) {
+	// // Run reverse if button pressed
+	// shooter.setToggledShooterSpeed(0.85, false);
+	// intake.pushBall();
+	// } else {
+	// if (shooter.getShooterHeight().equals(ShooterHeight.LOW) &&
+	// (operatorJoystick.getButtonSel()))
+	// camera.cameraDown();
+	// else
+	// camera.cameraUp();
+	// intake.stopMotors();
+	// shooter.setToggledShooterSpeed(0, false);
+	// if (!shooter.getShooterHeight().equals(ShooterHeight.MOVING) &&
+	// armSetpoint == null)
+	// intake.retractIntake();
+	// }
 
 	private ShooterHeight operatorWantsToMoveArmTo() {
 		if (operatorJoystick.getDpadUp()) {

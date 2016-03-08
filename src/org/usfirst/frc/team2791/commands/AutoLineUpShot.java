@@ -32,6 +32,7 @@ public class AutoLineUpShot extends ShakerCommand {
     }
 
     public static void reset() {
+    	shooter.cancelAutoFire();
         autoLineUpInProgress = false;
         autoLineUpCounter = 0;
         autoFireOnce = false;
