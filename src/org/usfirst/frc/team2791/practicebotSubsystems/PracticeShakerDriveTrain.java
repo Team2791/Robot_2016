@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.BasicPID;
 import org.usfirst.frc.team2791.util.Constants;
-import org.usfirst.frc.team2791.util.ShakerGyro;
 import org.usfirst.frc.team2791.util.Util;
 
 public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
@@ -15,7 +14,8 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
     private Talon leftTalonB;
     private Talon rightTalonA;
     private Talon rightTalonB;
-    private ShakerGyro gyro;
+    //    private ShakerGyro gyro;
+    private ADXRS450_Gyro gyro;
     private Encoder leftDriveEncoder;
     private Encoder rightDriveEncoder;
     private RobotDrive roboDrive;
@@ -49,8 +49,10 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
         rightDriveEncoder.reset();
         leftDriveEncoder.setDistancePerPulse(Util.tickToFeet(driveEncoderTicks, 8));
         rightDriveEncoder.setDistancePerPulse(-Util.tickToFeet(driveEncoderTicks, 8));
-        gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
-        (new Thread(gyro)).start();
+
+        gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
+//        gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
+//        (new Thread(gyro)).start();
         anglePID = new BasicPID(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
         distancePID = new BasicPID(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
 
@@ -249,12 +251,9 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
     public void calibrateGyro() {
         // recalibrate the gyro
-        gyro.recalibrate();
-    }
-
-    public boolean isGyroCalibrating() {
-        // Check if the gyro is currently calibrating
-        return gyro.currentlyCalibrating();
+        System.out.println("Gyro calibrating");
+        gyro.calibrate();
+        System.out.println("Done calibrating");
     }
 
     private enum GearState {
