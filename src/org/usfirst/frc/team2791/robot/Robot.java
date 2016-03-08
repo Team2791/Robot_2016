@@ -127,7 +127,7 @@ public class Robot extends IterativeRobot {
             driveTrain.resetGyro();
             driveTrain.resetEncoders();
         }
-        ShakerCommand.reset();
+        AutoLineUpShot.reset();
     }
 
     private void alwaysUpdatedSmartDashValues() {
