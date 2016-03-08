@@ -5,7 +5,7 @@ import org.usfirst.frc.team2791.util.ShakerCamera.ParticleReport;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
-public class AutoLineUpShot {
+public class AutoLineUpShot extends ShakerCommand {
     // to correct any curving of the shot leftward or right ward
     public static double shootOffset = 0.0;
     // this is the counter that decides what stop to run in the auto lineup
@@ -23,9 +23,22 @@ public class AutoLineUpShot {
     private static int timeThatCameraErrorIsLessThanFor;
     private static ParticleReport currentTarget;
 
+    public static void overrideAutoLineUp() {
+        autoLineUpCounter = 3;
+    }
+
+    public static boolean isRunning() {
+        return autoLineUpInProgress;
+    }
+
+    public static void reset() {
+        autoLineUpInProgress = false;
+        autoLineUpCounter = 0;
+        autoFireOnce = false;
+    }
+
     public static void run() {
         // Put dashboard values
-        SmartDashboard.putNumber("Auto Line Up step: ", autoLineUpCounter);
         currentTarget = camera.getTarget();
         // SmartDashboard.putBoolean("Has Target", currentTarget != null);
         switch (autoLineUpCounter) {
@@ -132,17 +145,11 @@ public class AutoLineUpShot {
 
     }
 
-    public static void overrideAutoLineUp() {
-        autoLineUpCounter = 3;
+    public void updateSmartDash() {
+        SmartDashboard.putNumber("Auto Line Up step: ", autoLineUpCounter);
     }
 
-    public static void reset() {
-        autoLineUpInProgress = false;
-        autoLineUpCounter = 0;
-        autoFireOnce = false;
-    }
+    public void debug() {
 
-    public static boolean isRunning() {
-        return autoLineUpInProgress;
     }
 }

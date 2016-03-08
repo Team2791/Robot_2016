@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.commands.ShakerCommand;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerDriveTrain;
@@ -126,7 +127,7 @@ public class Robot extends IterativeRobot {
             driveTrain.resetGyro();
             driveTrain.resetEncoders();
         }
-        AutoLineUpShot.reset();
+        ShakerCommand.reset();
     }
 
     private void alwaysUpdatedSmartDashValues() {
