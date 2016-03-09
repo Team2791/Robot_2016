@@ -79,8 +79,10 @@ public class TeleopHelper extends ShakerHelper {
 
 			if (driverJoystick.getButtonB())
 				driveTrain.setHighGear();
-			else
+			else if (driverJoystick.getButtonX())
 				driveTrain.setLowGear();
+			else
+				driveTrain.autoShift(!(driverJoystick.getGtaDriveLeft() == driverJoystick.getGtaDriveRight()));
 		}
 	}
 

@@ -2,6 +2,8 @@ package org.usfirst.frc.team2791.shakerJoystick;
 
 import org.usfirst.frc.team2791.util.Constants;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class Driver extends OverriddenJoystick {
     private static Driver driverJoystickInstance;
     // this is to account for any slack in the drive train

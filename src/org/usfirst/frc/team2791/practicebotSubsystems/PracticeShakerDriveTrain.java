@@ -8,6 +8,12 @@ import org.usfirst.frc.team2791.util.Util;
 
 public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 	private static PracticeShakerDriveTrain practiceDrive = null;
+	// approx no where near right
+	private static final double LOW_GEAR_MAX_OUTPUT_SPEED = 6;
+	// at what percent of the max output of low gear should be the shiftPoint
+	private static final double SHIFT_POINT_PERCENTAGE = 75;
+	// ft/s2...this is not accurate at all must be tested
+	private static final double ACCELERATION_SHIFT_POINT = 3;
 	private static BasicPID anglePID;
 	private static BasicPID distancePID;
 	private Talon leftTalonA;
@@ -25,6 +31,13 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 	private double driveEncoderTicks = 128;
 	private double driveTimePIDGoodTime = 0;
 	private double angleTimePIDGoodTime = 0;
+	private double timeSinceLastShift = -10;
+	private double previousRate = 0;
+	private double previousRateTime = 0;
+	private double currentRate = 0;
+	private double currentTime = 0;
+	private static final double VELOCITY_SHIFT_POINT = LOW_GEAR_MAX_OUTPUT_SPEED * SHIFT_POINT_PERCENTAGE;
+	private static final double SHIFT_THRESH_PERCENTAGE = 0.05;
 
 	private PracticeShakerDriveTrain() {
 		// instanciate the four talons for the drive train
@@ -64,7 +77,6 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		if (practiceDrive == null) {
 			System.out.println("Creating a new instance drive train");
 			practiceDrive = new PracticeShakerDriveTrain();
-
 		}
 		return practiceDrive;
 	}
@@ -114,8 +126,52 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
 	}
 
+	public void autoShift(boolean isTurning) {
+		boolean setToHighGear = false;
+		// if this is the first time running it will get current time
+		// then set to low gear
+		if (timeSinceLastShift == -10) {
+			timeSinceLastShift = Timer.getFPGATimestamp();
+			setLowGear();
+		}
+		// check that the robot is not turning currently and that
+		// it has been at least a few seconds since last shift
+		// this prevents overshifting multiple times
+		if (!isTurning && timeSinceLastShift > 0.5) {
+			// if the abs value of velocity is less than two
+			// then down shift
+			if (!(Math.abs(getAverageVelocity()) < 2)) {
+				// if the average velocity falls within 5 percent of the
+				// threshold act -- this prevents the bot from shifting while
+				// near the thresh
+				if (Math.abs(getAverageVelocity()) > VELOCITY_SHIFT_POINT * 1 + SHIFT_THRESH_PERCENTAGE)
+					setToHighGear = true;
+				else if (Math.abs(getAverageVelocity()) > VELOCITY_SHIFT_POINT * 1 - SHIFT_THRESH_PERCENTAGE)
+					setToHighGear = false;
+				if (getAverageAcceleration() > ACCELERATION_SHIFT_POINT)
+					setToHighGear = true;
+
+			}
+		} else
+			setToHighGear = false;
+		if (setToHighGear)
+			setHighGear();
+		else
+			setLowGear();
+	}
+
 	public void run() {
 		// nothing here?
+	}
+
+	public double getAverageAcceleration() {
+		double acceleration = currentRate - previousRate;
+		acceleration /= (currentTime - previousRateTime);
+		previousRate = currentRate;
+		previousRateTime = currentTime;
+		currentRate = getAverageVelocity();
+		currentTime = Timer.getFPGATimestamp();
+		return acceleration;
 	}
 
 	public void reset() {
