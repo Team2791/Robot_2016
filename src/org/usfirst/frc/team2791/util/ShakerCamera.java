@@ -366,7 +366,7 @@ public class ShakerCamera implements Runnable {
     public void cameraUp() {
         // // bring servo arm up
         // cameraServo.set(SmartDashboard.getNumber("servo angle"));
-        servoSetAngle(106);
+        servoSetAngle(133);
     }
 
     public void cameraDown() {
