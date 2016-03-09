@@ -215,13 +215,13 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
 	public double getLeftDistance() {
 		// distance of left encoder
-		return leftDriveEncoder.getDistance() * 12;// convert distance from feet
+		return leftDriveEncoder.getDistance() / 12;// convert distance from feet
 													// to inches;
 	}
 
 	public double getRightDistance() {
 		// distance of right encoder
-		return rightDriveEncoder.getDistance() * 12;
+		return rightDriveEncoder.getDistance() / 12;
 	}
 
 	public void resetGyro() {
@@ -254,7 +254,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 
 	public double getAvgDist() {
 		// average distance of both encoders
-		return (leftDriveEncoder.getDistance() + rightDriveEncoder.getDistance()) / 2;
+		return (getLeftDistance() + getRightDistance()) / 2;
 	}
 
 	public void calibrateGyro() {
