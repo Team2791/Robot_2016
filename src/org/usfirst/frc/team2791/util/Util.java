@@ -48,8 +48,8 @@ public class Util {
         return index;
     }
 
-    public static double tickToFeet(double encoderTicks, double wheelDiameter) {
-        return (wheelDiameter * Math.PI / encoderTicks) / 12;
+    public static double tickToFeet(double encoderTicks, double wheelDiameter_inFeet) {
+        return (wheelDiameter_inFeet * Math.PI / encoderTicks);
     }
 
     public enum UnitLength {

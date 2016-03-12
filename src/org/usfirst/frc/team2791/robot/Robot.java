@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.commands.ShakerCommand;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerDriveTrain;
@@ -74,10 +73,6 @@ public class Robot extends IterativeRobot {
         camera = ShakerCamera.getInstance();
         cameraThread = new Thread(camera);
         cameraThread.start();
-
-        autonHelper = AutonHelper.getInstance();
-        teleopHelper = TeleopHelper.getInstance();
-
         compressor = new Compressor(Constants.PCM_MODULE);
 
         SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
@@ -86,11 +81,13 @@ public class Robot extends IterativeRobot {
 
     public void autonomousInit() {
         gamePeriod = GamePeriod.AUTONOMOUS;
+        autonHelper = AutonHelper.getInstance();
 
     }
 
     public void teleopInit() {
         gamePeriod = GamePeriod.TELEOP;
+        teleopHelper = TeleopHelper.getInstance();
     }
 
     public void disabledInit() {
