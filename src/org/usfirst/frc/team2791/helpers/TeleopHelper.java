@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.commands.IntakingProcedure;
 import org.usfirst.frc.team2791.commands.MoveShooterArm;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake.IntakeState;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
 
@@ -15,11 +14,11 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
  * Created by Akhil on 2/14/2016.
  */
 public class TeleopHelper extends ShakerHelper {
+	public static Toggle useArmAttachmentToggle;
 	private static TeleopHelper teleop;
 	public boolean changeArmLocations = false;
 	public ShooterHeight armSetpoint;
 	private SendableChooser driveTypeChooser;
-	public static Toggle useArmAttachmentToggle;
 	private boolean cameraUp = true;
 
 	private TeleopHelper() {
@@ -140,9 +139,10 @@ public class TeleopHelper extends ShakerHelper {
 			}
 		}
 
-		if (operatorJoystick.getButtonB() || IntakingProcedure.isRunning())
+		if (operatorJoystick.getButtonB() || IntakingProcedure.isRunning()) {
 			IntakingProcedure.run();
-
+			cameraUp = true;
+		}
 		else if (operatorJoystick.getDpadLeft()) {
 			intake.extendIntake();
 			cameraUp = false;
@@ -160,6 +160,7 @@ public class TeleopHelper extends ShakerHelper {
 					shooter.setToggledShooterSpeed(0, false);
 				}
 				intake.retractIntake();
+				cameraUp = true;
 			}
 		}
 		if (cameraUp)
