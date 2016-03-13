@@ -27,6 +27,7 @@ public class AutoLineUpShot {
     private static double timeForErrorCheck;
     private static ParticleReport currentTarget;
     private static boolean morePowerInShot = false;
+    private static boolean shoot = true;
 
     public static void run() {
         // Put dashboard values
@@ -143,15 +144,18 @@ public class AutoLineUpShot {
                 }
                 break;
             case 30:
-                // keep the same angle until we are done shooting
-                if (driveTrain.setAngle(target, angleMaxOutput)) {
-                    if (!shooter.getIfAutoFire()) {
-                        // only run once the shot is finished
-                        System.out.println("done shooting");
-                        // if done running go to the next step
-                        autoLineUpCounter = 40;
+                if (shoot) {
+                    // keep the same angle until we are done shooting
+                    if (driveTrain.setAngle(target, angleMaxOutput)) {
+                        if (!shooter.getIfAutoFire()) {
+                            // only run once the shot is finished
+                            System.out.println("done shooting");
+                            // if done running go to the next step
+                            autoLineUpCounter = 40;
+                        }
                     }
-                }
+                } else
+                    autoLineUpCounter = 40;
                 break;
 
             // if (currentTarget != null) {
@@ -190,10 +194,19 @@ public class AutoLineUpShot {
         autoLineUpInProgress = false;
         autoLineUpCounter = 0;
         morePowerInShot = false;
+        shoot = true;
     }
 
     public static void shooterWithExtraJucice() {
         morePowerInShot = true;
+    }
+
+    public static void onlyLineup() {
+        shoot = false;
+    }
+
+    public static boolean getIfShooting() {
+        return shoot;
     }
 
     public static boolean isRunning() {
