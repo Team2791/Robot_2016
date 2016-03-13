@@ -66,7 +66,10 @@ public class TeleopHelper extends ShakerHelper {
                     driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
                     break;
             }
-
+            if (driverJoystick.getDpadDown() && !AutoLineUpShot.isRunning()) {
+                AutoLineUpShot.run();
+                AutoLineUpShot.onlyLineup();
+            }
             if (driverJoystick.getButtonB())
                 driveTrain.setHighGear();
             else if (driverJoystick.getButtonX())
