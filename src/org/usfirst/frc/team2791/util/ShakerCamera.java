@@ -1,11 +1,7 @@
 package org.usfirst.frc.team2791.util;
 
 import com.ni.vision.NIVision;
-import com.ni.vision.NIVision.GetImageSizeResult;
-import com.ni.vision.NIVision.Image;
-import com.ni.vision.NIVision.ImageType;
-import com.ni.vision.NIVision.Range;
-import com.ni.vision.NIVision.StructuringElement;
+import com.ni.vision.NIVision.*;
 import com.ni.vision.VisionException;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Servo;
@@ -20,6 +16,7 @@ import java.util.concurrent.Semaphore;
 
 public class ShakerCamera implements Runnable {
 	private static ShakerCamera cameraInstance;
+	private static ArrayList<ParticleReport> particles;
 	// camera used usb logitech c210
 	private final double CAMERA_WIDTH_DEGREES = 54.6666;
 	private final double CAMERA_FOV_VERTICAL = 41;
@@ -27,7 +24,6 @@ public class ShakerCamera implements Runnable {
 	private final double CAMERA_HT_INCHES = 26;
 	private final double CAMERA_PITCH_DEG = 24;
 	private long currentFrameID = 0;
-	private static ArrayList<ParticleReport> particles;
 	private int CAMERA_WIDTH_PIXELS = 640;
 	private int CAMERA_HEIGHT_PIXELS = 480;
 	private NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
@@ -143,7 +139,6 @@ public class ShakerCamera implements Runnable {
 					// targetting
 					cam.setExposureAuto();
 					cam.setBrightness(25);
-					cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 					cam.updateSettings();
 					cameraValsOnlyOnce = true;
 				} else if (!cameraValsOnlyOnce) {
@@ -151,7 +146,6 @@ public class ShakerCamera implements Runnable {
 					// targetting
 					cam.setExposureManual(cameraExposure);
 					cam.setBrightness(cameraBrightness);
-					cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 					cam.updateSettings();
 					cameraValsOnlyOnce = true;
 				}
@@ -375,7 +369,6 @@ public class ShakerCamera implements Runnable {
 		this.cameraBrightness = brightness;
 		this.cameraExposure = exposure;
 		this.cameraAutoSettings = false;
-		cam.setFPS(10);
 		cameraValsOnlyOnce = false;
 	}
 

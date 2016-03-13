@@ -3,6 +3,7 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
 
@@ -124,7 +125,7 @@ public class TeleopHelper extends ShakerHelper {
 		if (operatorJoystick.getDpadDown()) {
 			intake.extendIntake();
 			useArmAttachmentToggle.setManual(false);
-//			camera.setCameraValuesAutomatic();
+			camera.setCameraValuesAutomatic();
 			shooter.delayedShooterPosition(ShooterHeight.LOW);
 		}
 		
@@ -160,7 +161,7 @@ public class TeleopHelper extends ShakerHelper {
 				AutoLineUpShot.reset();
 			} else {
 				if(operatorJoystick.getButtonLS())
-					AutoLineUpShot.addSomeShooterPower();
+					AutoLineUpShot.shooterWithExtraJucice();
 				AutoLineUpShot.run();
 			}
 		}
@@ -171,7 +172,7 @@ public class TeleopHelper extends ShakerHelper {
 		// intake extension toggle
 		if (!shooter.getIfPreppingShot())
 			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB()
-					|| shooter.delayedArmMove || operatorJoystick.getButtonSel())
+					|| PracticeShakerShooter.delayedArmMove || operatorJoystick.getButtonSel())
 				// this runs if intakeing ball too
 				intake.extendIntake();
 			else// Retract intake
