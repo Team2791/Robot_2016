@@ -118,8 +118,10 @@ public class Robot extends IterativeRobot {
 		autonHelper.disableRun();
 		alwaysUpdatedSmartDashValues();
 
-		if (operatorJoystick.getButtonSt())
-			driveTrain.calibrateGyro();
+		if (operatorJoystick.getButtonSt()){
+			driveTrain.resetEncoders();
+//			driveTrain.calibrateGyro();
+			}
 
 		if (operatorJoystick.getButtonSel()) {
 			System.out.println("Resetting Auton step counter...");
@@ -131,7 +133,8 @@ public class Robot extends IterativeRobot {
 
 	private void alwaysUpdatedSmartDashValues() {
 		SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-		SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
+		SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
+//		System.out.println("DriveTrain average velocity "+ driveTrain.getAverageVelocity()+" current distance "+driveTrain.getAvgDist()+" Current gyro Angle "+ driveTrain.getAngle() );
 		debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
 		AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
 		if (debuggingMode) {

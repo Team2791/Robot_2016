@@ -21,8 +21,8 @@ public class PracticePorts {
 
     // PCM PORTS
     // First Pcm module
-    public static final int DRIVE_PISTON_FORWARD = 0;
-    public static final int DRIVE_PISTON_REVERSE = 1;
+    public static final int DRIVE_PISTON_FORWARD = 1;
+    public static final int DRIVE_PISTON_REVERSE = 0;
     public static final int INTAKE_PISTON_CHANNEL_FORWARD = 2;
     public static final int INTAKE_PISTON_CHANNEL_REVERSE = 3;
     public static final int LONG_PISTON_FORWARD = 4;
