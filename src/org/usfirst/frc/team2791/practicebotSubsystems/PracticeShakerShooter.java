@@ -5,13 +5,13 @@ import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
-import org.usfirst.frc.team2791.robot.Robot;
-import org.usfirst.frc.team2791.robot.Robot.*;
 
 public class PracticeShakerShooter extends PracticeShakerSubsystem implements Runnable {
 	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
 	// time that the shooter wheels have to be at the proper speed
 	private static final double delayTimeBeforeShooting = 0.5;
+	// boolean that decides whether the arm should move in a delay motion
+	public static boolean delayedArmMove = false;
 	private static PracticeShakerShooter practiceShooter = null;
 	private final double delayTimeForServo = 0.8;// time for servo to push
 	// how many ticks the encoder has
@@ -33,6 +33,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	// setpoints to acheicve target depending on the pos of the shooter arm
 	private double closeShotSetPoint = 590;
 	private double farShotSetpoint = 900;
+	private double farShotExtraJuice = 90;
 	// boolean that decides weahter autofiring should occur
 	private boolean autoFire = false;
 	// manual override boolean for the autofire
@@ -44,8 +45,6 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	private boolean shooterArmMoving = false;
 	// time when the shooter arm last moved
 	private double timeWhenShooterArmMoved;
-	// boolean that decides whether the arm should move in a delay motion
-	public static boolean delayedArmMove = false;
 	// shooter height setpoint
 	private ShooterHeight delayedShooterPos;
 	private boolean createOnce = false;
@@ -143,7 +142,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 
 				double setPoint = getSetPoint();
 				if(addExtraPower)
-					setPoint+=SmartDashboard.getNumber("ShooterSpeedExtraJuice");
+					setPoint += farShotExtraJuice;
 				// this to allow the shooters to give sometime to speed up
 				if (prepShot) {
 					prepShot(setPoint);
