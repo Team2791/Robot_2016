@@ -4,10 +4,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Constants;
 
 import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
 import static org.usfirst.frc.team2791.robot.Robot.intake;
+import static org.usfirst.frc.team2791.robot.Robot.shooter;
 
 import javax.xml.bind.SchemaOutputResolver;
 
@@ -38,12 +40,10 @@ public class AutonHelper extends ShakerHelper {
 		SmartDashboard.putNumber("Angle setpoint", setPoint);
 		SmartDashboard.putNumber("max speed", 0.5);
 		SmartDashboard.putNumber("pid distance travel", 1.0);
-		SmartDashboard.getNumber("pid distance travel");
 		SmartDashboard.putNumber("Auton step counter", counter);
 		defenseNumber = new SendableChooser();// choose what number defense
 		// robot is front of
 		// 1 is all the way left 5 is all the way right
-		SmartDashboard.putData("Auton Starting Position", defenseNumber);
 		defenseNumber.addObject("1", "6");
 		defenseNumber.addObject("2 Center", "7");// to center goal
 		defenseNumber.addObject("2 Left", "14");// to the side goal
@@ -55,7 +55,8 @@ public class AutonHelper extends ShakerHelper {
 		defenseNumber.addObject("AutoLineup + lowBar", 101);
 		defenseNumber.addObject("test moving", "16");
 		defenseNumber.addObject("test stationary", "17");
-		defenseNumber = new SendableChooser();// 1 is all the way left 5 is all
+
+		SmartDashboard.putData("Auton Starting Position", defenseNumber);
 		// the way right
 
 		defenseToCross = new SendableChooser();
@@ -66,6 +67,7 @@ public class AutonHelper extends ShakerHelper {
 		defenseToCross.addObject("Port Cullis", "4");
 		defenseToCross.addObject("Gate", "5");
 		counter = 0;
+		SmartDashboard.putData("Auton Starting Position", defenseNumber);
 
 	}
 
@@ -94,27 +96,27 @@ public class AutonHelper extends ShakerHelper {
 		// these first five cases will traverse the designated defense type
 		case 1:
 			if (traverseLowBar()) {
-				counter = defenseStartPos;
+				counter = 107;
 			}
 			break;
 		case 2:
 			if (traverseUnevenTerrain()) {
-				counter = defenseStartPos;
+				counter = 107;
 			}
 			break;
 		case 3:
 			if (traverseFunBridges()) {
-				counter = defenseStartPos;
+				counter = 107;
 			}
 			break;
 		case 4:
 			if (traversePortCullis()) {
-				counter = defenseStartPos;
+				counter = 107;
 			}
 			break;
 		case 5:
 			if (traverseGate()) {
-				counter = defenseStartPos;
+				counter = 107;
 			}
 			break;
 
@@ -180,6 +182,18 @@ public class AutonHelper extends ShakerHelper {
 				AutoLineUpShot.run();
 			else
 				counter = 20;
+		case 107:
+			intake.extendIntake();
+			shooter.delayedShooterPosition(ShooterHeight.HIGH);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			counter = defenseStartPos;
+			
 		case 20:
 
 			System.out.println("Done with auton");

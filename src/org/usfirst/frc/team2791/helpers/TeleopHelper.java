@@ -32,6 +32,7 @@ public class TeleopHelper extends ShakerHelper {
 		// toggles, to prevent sending a subsystem a value too many times
 		// this is sort of like a light switch
 		useArmAttachmentToggle = new Toggle(false);
+		camera.setCameraValues(1, 1);
 	}
 
 	public static TeleopHelper getInstance() {
@@ -48,10 +49,6 @@ public class TeleopHelper extends ShakerHelper {
 	}
 
 	private void driverRun() {
-		// Reads the current drive type to chooser what layout should be used
-		// if any of the pid driver controls are being used dont let the
-		// triggers take control
-		// this includes autoLineup Procedures
 		if (!AutoLineUpShot.isRunning()) {
 			switch (getDriveType()) {
 			case TANK:
@@ -68,23 +65,13 @@ public class TeleopHelper extends ShakerHelper {
 				driveTrain.setLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
 				break;
 			}
-			// driver control for pid movement
-			// if (driverJoystick.getDpadDown())// drive back 2 feet
-			// driveTrain.driveInFeet(driveTrain.getLeftDistance() - 2.0,
-			// driveTrain.getAngle(), 0.4);
-			// else if (driverJoystick.getDpadUp())// drive forward 2 feet
-			// driveTrain.driveInFeet(driveTrain.getLeftDistance() + 2.0,
-			// driveTrain.getAngle(), 0.4);
-			// else if (driverJoystick.getDpadLeft())// turn 90 deg clockwise
-			// driveTrain.setAngle(driveTrain.getAngle() + 90, 0.4);
-			// else if (driverJoystick.getDpadRight())// 90 degrees counter
-			// // clockwise
-			// driveTrain.setAngle(driveTrain.getAngle() - 90, 0.4);
-			// gear switching, defaults to low gear
+
 			if (driverJoystick.getButtonB())
 				driveTrain.setHighGear();
-			else
+			else if (driverJoystick.getButtonX())
 				driveTrain.setLowGear();
+			else
+				driveTrain.autoShift(!(driverJoystick.getGtaDriveLeft() == driverJoystick.getGtaDriveRight()));
 		}
 	}
 
@@ -99,12 +86,15 @@ public class TeleopHelper extends ShakerHelper {
 			shooter.setShooterSpeeds(0.85, false);
 			intake.pushBall();
 
-		} else if(!AutoLineUpShot.isRunning()&& !shooter.getIfAutoFire()) {
+		} else if (!AutoLineUpShot.isRunning() && !shooter.getIfAutoFire()) {
 			// else run the manual controls, if it is autofiring this will do
 			// nothing
-			 shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"), true);
-//			shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(), false);
+//			shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"), true);
+			 shooter.setShooterSpeeds(operatorJoystick.getAxisRT() -
+			 operatorJoystick.getAxisLT(), false);
 			intake.stopMotors();
+//			if(shooter.hasBall()||operatorJoystick.getButtonSel())
+//				camera.setCameraValues(1, 1);
 		}
 
 		if (operatorJoystick.getButtonRS()) {
@@ -123,20 +113,21 @@ public class TeleopHelper extends ShakerHelper {
 			useArmAttachmentToggle.setManual(false);
 			intake.extendIntake();
 			shooter.delayedShooterPosition(ShooterHeight.HIGH);
-//			camera.setCameraValues(1, 1);
+			// camera.setCameraValues(1, 1);
 		}
 		if (operatorJoystick.getDpadRight()) {
 			intake.extendIntake();
 			useArmAttachmentToggle.setManual(true);
 			shooter.delayedShooterPosition(ShooterHeight.MID);
-			camera.setCameraValues(1, 1);
+			
 		}
 		if (operatorJoystick.getDpadDown()) {
 			intake.extendIntake();
 			useArmAttachmentToggle.setManual(false);
-			camera.setCameraValuesAutomatic();
+//			camera.setCameraValuesAutomatic();
 			shooter.delayedShooterPosition(ShooterHeight.LOW);
 		}
+		
 
 		if (operatorJoystick.getButtonRB()) {// actuation of servo arm for
 												// shooter
@@ -149,9 +140,9 @@ public class TeleopHelper extends ShakerHelper {
 			// to its place if none of the
 			// previous cases apply
 			shooter.resetServoAngle();
-		
-		if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel()
-				||useArmAttachmentToggle.get())) {
+
+		if (shooter.getShooterHeight().equals(ShooterHeight.LOW)
+				&& (operatorJoystick.getButtonSel() || useArmAttachmentToggle.get())) {
 			camera.cameraDown();
 		} else {
 			camera.cameraUp();
@@ -168,6 +159,8 @@ public class TeleopHelper extends ShakerHelper {
 				shooter.reset();
 				AutoLineUpShot.reset();
 			} else {
+				if(operatorJoystick.getButtonLS())
+					AutoLineUpShot.addSomeShooterPower();
 				AutoLineUpShot.run();
 			}
 		}
@@ -178,7 +171,7 @@ public class TeleopHelper extends ShakerHelper {
 		// intake extension toggle
 		if (!shooter.getIfPreppingShot())
 			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB()
-					|| shooter.delayedArmMove)
+					|| shooter.delayedArmMove || operatorJoystick.getButtonSel())
 				// this runs if intakeing ball too
 				intake.extendIntake();
 			else// Retract intake
@@ -205,7 +198,6 @@ public class TeleopHelper extends ShakerHelper {
 		shooter.updateSmartDash();
 		driveTrain.updateSmartDash();
 		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
-		SmartDashboard.putBoolean("Is Gyro calibrating: ", driveTrain.isGyroCalibrating());
 		SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());
 	}
 

@@ -54,21 +54,30 @@ public class ShakerCamera implements Runnable {
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		Image filteredImage = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		particleBinaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
-		cam.setExposureManual(1);
+//		cam.setExposureManual(1);
+//		this.cameraBrightness = 1;
+//		this.cameraExposure = 1;
+//		cam.setBrightness(cameraBrightness);
+//		cam.setExposureManual(cameraExposure);
+//		this.cameraAutoSettings = false;
+//		cam.setFPS(10);
+//		cameraValsOnlyOnce = false;
 		cam.setBrightness(0);
+		
 		cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 		cam.updateSettings();
+		
 		StructuringElement box = new StructuringElement(6, 4, 1);
 		double AREA_MINIMUM = 7;
 		criteria[0] = new NIVision.ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA, AREA_MINIMUM,
 				100.0, 0, 0);
 		SmartDashboard.putBoolean("display targetting", false);
 		SmartDashboard.putBoolean("Debug Image", false);
-		SmartDashboard.putNumber("H min", 75);
+		SmartDashboard.putNumber("H min", 75-15);
 		SmartDashboard.putNumber("H max", 140);
-		SmartDashboard.putNumber("S min", 100);
+		SmartDashboard.putNumber("S min", 100-15);
 		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("L min", 60);
+		SmartDashboard.putNumber("L min", 60-15);
 		SmartDashboard.putNumber("L max", 184);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
@@ -219,15 +228,7 @@ public class ShakerCamera implements Runnable {
 		if (reports == null || reports.size() == 0) {
 			System.out.println("The camera reports are empty");
 			return null;
-		} else {
-			System.out.println("reports are size " + reports.size());
-			System.out.println("reports contents");
-			for (ParticleReport par : reports) {
-				System.out.println(par);
-			}
-
 		}
-
 		int targetLoc = 0;
 		if (reports.size() != 1) {
 			double maxPercentArea = 0;
@@ -362,7 +363,7 @@ public class ShakerCamera implements Runnable {
 	public void cameraUp() {
 		// // bring servo arm up
 		// cameraServo.set(SmartDashboard.getNumber("servo angle"));
-		servoSetAngle(106);
+		servoSetAngle(108);
 	}
 
 	public void cameraDown() {
@@ -374,6 +375,7 @@ public class ShakerCamera implements Runnable {
 		this.cameraBrightness = brightness;
 		this.cameraExposure = exposure;
 		this.cameraAutoSettings = false;
+		cam.setFPS(10);
 		cameraValsOnlyOnce = false;
 	}
 

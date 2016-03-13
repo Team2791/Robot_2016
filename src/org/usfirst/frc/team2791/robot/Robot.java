@@ -15,138 +15,138 @@ import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
-    public static boolean debuggingMode = false;
-    // Modes
-    public static GamePeriod gamePeriod;
-    // Joysticks
-    public static Driver driverJoystick;
-    public static Operator operatorJoystick;
+	public static boolean debuggingMode = false;
+	// Modes
+	public static GamePeriod gamePeriod;
+	// Joysticks
+	public static Driver driverJoystick;
+	public static Operator operatorJoystick;
 
-    // Subsystems
-    // Competition robot subsystems
-    // public static ShakerShooter shooter;
-    // public static ShakerIntake intake;
-    // public static ShakerDriveTrain driveTrain;
-    // Practice Robot susbsystems
-    public static PracticeShakerShooter shooter;
-    public static PracticeShakerIntake intake;
-    public static PracticeShakerDriveTrain driveTrain;
+	// Subsystems
+	// Competition robot subsystems
+	// public static ShakerShooter shooter;
+	// public static ShakerIntake intake;
+	// public static ShakerDriveTrain driveTrain;
+	// Practice Robot susbsystems
+	public static PracticeShakerShooter shooter;
+	public static PracticeShakerIntake intake;
+	public static PracticeShakerDriveTrain driveTrain;
 
-    // camera
-    public static ShakerCamera camera;
-    // other
-    public static Compressor compressor;
-    public Thread shooterThread;
-    public Thread cameraThread;
-    // helpers
-    private TeleopHelper teleopHelper;
-    private AutonHelper autonHelper;
+	// camera
+	public static ShakerCamera camera;
+	// other
+	public static Compressor compressor;
+	public Thread shooterThread;
+	public Thread cameraThread;
+	// helpers
+	private TeleopHelper teleopHelper;
+	private AutonHelper autonHelper;
 
-    // MAIN ROBOT CODE
-    public void robotInit() {
-        // game period changed when ever game mode changes
-        // (TELOP,AUTON,DISABLED,ETC.)
-        System.out.println("Starting to init my systems.");
-        gamePeriod = GamePeriod.DISABLED;
+	// MAIN ROBOT CODE
+	public void robotInit() {
+		// game period changed when ever game mode changes
+		// (TELOP,AUTON,DISABLED,ETC.)
+		System.out.println("Starting to init my systems.");
+		gamePeriod = GamePeriod.DISABLED;
 
-        // Singletons - only one instance of them is created
-        // Shaker joysticks
-        driverJoystick = Driver.getInstance();
-        operatorJoystick = Operator.getInstance();
+		// Singletons - only one instance of them is created
+		// Shaker joysticks
+		driverJoystick = Driver.getInstance();
+		operatorJoystick = Operator.getInstance();
 
-        // subsystems
-        driveTrain = PracticeShakerDriveTrain.getInstance();
-        intake = PracticeShakerIntake.getInstance();
-        shooter = PracticeShakerShooter.getInstance();
-        // shooter = PracticeShakerShooter.getInstance();
+		// subsystems
+		driveTrain = PracticeShakerDriveTrain.getInstance();
+		intake = PracticeShakerIntake.getInstance();
+		shooter = PracticeShakerShooter.getInstance();
+		// shooter = PracticeShakerShooter.getInstance();
 
-        // competition robot
-        // driveTrain = ShakerDriveTrain.getInstance();
-        // intake = ShakerIntake.getInstance();
-        // shooter = ShakerShooter.getInstance();
+		// competition robot
+		// driveTrain = ShakerDriveTrain.getInstance();
+		// intake = ShakerIntake.getInstance();
+		// shooter = ShakerShooter.getInstance();
 
-        // Camera and shooter are put on their own thread to prevent
-        // interference with main robot code
-        shooterThread = new Thread(shooter);
-        shooterThread.start();
+		// Camera and shooter are put on their own thread to prevent
+		// interference with main robot code
+		shooterThread = new Thread(shooter);
+		shooterThread.start();
 
-        camera = ShakerCamera.getInstance();
-        cameraThread = new Thread(camera);
-        cameraThread.start();
-        compressor = new Compressor(Constants.PCM_MODULE);
+		camera = ShakerCamera.getInstance();
+		cameraThread = new Thread(camera);
+		cameraThread.start();
 
-        SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
-        SmartDashboard.putBoolean("DEBUGGING MODE", debuggingMode);
-    }
+		autonHelper = AutonHelper.getInstance();
+		teleopHelper = TeleopHelper.getInstance();
 
-    public void autonomousInit() {
-        gamePeriod = GamePeriod.AUTONOMOUS;
-        autonHelper = AutonHelper.getInstance();
+		compressor = new Compressor(Constants.PCM_MODULE);
 
-    }
+		SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
+		SmartDashboard.putBoolean("DEBUGGING MODE", debuggingMode);
+	}
 
-    public void teleopInit() {
-        gamePeriod = GamePeriod.TELEOP;
-        teleopHelper = TeleopHelper.getInstance();
-    }
+	public void autonomousInit() {
+		gamePeriod = GamePeriod.AUTONOMOUS;
 
-    public void disabledInit() {
-        gamePeriod = GamePeriod.DISABLED;
-    }
+	}
 
-    public void autonomousPeriodic() {
-        super.autonomousPeriodic();
-        autonHelper.run();
-        autonHelper.updateSmartDash();
-        alwaysUpdatedSmartDashValues();
-    }
+	public void teleopInit() {
+		gamePeriod = GamePeriod.TELEOP;
+	}
 
-    public void teleopPeriodic() {
-        super.teleopPeriodic();
-        teleopHelper.run();
-        teleopHelper.updateSmartDash();
-        alwaysUpdatedSmartDashValues();
+	public void disabledInit() {
+		gamePeriod = GamePeriod.DISABLED;
+	}
 
-    }
+	public void autonomousPeriodic() {
+		super.autonomousPeriodic();
+		autonHelper.run();
+		autonHelper.updateSmartDash();
+		alwaysUpdatedSmartDashValues();
+	}
 
-    public void disabledPeriodic() {
-        super.disabledPeriodic();
-        teleopHelper.disableRun();
-        compressor.stop();
-        autonHelper.disableRun();
-        alwaysUpdatedSmartDashValues();
+	public void teleopPeriodic() {
+		super.teleopPeriodic();
+		teleopHelper.run();
+		teleopHelper.updateSmartDash();
+		alwaysUpdatedSmartDashValues();
 
-        if (operatorJoystick.getButtonSt())
-            driveTrain.calibrateGyro();
+	}
 
-        if (operatorJoystick.getButtonSel()) {
-            System.out.println("Resetting Gyro and encoders ");
-            driveTrain.resetGyro();
-            driveTrain.resetEncoders();
-        }
-        AutoLineUpShot.reset();
-    }
+	public void disabledPeriodic() {
+		super.disabledPeriodic();
+		teleopHelper.disableRun();
+		compressor.stop();
+		autonHelper.disableRun();
+		alwaysUpdatedSmartDashValues();
 
-    private void alwaysUpdatedSmartDashValues() {
-        SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
-        SmartDashboard.putNumber("Current gyro angle", driveTrain.getAngle());
-        debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
-        AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
-        if (debuggingMode) {
-            driveTrain.debug();
-            intake.debug();
-            shooter.debug();
-            teleopHelper.debug();
-            autonHelper.debug();
-        }
-        intake.updateSmartDash();
-        shooter.updateSmartDash();
-        driveTrain.updateSmartDash();
-    }
+		if (operatorJoystick.getButtonSt()){
+			driveTrain.resetEncoders();
+//			driveTrain.calibrateGyro();
+			}
 
-    // ENUMS
-    public enum GamePeriod {
-        AUTONOMOUS, TELEOP, DISABLED
-    }
+		if (operatorJoystick.getButtonSel()) {
+			System.out.println("Resetting Auton step counter...");
+			autonHelper.resetAutonStepCounter();
+			System.out.println("Done...");
+		}
+		AutoLineUpShot.reset();
+	}
+
+	private void alwaysUpdatedSmartDashValues() {
+		SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
+		SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
+//		System.out.println("DriveTrain average velocity "+ driveTrain.getAverageVelocity()+" current distance "+driveTrain.getAvgDist()+" Current gyro Angle "+ driveTrain.getAngle() );
+		debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
+		AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
+		if (debuggingMode) {
+			driveTrain.debug();
+			intake.debug();
+			shooter.debug();
+		}
+	}
+
+	// ENUMS
+	public enum GamePeriod {
+		AUTONOMOUS, TELEOP, DISABLED
+	}
 
 }

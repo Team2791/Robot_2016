@@ -24,13 +24,15 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	private DoubleSolenoid longPiston;
 	// servo that pushes ball into the shooter
 	private Servo ballAidServo;
+	private boolean addExtraPower = false;
 	// sensor that allows us to know that the ball is in the shooter
 	private AnalogInput ballDistanceSensor;
 	// feed forward of the shooter wheel pid
-	private double feedForward = 0.4;
+	private double feedForward = 0.31;
+	private boolean cancelShot = false;
 	// setpoints to acheicve target depending on the pos of the shooter arm
 	private double closeShotSetPoint = 590;
-	private double farShotSetpoint = 850;
+	private double farShotSetpoint = 900;
 	// boolean that decides weahter autofiring should occur
 	private boolean autoFire = false;
 	// manual override boolean for the autofire
@@ -140,6 +142,8 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 				}
 
 				double setPoint = getSetPoint();
+				if(addExtraPower)
+					setPoint+=SmartDashboard.getNumber("ShooterSpeedExtraJuice");
 				// this to allow the shooters to give sometime to speed up
 				if (prepShot) {
 					prepShot(setPoint);
@@ -150,7 +154,8 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 				// auto fire is done if it reaches here
 				overrideShot = false;
 				autoFire = false;
-
+				cancelShot = false;
+				addExtraPower = false;
 				// slows down the rate at which this method is called(so it
 				// doesn't run too fast)
 				Thread.sleep(updateDelayMs);
@@ -174,7 +179,7 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		while (Timer.getFPGATimestamp() - whenTheWheelsStartedBeingTheRightSpeed < delayTimeBeforeShooting) {
 			// if manual override is activated then skip the delay
 			// and go straight to next step
-			if (overrideShot)
+			if (overrideShot || cancelShot)
 				break;
 			// if there is sufficient error then stay in the while
 			// loop
@@ -194,27 +199,28 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		double time = Timer.getFPGATimestamp();
 		// push ball
 		// the servo is run for a bit forward
-		System.out.println("starting autofire servo push");
-		while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (!cancelShot) {
+			System.out.println("starting autofire servo push");
+			while (Timer.getFPGATimestamp() - time < delayTimeForServo) {
+				setShooterSpeeds(setPoint, true);
+				pushBall();
 			}
-			setShooterSpeeds(setPoint, true);
-			pushBall();
+			double tempTime = Timer.getFPGATimestamp();
+			while (Timer.getFPGATimestamp() - tempTime < 0.5){
+				setShooterSpeeds(setPoint,true);
+			}
+				// resets everything
+				resetServoAngle();
+			stopMotors();
+			overrideShot = false;
+			System.out.println("Finishing autofire");
 		}
-		// resets everything
-		resetServoAngle();
-		stopMotors();
-		overrideShot = false;
-		System.out.println("Finishing autofire");
+
 	}
 
 	private void prepShot(double setPoint) {
 		setShooterSpeeds(setPoint, true);
-		if (overrideShot || autoFire) {
+		if (overrideShot || autoFire || cancelShot) {
 			System.out.println("finished prepping the shot");
 			prepShot = false;
 
@@ -227,14 +233,16 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 		closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
 		farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
 		// choose the setpoint by getting arm pos
-//		if (getShooterHeight().equals(ShooterHeight.MID) && Robot.camera.getTarget()!=null)
-//			if (Robot.camera.getRange() > 165){
-//				System.out.println("IM adding some extra juice because of distance");
-//				return farShotSetpoint + SmartDashboard.getNumber("ShooterSpeedExtraJuice");}
-//			else
-//				return farShotSetpoint;
-//		else
-			return getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
+		// if (getShooterHeight().equals(ShooterHeight.MID) &&
+		// Robot.camera.getTarget()!=null)
+		// if (Robot.camera.getRange() > 165){
+		// System.out.println("IM adding some extra juice because of distance");
+		// return farShotSetpoint +
+		// SmartDashboard.getNumber("ShooterSpeedExtraJuice");}
+		// else
+		// return farShotSetpoint;
+		// else
+		return getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
 	}
 
 	private void delayArmMove() {
@@ -261,6 +269,12 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 	public boolean shooterAtSpeed() {
 		double total_error = Math.abs(leftShooterTalon.getError()) + Math.abs(rightShooterTalon.getError());
 		return total_error < 50;
+	}
+
+	public void resetShooterAutoStuff() {
+		overrideShot = false;
+		prepShot = false;
+		cancelShot = true;
 	}
 
 	public void setShooterSpeeds(double targetSpeed, boolean withPID) {
@@ -360,6 +374,9 @@ public class PracticeShakerShooter extends PracticeShakerSubsystem implements Ru
 
 	public void autoFire() {
 		autoFire = true;
+	}
+	public void autoFireWithExtraJuice(){
+		addExtraPower = true;
 	}
 
 	public ShooterHeight getShooterHeight() {
