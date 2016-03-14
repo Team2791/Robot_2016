@@ -65,8 +65,8 @@ public class Constants {
     public static double STATIONARY_ANGLE_P = 0.09;
     public static double STATIONARY_ANGLE_I = 0.6;
     public static double STATIONARY_ANGLE_D = 0.001;
-    public static double DRIVE_DISTANCE_P = 0.1;
-    public static double DRIVE_DISTANCE_I = 0;
+    public static double DRIVE_DISTANCE_P = 0.5;
+    public static double DRIVE_DISTANCE_I = 0.3;
     public static double DRIVE_DISTANCE_D = 0;
 
 }

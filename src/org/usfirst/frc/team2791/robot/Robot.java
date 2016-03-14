@@ -38,6 +38,7 @@ public class Robot extends IterativeRobot {
 	public static Compressor compressor;
 	public Thread shooterThread;
 	public Thread cameraThread;
+	public Thread driveTrainThread;
 	// helpers
 	private TeleopHelper teleopHelper;
 	private AutonHelper autonHelper;
@@ -56,6 +57,8 @@ public class Robot extends IterativeRobot {
 
 		// subsystems
 		driveTrain = PracticeShakerDriveTrain.getInstance();
+		driveTrainThread = new Thread(driveTrain);
+		driveTrainThread.start();
 		intake = PracticeShakerIntake.getInstance();
 		shooter = PracticeShakerShooter.getInstance();
 		// shooter = PracticeShakerShooter.getInstance();
@@ -132,7 +135,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void alwaysUpdatedSmartDashValues() {
-		SmartDashboard.putNumber("Gyro Rate", driveTrain.getGyroRate());
+		SmartDashboard.putNumber("Gyro Rate", driveTrain.getEncoderAngleRate());
 		SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
 //		System.out.println("DriveTrain average velocity "+ driveTrain.getAverageVelocity()+" current distance "+driveTrain.getAvgDist()+" Current gyro Angle "+ driveTrain.getAngle() );
 		debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");

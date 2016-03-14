@@ -50,30 +50,30 @@ public class ShakerCamera implements Runnable {
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		Image filteredImage = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		particleBinaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
-//		cam.setExposureManual(1);
-//		this.cameraBrightness = 1;
-//		this.cameraExposure = 1;
-//		cam.setBrightness(cameraBrightness);
-//		cam.setExposureManual(cameraExposure);
-//		this.cameraAutoSettings = false;
-//		cam.setFPS(10);
-//		cameraValsOnlyOnce = false;
+		// cam.setExposureManual(1);
+		// this.cameraBrightness = 1;
+		// this.cameraExposure = 1;
+		// cam.setBrightness(cameraBrightness);
+		// cam.setExposureManual(cameraExposure);
+		// this.cameraAutoSettings = false;
+		// cam.setFPS(10);
+		// cameraValsOnlyOnce = false;
 		cam.setBrightness(0);
-		
+
 		cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 		cam.updateSettings();
-		
+
 		StructuringElement box = new StructuringElement(6, 4, 1);
 		double AREA_MINIMUM = 7;
 		criteria[0] = new NIVision.ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA, AREA_MINIMUM,
 				100.0, 0, 0);
 		SmartDashboard.putBoolean("display targetting", false);
 		SmartDashboard.putBoolean("Debug Image", false);
-		SmartDashboard.putNumber("H min", 75-15);
+		SmartDashboard.putNumber("H min", 75 - 15);
 		SmartDashboard.putNumber("H max", 140);
-		SmartDashboard.putNumber("S min", 100-15);
+		SmartDashboard.putNumber("S min", 70);
 		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("L min", 60-15);
+		SmartDashboard.putNumber("L min", 12);
 		SmartDashboard.putNumber("L max", 184);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
@@ -121,11 +121,10 @@ public class ShakerCamera implements Runnable {
 						processingTime = Timer.getFPGATimestamp() - processingTime;
 						SmartDashboard.putNumber("FPS with processing", 1000 / (processingTime + imageGetTime));
 						GetImageSizeResult x = NIVision.imaqGetImageSize(binaryFrame);
-						SmartDashboard.putString("Current Image size is ", x.width + " by " + x.height);
 						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
-								new NIVision.Point(x.width / 2, 0), new NIVision.Point(x.width / 2, x.height), 125f);
+								new NIVision.Point(x.width / 2, 0), new NIVision.Point(x.width / 2, x.height), 100f);
 						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
-								new NIVision.Point(0, x.height / 2), new NIVision.Point(x.width, x.height / 2), 125f);
+								new NIVision.Point(0, x.height / 2), new NIVision.Point(x.width, x.height / 2), 100f);
 						CameraServer.getInstance().setImage(binaryFrame);
 					} else {
 						SmartDashboard.putNumber("FPS without processing", (imageGetTime) * 100);
@@ -144,6 +143,7 @@ public class ShakerCamera implements Runnable {
 				} else if (!cameraValsOnlyOnce) {
 					// set the exposure and the brightness for when vision
 					// targetting
+					cam.setFPS(20);
 					cam.setExposureManual(cameraExposure);
 					cam.setBrightness(cameraBrightness);
 					cam.updateSettings();
@@ -362,7 +362,8 @@ public class ShakerCamera implements Runnable {
 
 	public void cameraDown() {
 		// bring servo arm down
-		servoSetAngle(0);
+		// servoSetAngle(0);
+		servoSetAngle(108);
 	}
 
 	public void setCameraValues(int exposure, int brightness) {

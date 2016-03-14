@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
+public class PracticeShakerDriveTrain extends PracticeShakerSubsystem implements Runnable {
+	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
 	private static final float MOTOR_FREE_SPEED = 5310;
 	private static final float LOW_GEAR_REDUCTION = 25;
 	private static final float HIGH_GEAR_REDUCTION = (float) 12.15;
 	// wheel diamter in feet
+	private static boolean usingPID = false;
 	private static final float WHEEL_DIAMETER = (float) (8.0 / 12.0);
 	private static final float WHEEL_CIRCUMFERENCE = (float) Math.PI * WHEEL_DIAMETER;
 	private static final float WHEEL_RPM = MOTOR_FREE_SPEED * (LOW_GEAR_REDUCTION - HIGH_GEAR_REDUCTION)
@@ -55,6 +57,10 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 	private double previousRateTime = 0;
 	private double currentRate = 0;
 	private double currentTime = 0;
+	// these vars are for the angle PID
+	private double angleTarget = 0.0;
+	private double turnPIDMaxOutput = 0.5;
+	private boolean PIDAtTarget = false;
 
 	private PracticeShakerDriveTrain() {
 		System.out.println("The shift point is " + SHIFT_POINT + " The wheel rpm is " + WHEEL_RPM);
@@ -85,11 +91,11 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		// gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
 		// gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
 		// (new Thread(gyro)).start();
-		this.gyro = new AnalogGyro(new AnalogInput(1));
-		gyro.setSensitivity(0.0007);
+		// this.gyro = new AnalogGyro(new AnalogInput(1));
+		// gyro.setSensitivity(0.0007);
 		anglePID = new BasicPID(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
 		distancePID = new BasicPID(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
-
+		anglePID.setInvertOutput(true);
 		anglePID.setMaxOutput(0.5);
 		anglePID.setMinOutput(-0.5);
 	}
@@ -102,6 +108,22 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		return practiceDrive;
 	}
 
+	public void run() {
+		try {
+			while (true) {
+				// so here if we are using PID update the drive values otherwise
+				// do nothing
+				if (usingPID) {
+					PIDAtTarget = setAngleInternal(angleTarget, turnPIDMaxOutput);
+				}
+				Thread.sleep(updateDelayMs);
+
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public boolean driveInFeet(double distance, double angle, double maxOutput) {
 		setLowGear();
 		distancePID.setSetPoint(distance);
@@ -110,12 +132,19 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		distancePID.setMinOutput(-maxOutput);
 		anglePID.setMaxOutput(maxOutput / 2);
 		anglePID.setMinOutput(-maxOutput / 2);
+		distancePID.setIZone(0.25);
+		anglePID.setIZone(4);
 		anglePID.changeGains(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
 		distancePID.changeGains(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
-		drivePIDOutput = distancePID.updateAndGetOutput(this.getLeftDistance());
+
+		drivePIDOutput = -distancePID.updateAndGetOutput(getAverageDist());
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngle());
+
 		setLeftRightVoltage(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
-		if (!(Math.abs(distancePID.getError()) < 1) && (Math.abs(anglePID.getError()) < 2.5))
+		System.out.println("distError: " + distancePID.getError() + " output: " + drivePIDOutput);
+		System.out.println("angleError: " + anglePID.getError() + " output: " + anglePIDOutput);
+
+		if (!(Math.abs(distancePID.getError()) < 0.05) && (Math.abs(anglePID.getError()) < 1.5))
 			// Makes sure pid is good error is minimal
 			driveTimePIDGoodTime = Timer.getFPGATimestamp();
 		else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.5)
@@ -147,7 +176,39 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 	// return false;
 	//
 	// }
+
 	public boolean setAngle(double angle, double maxOutput) {
+		usingPID = true;
+		turnPIDMaxOutput = maxOutput;
+		angleTarget = angle;
+		return PIDAtTarget;
+	}
+
+	public boolean setAngleInternal(double angle, double maxOutput) {
+		setLowGear();
+		anglePID.setSetPoint(angle);
+		anglePID.setMaxOutput(maxOutput);
+		anglePID.setMinOutput(-maxOutput);
+		anglePID.setIZone(4);
+		anglePID.changeGains(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
+		anglePIDOutput = anglePID.updateAndGetOutput(getAngleEncoder());
+		setLeftRightVoltage(anglePIDOutput, -anglePIDOutput);
+
+		if (!(Math.abs(anglePID.getError()) < 0.5)) {
+			// Makes sure pid is good error is minimal
+			angleTimePIDGoodTime = Timer.getFPGATimestamp();
+		} else if (Timer.getFPGATimestamp() - angleTimePIDGoodTime > 0.5) {
+			// then makes sure that certain time has passed to be absolutely
+			// positive
+			return true;
+		}
+		return false;
+//		return (Math.abs(anglePID.getError()) < 0.5) && getEncoderAngleRate() < 1.5;
+
+	}
+
+	public boolean setAngleWithOffset(double angle, double maxOutput, double offset) {
+		usingPID = true;
 		setLowGear();
 		anglePID.setInvertOutput(true);
 		anglePID.setSetPoint(angle);
@@ -156,16 +217,16 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		anglePID.setIZone(4);
 		anglePID.changeGains(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
 		anglePIDOutput = anglePID.updateAndGetOutput(getAngleEncoder());
-		setLeftRightVoltage(anglePIDOutput, -anglePIDOutput);
-		
-//		if (!(Math.abs(anglePID.getError()) < 0.5))
-//			// Makes sure pid is good error is minimal
-//			angleTimePIDGoodTime = Timer.getFPGATimestamp();
-//		else if (Timer.getFPGATimestamp() - angleTimePIDGoodTime > 0.5)
-//			// then makes sure that certain time has passed to be absolutely
-//			// positive
-//			return true;
-//		return false;
+		setLeftRightVoltage(anglePIDOutput + offset, -anglePIDOutput + offset);
+
+		// if (!(Math.abs(anglePID.getError()) < 0.5))
+		// // Makes sure pid is good error is minimal
+		// angleTimePIDGoodTime = Timer.getFPGATimestamp();
+		// else if (Timer.getFPGATimestamp() - angleTimePIDGoodTime > 0.5)
+		// // then makes sure that certain time has passed to be absolutely
+		// // positive
+		// return true;
+		// return false;
 		return (Math.abs(anglePID.getError()) < 0.5) && getEncoderAngleRate() < 1.5;
 
 	}
@@ -174,14 +235,20 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		return 45.0 * (getLeftDistance() - getRightDistance()) / 2.0;
 
 	}
+
 	public double getEncoderAngleRate() {
-		return 45.0 * (leftDriveEncoder.getRate()- rightDriveEncoder.getRate()) / 2.0;
+		return 45.0 * (leftDriveEncoder.getRate() - rightDriveEncoder.getRate()) / 2.0;
 
 	}
-	public void autoShift(boolean isTurning) {
+
+	public void autoShift(boolean isTurning, boolean isShooterLow) {
 		// System.out.println("The shift point is " + SHIFT_POINT + " The wheel
 		// rpm is " + WHEEL_RPM);
-
+		double tempShiftPoint = SHIFT_POINT;
+		if (isShooterLow)
+			tempShiftPoint = SHIFT_POINT;
+		else
+			tempShiftPoint = SHIFT_POINT + 1;
 		boolean setToHighGear = false;
 		// if this is the first time running it will get current time
 		// then set to low gear
@@ -192,7 +259,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		// check that the robot is not turning currently and that
 		// it has been at least a few seconds since last shift
 		// this prevents overshifting multiple times
-		if (!isTurning && timeSinceLastShift > 0.5) {
+		if (!isTurning && Timer.getFPGATimestamp() - timeSinceLastShift > 0.5) {
 			// if the abs value of velocity is less than two
 			// then down shift
 			if (!(Math.abs(getAverageVelocity()) < 2)) {
@@ -217,10 +284,6 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 				setLowGear();
 			}
 		}
-	}
-
-	public void run() {
-		// nothing here?
 	}
 
 	public double getAverageAcceleration() {
@@ -263,7 +326,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		SmartDashboard.putNumber("Encoder Angle Rate Change", getEncoderAngleRate());
 		SmartDashboard.putNumber("Angle PID Error", anglePID.getError());
 		SmartDashboard.putNumber("Angle PID Output", anglePIDOutput);
-		SmartDashboard.putNumber("Average Encoder Distance", getAvgDist());
+		SmartDashboard.putNumber("Average Encoder Distance", getAverageDist());
 		SmartDashboard.putNumber("Left Encoder Distance", getLeftDistance());
 		SmartDashboard.putNumber("Right Encoder Distance", getRightDistance());
 		SmartDashboard.putNumber("Distance PID output", drivePIDOutput);
@@ -276,8 +339,13 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 	}
 
 	public void setLeftRight(double left, double right) {
-		// sets the left and right motors
 		roboDrive.setLeftRightMotorOutputs(left, right);
+	}
+
+	public void setToggledLeftRight(double left, double right) {
+		// sets the left and right motors
+		if (!usingPID)
+			setLeftRight(left, right);
 	}
 
 	public void setLeftRightVoltage(double leftVoltage, double rightVoltage) {
@@ -335,26 +403,43 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		// to inches;
 	}
 
+	public double getAngle() {
+		return getAngleEncoder();
+
+	}
+
 	public double getRightDistance() {
 		// distance of right encoder
 		return rightDriveEncoder.getDistance();
 	}
 
-	public void resetGyro() {
-		// zero the gyro
-		gyro.reset();
+	public boolean isUsingPID() {
+		return usingPID;
 	}
 
-	public double getGyroRate() {
-		// recalibrate the gyro for
-		return gyro.getRate();
+	public void usePID() {
+		usingPID = true;
 	}
 
-	public double getAngle() {
-		// Get the current gyro angle
-//		return gyro.getAngle();
-		return getAngleEncoder();
+	public void doneUsingPID() {
+		usingPID = false;
 	}
+
+	// public void resetGyro() {
+	// // zero the gyro
+	// gyro.reset();
+	// }
+	//
+	// public double getGyroRate() {
+	// // recalibrate the gyro for
+	// return gyro.getRate();
+	// }
+	//
+	// public double getAngle() {
+	// // Get the current gyro angle
+	// // return gyro.getAngle();
+	// return getAngleEncoder();
+	// }
 
 	public double getLeftVelocity() {
 		return leftDriveEncoder.getRate();
@@ -369,7 +454,7 @@ public class PracticeShakerDriveTrain extends PracticeShakerSubsystem {
 		return (getLeftVelocity() + getRightVelocity()) / 2;
 	}
 
-	public double getAvgDist() {
+	public double getAverageDist() {
 		// average distance of both encoders
 		return (getLeftDistance() + getRightDistance()) / 2;
 	}
