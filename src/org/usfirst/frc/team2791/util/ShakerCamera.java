@@ -86,7 +86,7 @@ public class ShakerCamera implements Runnable {
 
 	public static ShakerCamera getInstance() {
 		if (cameraInstance == null)
-			cameraInstance = new ShakerCamera("cam0");
+			cameraInstance = new ShakerCamera("cam1");
 		return cameraInstance;
 	}
 
