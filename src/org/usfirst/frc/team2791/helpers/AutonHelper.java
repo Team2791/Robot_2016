@@ -1,14 +1,13 @@
 package org.usfirst.frc.team2791.helpers;
 
-import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
-import static org.usfirst.frc.team2791.robot.Robot.intake;
-
-import org.usfirst.frc.team2791.util.Constants;
-
-import autonModes.AutonMode;
-import autonModes.BasicCloseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team2791.helpers.autonModes.AutonMode;
+import org.usfirst.frc.team2791.helpers.autonModes.BasicCloseAuton;
+import org.usfirst.frc.team2791.util.Constants;
+
+import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
+import static org.usfirst.frc.team2791.robot.Robot.intake;
 
 /**
  * Created by Akhil on 1/28/2016.
@@ -66,14 +65,23 @@ public class AutonHelper extends ShakerHelper {
 		counter = 0;
 		SmartDashboard.putData("Auton Starting Position", defenseNumber);
 
-//		overallAuto = new BasicCloseAuto(24.5, -60, .5);
-		overallAuto = new BasicCloseAuto(20.6, 60, 7.9);
+//		overallAuto = new BasicCloseAuton(24.5, -60, .5);
+		overallAuto = new BasicCloseAuton(20.6, 60, 7.9);
 	}
 
 	public static AutonHelper getInstance() {
 		if (auton == null)
 			auton = new AutonHelper();
 		return auton;
+	}
+
+	private static void retuneStationaryAnglePID() {
+		driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
+	}
+
+	private static void retuneDistancePID() {
+		driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
+				SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
 	}
 
 	public void run() {
@@ -94,15 +102,6 @@ public class AutonHelper extends ShakerHelper {
 			break;
 
 		}// end switch
-	}
-
-	private static void retuneStationaryAnglePID() {
-		driveTrain.setAngle(SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
-	}
-
-	private static void retuneDistancePID() {
-		driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
-				SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
 	}
 
 	// driveTrain.setAngle(SmartDashboard.getNumber("Angle

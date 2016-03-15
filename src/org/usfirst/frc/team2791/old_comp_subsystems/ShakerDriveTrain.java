@@ -1,5 +1,4 @@
-package org.usfirst.frc.team2791.old_comp_subsystems;
-//package org.usfirst.frc.team2791.subsystems;
+//package org.usfirst.frc.team2791.old_comp_subsystems;
 //
 //import edu.wpi.first.wpilibj.*;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,7 +7,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //import org.usfirst.frc.team2791.util.ShakerGyro;
 //import org.usfirst.frc.team2791.util.Util;
 //
-//public class ShakerDriveTrain extends ShakerSubsystem {
+//public class ShakerDriveTrain {
 //    private static ShakerDriveTrain driveTrainInstance;
 //    private static BasicPID anglePID;
 //    private static BasicPID distancePID;
