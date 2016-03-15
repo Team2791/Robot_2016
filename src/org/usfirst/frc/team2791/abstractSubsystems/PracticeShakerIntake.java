@@ -1,18 +1,15 @@
-package org.usfirst.frc.team2791.practicebotSubsystems;
+package org.usfirst.frc.team2791.abstractSubsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class PracticeShakerIntake extends PracticeShakerSubsystem {
-    private static final double INTAKE_ACTUATION_TIME = 1.5;
+public class PracticeShakerIntake extends ShakerSubsystem {
     private static PracticeShakerIntake practiceIntake = null;
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;
     private DoubleSolenoid intakeSolenoid;
     private DoubleSolenoid armAttachment;
-    private double timeSinceIntakeActuation;
 
     private PracticeShakerIntake() {
         // init
@@ -36,6 +33,7 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
     public void run() {
     }
 
+
     public void updateSmartDash() {
     }
 
@@ -56,40 +54,24 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
 
     public void retractIntake() {
         // bring intake back behind bumpers
-        if (getSolenoidState().equals(IntakeState.EXTENDED))
-            timeSinceIntakeActuation = Timer.getFPGATimestamp();
         intakeSolenoid.set(PracticeConstants.INTAKE_RECTRACTED_VALUE);
+
     }
 
     public void extendIntake() {
         // extends the intake for ball pickup
-        if (getSolenoidState().equals(IntakeState.RETRACTED))
-            timeSinceIntakeActuation = Timer.getFPGATimestamp();
-        timeSinceIntakeActuation = Timer.getFPGATimestamp();
         intakeSolenoid.set(PracticeConstants.INTAKE_EXTENDED_VALUE);
 
     }
 
-    private IntakeState getSolenoidState() {
+    public IntakeState getIntakeState() {
+        // returns state of intake in form of the enum IntakeState
         if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE))
             return IntakeState.RETRACTED;
         else if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_EXTENDED_VALUE))
             return IntakeState.EXTENDED;
         else
             return IntakeState.EXTENDED;
-    }
-
-    public IntakeState getIntakeState() {
-        // returns state of intake in form of the enum IntakeState
-        if (Timer.getFPGATimestamp() - timeSinceIntakeActuation > INTAKE_ACTUATION_TIME) {
-            if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE))
-                return IntakeState.RETRACTED;
-            else if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_EXTENDED_VALUE))
-                return IntakeState.EXTENDED;
-            else
-                return IntakeState.EXTENDED;
-        }
-        return IntakeState.MOVING;
     }
 
     public void stopMotors() {
@@ -112,16 +94,14 @@ public class PracticeShakerIntake extends PracticeShakerSubsystem {
     }
 
     public void setArmAttachmentUp() {
-        // set the flipper up
         armAttachment.set(PracticeConstants.INTAKE_ARM_UP_VALUE);
     }
 
     public void setArmAttachmentDown() {
-        // set the flipper down
         armAttachment.set(PracticeConstants.INTAKE_ARM_DOWN_VALUE);
     }
 
     public enum IntakeState {
-        RETRACTED, EXTENDED, MOVING
+        RETRACTED, EXTENDED
     }
 }
