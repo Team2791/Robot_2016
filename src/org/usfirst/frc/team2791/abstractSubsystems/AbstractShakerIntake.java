@@ -4,17 +4,18 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class AbstractShakerIntake extends ShakerSubsystem {
-	public final double INTAKE_SPEED = 1.0;
-	
+    public final double INTAKE_SPEED = 1.0;
+
+
     protected Talon rightIntakeMotor;
     protected Talon leftIntakeMotor;
 
     public AbstractShakerIntake() {
     }
-    
+
     // THIS METHOD NEEDS TO BE CALLED BY THE SUB CLASS
     protected void init() {
-    	leftIntakeMotor.setInverted(true);
+        leftIntakeMotor.setInverted(true);
     }
 
     public void updateSmartDash() {
@@ -36,10 +37,24 @@ public abstract class AbstractShakerIntake extends ShakerSubsystem {
     }
 
     public abstract void retractIntake();
+
     public abstract void extendIntake();
+
     public abstract IntakeState getIntakeState();
+
     public abstract void setArmAttachmentUp();
+
     public abstract void setArmAttachmentDown();
+
+    public abstract boolean getArmAttachementUp();
+
+    public boolean isExtended() {
+        return getIntakeState().equals(IntakeState.EXTENDED);
+    }
+
+    public boolean isRetracted() {
+        return getIntakeState().equals(IntakeState.RETRACTED);
+    }
 
     public void stopMotors() {
         // sends 0 to both motors to stop them
