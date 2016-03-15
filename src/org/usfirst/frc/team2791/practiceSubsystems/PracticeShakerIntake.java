@@ -1,11 +1,8 @@
 package org.usfirst.frc.team2791.practiceSubsystems;
 
-import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
-import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake.IntakeState;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 
 public class PracticeShakerIntake extends AbstractShakerIntake  {
     private DoubleSolenoid intakeSolenoid;
@@ -60,6 +57,11 @@ public class PracticeShakerIntake extends AbstractShakerIntake  {
 	@Override
     public void setArmAttachmentDown() {
         armAttachment.set(PracticeConstants.INTAKE_ARM_DOWN_VALUE);
+    }
+
+    @Override
+    public boolean getArmAttachementUp() {
+        return false;
     }
 
 }

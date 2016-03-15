@@ -1,17 +1,10 @@
 package org.usfirst.frc.team2791.practiceSubsystems;
 
-import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
-import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter.ShooterHeight;
-import org.usfirst.frc.team2791.util.Constants;
-
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
-import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 
 public class PracticeShakerShooter extends AbstractShakerShooter {
 	// shooter arm positiion pistons
@@ -54,8 +47,8 @@ public class PracticeShakerShooter extends AbstractShakerShooter {
 		shortPiston.set(PracticeConstants.SMALL_PISTON_LOW_STATE);
 		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
 	}
-	
-	protected void moveShooterPistonsLHigh() {
+
+	protected void moveShooterPistonsHigh() {
 		shortPiston.set(PracticeConstants.SMALL_PISTON_HIGH_STATE);
 		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
 	}
