@@ -1,18 +1,20 @@
 package org.usfirst.frc.team2791.robot;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
+import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerIntake;
+import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerDriveTrain;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
+
+import practiceSubsystems.PracticeShakerDriveTrain;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 	public static boolean debuggingMode = false;
@@ -30,7 +32,7 @@ public class Robot extends IterativeRobot {
 	// Practice Robot susbsystems
 	public static PracticeShakerShooter shooter;
 	public static PracticeShakerIntake intake;
-	public static PracticeShakerDriveTrain driveTrain;
+	public static AbstractShakerDriveTrain driveTrain;
 
 	// camera
 	public static ShakerCamera camera;
@@ -56,7 +58,7 @@ public class Robot extends IterativeRobot {
 		operatorJoystick = Operator.getInstance();
 
 		// subsystems
-		driveTrain = PracticeShakerDriveTrain.getInstance();
+		driveTrain = new PracticeShakerDriveTrain();
 		driveTrainThread = new Thread(driveTrain);
 		driveTrainThread.start();
 		intake = PracticeShakerIntake.getInstance();

@@ -2,10 +2,11 @@ package org.usfirst.frc.team2791.helpers;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter;
+import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerIntake.IntakeState;
+import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerIntake.IntakeState;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter;
-import org.usfirst.frc.team2791.practicebotSubsystems.PracticeShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.util.Toggle;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
@@ -58,37 +59,46 @@ public class TeleopHelper extends ShakerHelper {
 	}
 
 	private void driverRun() {
+
+		// Read a value from the smart dashboard and chose what control scheme to use for the
+		// drive train
 		switch (getDriveType()) {
 		case TANK:
-			driveTrain.setToggledLeftRight(driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightY());
+			driveTrain.setToggledLeftRight(driverJoystick.getAxisLeftY(),
+					-driverJoystick.getAxisRightY());
 			break;
 		default:
 		case GTA:
-			driveTrain.setToggledLeftRight(driverJoystick.getGtaDriveLeft(), driverJoystick.getGtaDriveRight());
+
 			break;
 		case ARCADE:
-			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisRightX());
+			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
+					-driverJoystick.getAxisRightX());
 			break;
 		case SINGLE_ARCADE:
-			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(), -driverJoystick.getAxisLeftX());
+			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
+					-driverJoystick.getAxisLeftX());
 			break;
 		}
-		if(driveTrain.isUsingPID() && Math.abs(driverJoystick.getGtaDriveLeft())>0.2) {
+
+		if (driveTrain.isUsingPID() && Math.abs(driverJoystick.getGtaDriveLeft()) > 0.2) {
 			System.out.println("driver exiting PID");
 			driveTrain.doneUsingPID();
 			AutoLineUpShot.reset();
 		}
-			
-		if (driverJoystick.getDpadLeft() || cameraLineUp) {
-			driverAutoLineUp();
-		}
+
+		// TODO: rework this method and the drive train methods to do PID in the run loop 
+//		if (driverJoystick.getDpadLeft() || cameraLineUp) {
+//			driverAutoLineUp();
+//		}
+		
+		// Let the driver hold B to set high gear, hold X to set low gear and othewise auto shit
 		if (driverJoystick.getButtonB())
 			driveTrain.setHighGear();
 		else if (driverJoystick.getButtonX())
 			driveTrain.setLowGear();
 		else
-			driveTrain.autoShift(!(driverJoystick.getGtaDriveLeft() == driverJoystick.getGtaDriveRight()),
-					shooter.equals(ShooterHeight.LOW));
+			driveTrain.autoShift(shooter.equals(ShooterHeight.LOW));
 	}
 
 	private void operatorRun() {
@@ -106,13 +116,16 @@ public class TeleopHelper extends ShakerHelper {
 		} else if (!AutoLineUpShot.isRunning() && !shooter.getIfAutoFire()) {
 			// else run the manual controls, if it is autofiring this will do
 			// nothing
-//			 shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"), false);
-			shooter.setShooterSpeeds(operatorJoystick.getAxisRT() - operatorJoystick.getAxisLT(), false);
+			// shooter.setShooterSpeeds(SmartDashboard.getNumber("Shooter Speeds Setpoint range table"),
+			// false);
+			shooter.setShooterSpeeds(operatorJoystick.getAxisRT()
+					- operatorJoystick.getAxisLT(), false);
 			intake.stopMotors();
 			// if(shooter.hasBall()||operatorJoystick.getButtonSel())
 			// camera.setCameraValues(1, 1);
 		}
-		if (shooter.hasBall() && operatorJoystick.getDpadDown() || operatorJoystick.getDpadLeft()
+		if (shooter.hasBall() && operatorJoystick.getDpadDown()
+				|| operatorJoystick.getDpadLeft()
 				|| operatorJoystick.getDpadRight())
 			holdIntakeDown = false;
 		if (operatorJoystick.getButtonRS()) {
@@ -126,7 +139,8 @@ public class TeleopHelper extends ShakerHelper {
 		// then run the delayed shooter movement that waits one second
 		// before moving the arm
 		// this allows time for the intake to go down to prevent collision
-		if (holdIntakeDown && intake.getIntakeState().equals(IntakeState.EXTENDED)) {
+		if (holdIntakeDown
+				&& intake.getIntakeState().equals(IntakeState.EXTENDED)) {
 			if (operatorJoystick.getDpadUp()) {
 				// holdIntakeDown = false;
 				useArmAttachmentToggle.setManual(false);
@@ -187,7 +201,8 @@ public class TeleopHelper extends ShakerHelper {
 			shooter.resetServoAngle();
 
 		if (shooter.getShooterHeight().equals(ShooterHeight.LOW)
-				&& (operatorJoystick.getButtonSel() || useArmAttachmentToggle.get())) {
+				&& (operatorJoystick.getButtonSel() || useArmAttachmentToggle
+						.get())) {
 			camera.cameraDown();
 		} else {
 			camera.cameraUp();
@@ -198,8 +213,8 @@ public class TeleopHelper extends ShakerHelper {
 		else
 			compressor.start();
 
-		if ((operatorJoystick.getButtonLB() || driverJoystick.getDpadRight() || AutoLineUpShot.isRunning())
-				&& !cameraLineUp) {
+		if ((operatorJoystick.getButtonLB() || driverJoystick.getDpadRight() || AutoLineUpShot
+				.isRunning()) && !cameraLineUp) {
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt()) {
 				shooter.reset();
@@ -218,14 +233,18 @@ public class TeleopHelper extends ShakerHelper {
 			holdIntakeDown = false;
 		// intake extension toggle
 		if (!shooter.getIfPreppingShot())
-			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB()
-					|| PracticeShakerShooter.delayedArmMove || operatorJoystick.getButtonSel() || holdIntakeDown) {
+			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft()
+					|| operatorJoystick.getButtonB()
+					|| PracticeShakerShooter.delayedArmMove
+					|| operatorJoystick.getButtonSel() || holdIntakeDown) {
 				// this runs if intakeing ball too
 				intake.extendIntake();
-			} else// Retract intake
+			} else
+				// Retract intake
 				intake.retractIntake();
 		// arm attachment
-		useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY() || operatorJoystick.getButtonY());
+		useArmAttachmentToggle.giveToggleInput(driverJoystick.getButtonY()
+				|| operatorJoystick.getButtonY());
 		if (useArmAttachmentToggle.getToggleOutput())
 			intake.setArmAttachmentDown();
 		else
@@ -245,8 +264,10 @@ public class TeleopHelper extends ShakerHelper {
 		intake.updateSmartDash();
 		shooter.updateSmartDash();
 		driveTrain.updateSmartDash();
-		SmartDashboard.putString("Current Driver Input:", getDriveType().toString());
-		SmartDashboard.putNumber("turning value", driverJoystick.getAxisLeftX());
+		SmartDashboard.putString("Current Driver Input:", getDriveType()
+				.toString());
+		SmartDashboard
+				.putNumber("turning value", driverJoystick.getAxisLeftX());
 	}
 
 	public void reset() {
@@ -254,25 +275,29 @@ public class TeleopHelper extends ShakerHelper {
 		intake.reset();
 	}
 
-	private static void driverAutoLineUp() {
-		cameraLineUp = true;
-		if (!runOnlyOnce) {
-			driveTrain.resetEncoders();
-			if (camera.getTarget() != null)
-				target = driveTrain.getAngle() + camera.getTarget().ThetaDifference;
-			runOnlyOnce = true;
-		}
-		if (driveTrain.setAngleWithOffset(target, 0.7, driverJoystick.getAxisRT() - driverJoystick.getAxisLT())
-				|| driverJoystick.getDpadUp()) {
-			SmartDashboard.putBoolean("Done Lining Up", true);
-			cameraLineUp = false;
-			runOnlyOnce = false;
-			target = 0;
-
-		} else
-			SmartDashboard.putBoolean("Done Lining Up", false);
-
-	}
+//	// THIS IS UNTESTED!!!!
+//	private static void driverAutoLineUp() {
+//		cameraLineUp = true;
+//		if (!runOnlyOnce) {
+//			driveTrain.resetEncoders();
+//			if (camera.getTarget() != null)
+//				target = driveTrain.getAngle()
+//						+ camera.getTarget().ThetaDifference;
+//			runOnlyOnce = true;
+//		}
+//		
+//		double driverThrottle = driverJoystick.getAxisRT() - driverJoystick.getAxisLT();
+//		// Exit the autoline up after the 
+//		if (driveTrain.setAngleWithDriving(target, 0.7, driverThrottle) || driverJoystick.getDpadUp()) {
+//			SmartDashboard.putBoolean("Done Lining Up", true);
+//			cameraLineUp = false;
+//			runOnlyOnce = false;
+//			target = 0;
+//
+//		} else
+//			SmartDashboard.putBoolean("Done Lining Up", false);
+//
+//	}
 
 	public DriveType getDriveType() {
 		// reads data of the smart dashboard and converts to enum DriveType

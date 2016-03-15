@@ -1,10 +1,10 @@
-package org.usfirst.frc.team2791.practicebotSubsystems;
+package org.usfirst.frc.team2791.abstractSubsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class PracticeShakerIntake extends PracticeShakerSubsystem {
+public class PracticeShakerIntake extends ShakerSubsystem {
     private static PracticeShakerIntake practiceIntake = null;
     private Talon rightIntakeMotor;
     private Talon leftIntakeMotor;

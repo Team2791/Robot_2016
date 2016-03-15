@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2791.practicebotSubsystems;
+package org.usfirst.frc.team2791.abstractSubsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
 
-public class PracticeShakerShooter extends PracticeShakerSubsystem implements Runnable {
+public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
 	// time that the shooter wheels have to be at the proper speed
 	private static final double delayTimeBeforeShooting = 0.5;
