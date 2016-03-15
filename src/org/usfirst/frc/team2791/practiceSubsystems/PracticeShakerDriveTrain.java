@@ -1,4 +1,4 @@
-package practiceSubsystems;
+package org.usfirst.frc.team2791.practiceSubsystems;
 
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 
@@ -41,6 +41,7 @@ public class PracticeShakerDriveTrain extends AbstractShakerDriveTrain {
 				PracticePorts.LEFT_DRIVE_ENCODER_PORT_B);
 		this.rightDriveEncoder = new Encoder(PracticePorts.RIGHT_DRIVE_ENCOODER_PORT_A,
 				PracticePorts.RIGHT_DRIVE_ENCODER_PORT_B);
+		init();
 	}
 	
 	public GearState getCurrentGear() {

@@ -1,17 +1,19 @@
 package org.usfirst.frc.team2791.robot;
 
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
-import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerIntake;
-import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
+import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerDriveTrain;
+import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerIntake;
+import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
-import practiceSubsystems.PracticeShakerDriveTrain;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,8 +32,8 @@ public class Robot extends IterativeRobot {
 	// public static ShakerIntake intake;
 	// public static ShakerDriveTrain driveTrain;
 	// Practice Robot susbsystems
-	public static PracticeShakerShooter shooter;
-	public static PracticeShakerIntake intake;
+	public static AbstractShakerShooter shooter;
+	public static AbstractShakerIntake intake;
 	public static AbstractShakerDriveTrain driveTrain;
 
 	// camera
@@ -61,8 +63,8 @@ public class Robot extends IterativeRobot {
 		driveTrain = new PracticeShakerDriveTrain();
 		driveTrainThread = new Thread(driveTrain);
 		driveTrainThread.start();
-		intake = PracticeShakerIntake.getInstance();
-		shooter = PracticeShakerShooter.getInstance();
+		intake = new PracticeShakerIntake();
+		shooter = new PracticeShakerShooter();
 		// shooter = PracticeShakerShooter.getInstance();
 
 		// competition robot

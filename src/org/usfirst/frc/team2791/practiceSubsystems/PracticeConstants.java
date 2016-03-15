@@ -1,4 +1,4 @@
-package practiceSubsystems;
+package org.usfirst.frc.team2791.practiceSubsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
@@ -33,7 +33,6 @@ public class PracticeConstants {
     public static final double THRESHOLD_BALL_DISTANCE = 0.250;
 
     // INTAKE CONSTANTS
-    public static final double INTAKE_SPEED = 1.0;
     public static final DoubleSolenoid.Value INTAKE_RECTRACTED_VALUE = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value INTAKE_EXTENDED_VALUE = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value INTAKE_ARM_UP_VALUE = DoubleSolenoid.Value.kForward;
