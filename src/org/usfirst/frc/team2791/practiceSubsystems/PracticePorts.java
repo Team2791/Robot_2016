@@ -1,4 +1,4 @@
-package practiceSubsystems;
+package org.usfirst.frc.team2791.practiceSubsystems;
 
 public class PracticePorts {
     // ANALOG

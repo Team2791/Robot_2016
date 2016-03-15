@@ -41,8 +41,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	// protected Shakey_ADXRS450_Gyro gyro;
 	
 	// These are sensors for the drive train
-	protected Encoder leftDriveEncoder;
-	protected Encoder rightDriveEncoder;
+	protected Encoder leftDriveEncoder = null;
+	protected Encoder rightDriveEncoder = null;
 	
 	// Sensor information and information about the robot
 	protected static final float WHEEL_DIAMETER = (float) (8.0 / 12.0);
@@ -75,7 +75,10 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	 */
 	public AbstractShakerDriveTrain() {
 		// TODO check if any of the sensors we rely on are null
-		
+	}
+	
+	// THIS METHOD NEEDS TO BE CALLED BY THE SUBCLASS!!
+	protected void init() {
 		if(robotDrive == null) {
 			System.out.println("robotDrive needs to be instantiated by the subclass!");
 			// The only reason this is commented out is because is so we don't have to introduce 

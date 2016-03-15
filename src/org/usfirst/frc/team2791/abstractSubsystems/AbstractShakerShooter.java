@@ -6,125 +6,105 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
 
-public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
-	private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
+public abstract class AbstractShakerShooter extends ShakerSubsystem implements Runnable {
+	protected static final int updateDelayMs = 1000 / 100; // run at 100 Hz
 	// time that the shooter wheels have to be at the proper speed
-	private static final double delayTimeBeforeShooting = 0.5;
+	protected static final double delayTimeBeforeShooting = 0.5;
 	// boolean that decides whether the arm should move in a delay motion
 	public static boolean delayedArmMove = false;
-	private static PracticeShakerShooter practiceShooter = null;
-	private final double delayTimeForServo = 0.8;// time for servo to push
+	protected final double delayTimeForServo = 0.8;// time for servo to push
 	// how many ticks the encoder has
-	private final int encoderTicks = 128 * 4;
+	protected final int encoderTicks = 128 * 4;
 	// shooter can talons
-	private CANTalon leftShooterTalon;
-	private CANTalon rightShooterTalon;
+	protected CANTalon leftShooterTalon;
+	protected CANTalon rightShooterTalon;
+	
 	// shooter arm positiion pistons
-	private DoubleSolenoid shortPiston;
-	private DoubleSolenoid longPiston;
+//	private DoubleSolenoid shortPiston;
+//	private DoubleSolenoid longPiston;
+	
 	// servo that pushes ball into the shooter
-	private Servo ballAidServo;
-	private boolean addExtraPower = false;
+	protected Servo ballAidServo;
+	protected boolean addExtraPower = false;
 	// sensor that allows us to know that the ball is in the shooter
-	private AnalogInput ballDistanceSensor;
+	protected AnalogInput ballDistanceSensor;
 	// feed forward of the shooter wheel pid
-	private double feedForward = 0.31;
-	private boolean cancelShot = false;
+	protected double feedForward = 0.31;
+	protected boolean cancelShot = false;
 	// setpoints to acheicve target depending on the pos of the shooter arm
 //	private double closeShotSetPoint = 560;
-	private double closeShotSetPoint = 635;
-	private double farShotSetpoint = 925;
-	private double farShotExtraJuice = 90;
+	protected double closeShotSetPoint = 635;
+	protected double farShotSetpoint = 925;
+	protected double farShotExtraJuice = 90;
 	// boolean that decides weahter autofiring should occur
-	private boolean autoFire = false;
+	protected boolean autoFire = false;
 	// manual override boolean for the autofire
-	private boolean overrideShot = false;
-	private double autonShootSpeed = 100;
-	private boolean autonShot = false;
+	protected boolean overrideShot = false;
+	protected double autonShootSpeed = 100;
+	protected boolean autonShot = false;
 	// prepshot decides whether to run the shooter wheels before hand to save
 	// time
-	private boolean prepShot = false;
+	protected boolean prepShot = false;
 	// check is shooter arm is moving
-	private boolean shooterArmMoving = false;
+	protected boolean shooterArmMoving = false;
 	// time when the shooter arm last moved
-	private double timeWhenShooterArmMoved;
+	protected double timeWhenShooterArmMoved;
 	// shooter height setpoint
-	private ShooterHeight delayedShooterPos;
-	private boolean createOnce = false;
+	protected ShooterHeight delayedShooterPos;
 
-	private PracticeShakerShooter() {
-		System.out.println("Creating an instance of the shaker shooter");
-
-		// shooter talons
-		if (!createOnce) {
-			leftShooterTalon = new CANTalon(PracticePorts.SHOOTER_TALON_LEFT_PORT);
-			rightShooterTalon = new CANTalon(PracticePorts.SHOOTER_TALON_RIGHT_PORT);
-			// servo
-			ballAidServo = new Servo(PracticePorts.BALL_AID_SERVO_PORT);
-			// shooter arm movement pistons
-			longPiston = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.LONG_PISTON_FORWARD,
-					PracticePorts.LONG_PISTON_REVERSE);
-			shortPiston = new DoubleSolenoid(21, 0, 1);
-			// analog sensor
-			ballDistanceSensor = new AnalogInput(PracticePorts.BALL_DISTANCE_SENSOR_PORT);
-			// shooter talon config
-			rightShooterTalon.setInverted(false);
-			rightShooterTalon.reverseOutput(false);
-			leftShooterTalon.reverseOutput(false);
-			leftShooterTalon.reverseSensor(true);
-			rightShooterTalon.reverseSensor(false);
-			// sets limits in each direction such that shooters don't run
-			// reverse
-			// with pid
-			leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-			rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
-			// put the shooter pid values on the dashboard
-			SmartDashboard.putNumber("Shooter p", Constants.SHOOTER_P);
-			SmartDashboard.putNumber("Shooter i", Constants.SHOOTER_I);
-			SmartDashboard.putNumber("Shooter d", Constants.SHOOTER_D);
-			SmartDashboard.putNumber("FeedForward", feedForward);
-			// put setpoints on the dashboard
-			SmartDashboard.putNumber("closeShotSetpoint", closeShotSetPoint);
-			SmartDashboard.putNumber("farShotSetpoint", farShotSetpoint);
-			// izone for the talons
-			// izone is how close the shooter has to be to the setpoint before
-			// using
-			// i in pid
-			leftShooterTalon.setIZone(500);
-			rightShooterTalon.setIZone(500);
-			// choose the type of sensor attached to the talon
-			leftShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			rightShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			// how many ticks are in the feed back device
-			leftShooterTalon.configEncoderCodesPerRev(encoderTicks);
-			rightShooterTalon.configEncoderCodesPerRev(encoderTicks);
-			// control mode - speed(rpms), voltage(how many volts to be sent to
-			// the
-			// talons)
-			// percentage(voltage sent/ 12 v)
-			leftShooterTalon.changeControlMode(TalonControlMode.Speed);
-			rightShooterTalon.changeControlMode(TalonControlMode.Speed);
-			// enable the talons
-			leftShooterTalon.enableControl();
-			rightShooterTalon.enableControl();
-			leftShooterTalon.enable();
-			rightShooterTalon.enable();
-
-			leftShooterTalon.configNominalOutputVoltage(0, 0);
-			rightShooterTalon.configNominalOutputVoltage(0, 0);
-			createOnce = true;
-			SmartDashboard.putNumber("ShooterSpeedExtraJuice", 0);
-		}
+	public AbstractShakerShooter() {
 	}
 
-	public static PracticeShakerShooter getInstance() {
-		if (practiceShooter == null) {
-			System.out.println("Creating new instance of shooter");
-			practiceShooter = new PracticeShakerShooter();
-		}
-		return practiceShooter;
-	}
+	// THIS METHOD NEED STO BE CALLED BY THE SUB CLASS
+	protected void init() {
+		// shooter talon config
+		rightShooterTalon.setInverted(false);
+		rightShooterTalon.reverseOutput(false);
+		leftShooterTalon.reverseOutput(false);
+		leftShooterTalon.reverseSensor(true);
+		rightShooterTalon.reverseSensor(false);
+		// sets limits in each direction such that shooters don't run
+		// reverse
+		// with pid
+		leftShooterTalon.configPeakOutputVoltage(+12.0f, 0);
+		rightShooterTalon.configPeakOutputVoltage(+12.0f, 0);
+		// put the shooter pid values on the dashboard
+		SmartDashboard.putNumber("Shooter p", Constants.SHOOTER_P);
+		SmartDashboard.putNumber("Shooter i", Constants.SHOOTER_I);
+		SmartDashboard.putNumber("Shooter d", Constants.SHOOTER_D);
+		SmartDashboard.putNumber("FeedForward", feedForward);
+		// put setpoints on the dashboard
+		SmartDashboard.putNumber("closeShotSetpoint", closeShotSetPoint);
+		SmartDashboard.putNumber("farShotSetpoint", farShotSetpoint);
+		// izone for the talons
+		// izone is how close the shooter has to be to the setpoint before
+		// using
+		// i in pid
+		leftShooterTalon.setIZone(500);
+		rightShooterTalon.setIZone(500);
+		// choose the type of sensor attached to the talon
+		leftShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		rightShooterTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		// how many ticks are in the feed back device
+		leftShooterTalon.configEncoderCodesPerRev(encoderTicks);
+		rightShooterTalon.configEncoderCodesPerRev(encoderTicks);
+		// control mode - speed(rpms), voltage(how many volts to be sent to
+		// the
+		// talons)
+		// percentage(voltage sent/ 12 v)
+		leftShooterTalon.changeControlMode(TalonControlMode.Speed);
+		rightShooterTalon.changeControlMode(TalonControlMode.Speed);
+		// enable the talons
+		leftShooterTalon.enableControl();
+		rightShooterTalon.enableControl();
+		leftShooterTalon.enable();
+		rightShooterTalon.enable();
 
+		leftShooterTalon.configNominalOutputVoltage(0, 0);
+		rightShooterTalon.configNominalOutputVoltage(0, 0);
+		SmartDashboard.putNumber("ShooterSpeedExtraJuice", 0);
+	}
+	
 	public void run() {
 		try {
 			while (true) {
@@ -392,44 +372,34 @@ public class PracticeShakerShooter extends ShakerSubsystem implements Runnable {
 		// addExtraPower = true;
 	}
 
-	public ShooterHeight getShooterHeight() {
-		// get current shooter height by determining which solenoid are true
-		if (shortPiston.get().equals(PracticeConstants.SMALL_PISTON_HIGH_STATE)
-				&& longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)) {
-			return ShooterHeight.HIGH;
-		} else if (longPiston.get().equals(PracticeConstants.LARGE_PISTON_HIGH_STATE)) {
-			return ShooterHeight.MID;
-		} else {
-			return ShooterHeight.LOW;
-		}
-	}
+	public abstract ShooterHeight getShooterHeight();
 
 	public void setShooterLow() {
 		// both pistons will be set to true to get max height
 		shooterArmMoving = true;
 		timeWhenShooterArmMoved = Timer.getFPGATimestamp();
 		// both pistons will be set to true to get low height
-		shortPiston.set(PracticeConstants.SMALL_PISTON_LOW_STATE);
-		longPiston.set(PracticeConstants.LARGE_PISTON_LOW_STATE);
-
+		moveShooterPistonsLow();
 	}
 
 	public void setShooterMiddle() {
 		// set shooter height to middle meaning only one piston will be true
 		shooterArmMoving = true;
 		timeWhenShooterArmMoved = Timer.getFPGATimestamp();
-		shortPiston.set(PracticeConstants.SMALL_PISTON_LOW_STATE);
-		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
+		moveShooterPistonsMiddle();
 	}
 
 	public void setShooterHigh() {
 		// set shooter height to low , set both pistons to false
 		shooterArmMoving = true;
 		timeWhenShooterArmMoved = Timer.getFPGATimestamp();
-		shortPiston.set(PracticeConstants.SMALL_PISTON_HIGH_STATE);
-		longPiston.set(PracticeConstants.LARGE_PISTON_HIGH_STATE);
-		// short needs to switch
+		moveShooterPistonsLHigh();
 	}
+	
+	
+	protected abstract void moveShooterPistonsLow();
+	protected abstract void moveShooterPistonsMiddle();
+	protected abstract void moveShooterPistonsLHigh();
 
 	public void overrideAutoShot() {
 		overrideShot = true;
