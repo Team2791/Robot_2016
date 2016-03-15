@@ -59,26 +59,26 @@ public class TeleopHelper extends ShakerHelper {
 	}
 
 	private void driverRun() {
-
 		// Read a value from the smart dashboard and chose what control scheme to use for the
 		// drive train
 		switch (getDriveType()) {
-		case TANK:
-			driveTrain.setToggledLeftRight(driverJoystick.getAxisLeftY(),
-					-driverJoystick.getAxisRightY());
-			break;
-		default:
-		case GTA:
-
-			break;
-		case ARCADE:
-			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
-					-driverJoystick.getAxisRightX());
-			break;
-		case SINGLE_ARCADE:
-			driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
-					-driverJoystick.getAxisLeftX());
-			break;
+			case TANK:
+				driveTrain.setToggledLeftRight(driverJoystick.getAxisLeftY(),
+						-driverJoystick.getAxisRightY());
+				break;
+			default:
+			case GTA:
+				driveTrain.setToggledLeftRight(driverJoystick.getGtaDriveLeft(),
+						driverJoystick.getGtaDriveRight());
+				break;
+			case ARCADE:
+				driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
+						-driverJoystick.getAxisRightX());
+				break;
+			case SINGLE_ARCADE:
+				driveTrain.setToggledLeftRight(-driverJoystick.getAxisLeftY(),
+						-driverJoystick.getAxisLeftX());
+				break;
 		}
 
 		if (driveTrain.isUsingPID() && Math.abs(driverJoystick.getGtaDriveLeft()) > 0.2) {
@@ -303,15 +303,15 @@ public class TeleopHelper extends ShakerHelper {
 		// reads data of the smart dashboard and converts to enum DriveType
 		String driverInputType = (String) driveTypeChooser.getSelected();
 		switch (driverInputType) {
-		default:
-		case "GTA":
-			return DriveType.GTA;
-		case "ARCADE":
-			return DriveType.ARCADE;
-		case "TANK":
-			return DriveType.TANK;
-		case "SINGLE_ARCADE":
-			return DriveType.SINGLE_ARCADE;
+			default:
+			case "GTA":
+				return DriveType.GTA;
+			case "ARCADE":
+				return DriveType.ARCADE;
+			case "TANK":
+				return DriveType.TANK;
+			case "SINGLE_ARCADE":
+				return DriveType.SINGLE_ARCADE;
 		}
 	}
 

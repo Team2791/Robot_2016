@@ -111,11 +111,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		super.teleopPeriodic();
 		teleopHelper.run();
 		teleopHelper.updateSmartDash();
 		alwaysUpdatedSmartDashValues();
-
 	}
 
 	public void disabledPeriodic() {
