@@ -1,7 +1,13 @@
 package org.usfirst.frc.team2791.helpers.autonModes;
 
-import static org.usfirst.frc.team2791.robot.Robot.*;
+import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
 //import org.usfirst.frc.team2791.
+import static org.usfirst.frc.team2791.robot.Robot.intake;
+import static org.usfirst.frc.team2791.robot.Robot.shooter;
+
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake.IntakeState;
+
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Created by team2791 on 3/15/2016.
@@ -10,6 +16,8 @@ public class BasicCloseAuton extends AutonMode {
     private double firstDistance;
     private double turnToAngle;
     private double secondDistance;
+    
+    private Timer timer = new Timer();
 
     public BasicCloseAuton(double firstTravelDistance, double turnAngle, double secondTravelDistance) {
         this.firstDistance = firstTravelDistance;
@@ -22,27 +30,36 @@ public class BasicCloseAuton extends AutonMode {
             case 0:
                 driveTrain.disable();
                 shooter.stopMotors();
+                timer.reset();
                 break;
             case 1:
+            	System.out.println("Starting basic close auto.");
                 driveTrain.resetEncoders();
                 intake.extendIntake();
+                timer.reset();
+                timer.start();
             case 2:
-                if (intake.getIntakeState().equals(IntakeState.EXTENDED))
+                if (timer.get() > 1.5 && intake.getIntakeState().equals(IntakeState.EXTENDED)) {
+                	System.out.println("Intake down, starting my first drive.");
                     state++;
+                }
                 break;
             case 3:
                 if (driveTrain.driveInFeet(firstDistance, 0, 0.6)) {
-                    //if reached the distance then reset the encoders
+                	System.out.println("Finished driving, now time to raise the shooter.");
+                    // if reached the distance then reset the encoders 
                     driveTrain.resetEncoders();
-                    //then continue to the next case
+                    
+                    // raise the arm and continue to the next case
+                    shooter.setShooterHigh();
+                    timer.reset();
                     state++;
                 }
                 break;
             case 4:
-                //raise arm before turning to allow time for the arm to rise
-                shooter.setShooterHigh();
-                //continue to the next case
-                state++;
+                // allow 1s for the arm to rise
+                if(timer.get() > 1)
+		            state++;
                 break;
             case 5:
                 if (driveTrain.setAngle(turnToAngle, 0.6)) {
@@ -56,6 +73,7 @@ public class BasicCloseAuton extends AutonMode {
                 if (driveTrain.driveInFeet(secondDistance, 0, 0.6)) {
                     //after reaching the final distance fire
                     shooter.autoFire();
+                    state++;
                 }
                 break;
             case 7:

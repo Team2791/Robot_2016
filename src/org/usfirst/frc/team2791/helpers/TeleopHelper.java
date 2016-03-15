@@ -3,9 +3,9 @@ package org.usfirst.frc.team2791.helpers;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter;
-import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerIntake.IntakeState;
-import org.usfirst.frc.team2791.abstractSubsystems.PracticeShakerShooter.ShooterHeight;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake.IntakeState;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.util.Toggle;
 
@@ -235,7 +235,7 @@ public class TeleopHelper extends ShakerHelper {
 		if (!shooter.getIfPreppingShot())
 			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft()
 					|| operatorJoystick.getButtonB()
-					|| PracticeShakerShooter.delayedArmMove
+					|| AbstractShakerShooter.delayedArmMove
 					|| operatorJoystick.getButtonSel() || holdIntakeDown) {
 				// this runs if intakeing ball too
 				intake.extendIntake();
