@@ -31,7 +31,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //    private double closeShotSetPoint = 590;
 //    private double farShotSetpoint = 850;
 //    //boolean that decides weahter autofiring should occur
-//    private boolean autoFire = false;
+//    private boolean internalAutoFire = false;
 //    //manual override boolean for the autofire
 //    private boolean overrideShot = false;
 //    //prepshot decides whether to run the shooter wheels before hand to save time
@@ -139,12 +139,12 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //                if (prepShot) {
 //                    System.out.println("I am currently prepping the shot");
 //                    setShooterSpeeds(setPoint, true);
-//                    if (overrideShot || autoFire) {
+//                    if (overrideShot || internalAutoFire) {
 //                        System.out.println("finished prepping the shot");
 //                        prepShot = false;
 //                    }
 //                }
-//                if (autoFire) {
+//                if (internalAutoFire) {
 //                    System.out.println("Auto Firing starting");
 //                    // set the shooter speeds to the set point
 //                    setShooterSpeeds(setPoint, true);
@@ -186,7 +186,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //                    overrideShot = false;
 //                }
 //                // auto fire is done if it reaches here
-//                autoFire = false;
+//                internalAutoFire = false;
 //
 //                // slows down the rate at which this method is called(so it
 //                // doesn't run too fast)
@@ -218,7 +218,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //            leftShooterTalon.set(targetSpeed);
 //            rightShooterTalon.set(targetSpeed);
 //
-//        } else if (!autoFire || !prepShot) {
+//        } else if (!internalAutoFire || !prepShot) {
 //            // if shooters is not autofiring or prepping the shot then use
 //            // inputs given, including 0
 //            leftShooterTalon.changeControlMode(TalonControlMode.PercentVbus);
@@ -233,7 +233,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //    public void updateSmartDash() {
 //        // update the smartdashbaord with values
 //        SmartDashboard.putBoolean("Does shooter have ball", hasBall());
-//        SmartDashboard.putBoolean("Is auto firing", autoFire);
+//        SmartDashboard.putBoolean("Is auto firing", internalAutoFire);
 //        SmartDashboard.putBoolean("Is preparing shot", prepShot);
 //    }
 //
@@ -295,8 +295,8 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //        ballAidServo.set(1);
 //    }
 //
-//    public void autoFire() {
-//        autoFire = true;
+//    public void internalAutoFire() {
+//        internalAutoFire = true;
 //    }
 //
 //    public ShooterHeight getShooterHeight() {
@@ -353,7 +353,7 @@ package org.usfirst.frc.team2791.old_comp_subsystems;
 //    }
 //
 //    public boolean getIfAutoFire() {
-//        return autoFire;
+//        return internalAutoFire;
 //
 //    }
 //

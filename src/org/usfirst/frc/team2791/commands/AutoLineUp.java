@@ -111,7 +111,7 @@
 //                                if (morePowerInShot)
 //                                    shooter.autoFireWithExtraJuice();
 //                                else
-//                                    shooter.autoFire();
+//                                    shooter.internalAutoFire();
 //                                autoLineUpCounter = 30;
 //                            } else {
 //                                if (!shooter.shooterAtSpeed())
