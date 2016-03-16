@@ -35,6 +35,8 @@ public class AutonHelper extends ShakerHelper {
 		SmartDashboard.putNumber("DISTANCE I", Constants.DRIVE_DISTANCE_I);
 		SmartDashboard.putNumber("Distance D", Constants.DRIVE_DISTANCE_D);
 		SmartDashboard.putNumber("Angle setpoint", setPoint);
+		SmartDashboard.putBoolean("Use Gyro", false);
+
 		SmartDashboard.putNumber("max speed", 0.5);
 		SmartDashboard.putNumber("pid distance travel", 1.0);
 		SmartDashboard.putNumber("Auton step counter", counter);
@@ -80,12 +82,12 @@ public class AutonHelper extends ShakerHelper {
 	}
 
 	private static void retuneDistancePID() {
-		driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
-				SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"));
+		driveTrain.setDistance(SmartDashboard.getNumber("pid distance travel"),
+				SmartDashboard.getNumber("Angle setpoint"), SmartDashboard.getNumber("max speed"), SmartDashboard.getBoolean("Use Gyro"));
 	}
 
 	public void run() {
-		// driveTrain.driveInFeet(3, 0, 0.7);
+		// driveTrain.setDistance(3, 0, 0.7);
 //		retuneDistancePID();
 //		retuneDistancePID();
 		switch (counter) {
@@ -224,7 +226,7 @@ public class AutonHelper extends ShakerHelper {
 	// break;
 	// // For pid testing and tuning of dist pid
 	// case 16:
-	// driveTrain.driveInFeet(SmartDashboard.getNumber("pid distance travel"),
+	// driveTrain.setDistance(SmartDashboard.getNumber("pid distance travel"),
 	// SmartDashboard.getNumber("Angle setpoint"), 0.7);
 	// break;
 	// case 17: // This is for testing the stationary angle pid
@@ -255,123 +257,123 @@ public class AutonHelper extends ShakerHelper {
 
 	}
 
-	public boolean traverseLowBar() {
-		intake.extendIntake();
-		return driveTrain.driveInFeet(7, 0, 0.5);
-	}
-
-	public boolean traverseUnevenTerrain() {
-		// follows the same principle as traverse low bar but allows for greater
-		// output for pid
-		// intake.setArmAttachmentUp();
-		return driveTrain.driveInFeet(5, 0, 0.7);
-	}
-
-	public boolean traverseFunBridges() {// this is for future autons
-		return false;
-	}
-
-	public boolean traversePortCullis() {// future auton
-		return false;
-	}
-
-	public boolean traverseGate() {// future auton
-		return false;
-	}
-
-	// this method won't work becase it's not using a state machine
-	// public boolean defenseOneToShootingSpot() {
-	// if (driveTrain.driveInFeet(12.4, 0, 0.5)) {
-	// if (driveTrain.driveInFeet(8, 60, 0.5))
-	// return true;
-	// }
-	//
-	// return false;
-	// }
-
-	public boolean defenseTwoToLeftShootingSpot() {
-		switch (microCounter) {
-		case 0:
-			if (driveTrain.driveInFeet(14, 0, 0.5))
-				microCounter++;
-		case 1:
-			if (driveTrain.driveInFeet(4, 45, 0.5))
-				microCounter++;
-		case 2:
-			return true;
-
-		}
-		return false;
-	}
-
-	public boolean defenseTwoToCenterShootingSpot() {
-		switch (microCounter) {
-		case 0:
-			if (driveTrain.driveInFeet(12.4, 0, 0.5))
-				microCounter++;
-		case 1:
-			if (driveTrain.driveInFeet(4.2, 90, 0.5))
-				microCounter++;
-		case 2:
-			if (driveTrain.driveInFeet(2, -90, 0.5))
-				microCounter++;
-		case 3:
-			return true;
-		}
-		return false;
-	}
-
-	public boolean defenseThreeToShootingSpot() {
-		return driveTrain.driveInFeet(12, 0, 0.5);
-
-	}
-
-	public boolean defenseFourToCenterShootingSpot() {
-		switch (microCounter) {
-		case 0:
-			if (driveTrain.driveInFeet(10, 0, 0.5))
-				microCounter++;
-		case 1:
-			if (driveTrain.driveInFeet(4.2, -90, 0.5))
-				microCounter++;
-		case 2:
-			if (driveTrain.driveInFeet(2, 90, 0.5))
-				microCounter++;
-		case 3:
-			return true;
-		}
-		return false;
-
-	}
-
-	public boolean defenseFourToRightShootingSpot() {
-		switch (microCounter) {
-		case 0:
-			if (driveTrain.driveInFeet(14, 0, 0.5))
-				microCounter++;
-		case 1:
-			if (driveTrain.driveInFeet(4, -45, 0.5))
-				microCounter++;
-		case 3:
-			return true;
-		}
-		return false;
-	}
-
-	public boolean defenseFiveToShootingSpot() {
-		switch (microCounter) {
-		case 0:
-			if (driveTrain.driveInFeet(12.4, 0, 0.5))
-				microCounter++;
-		case 1:
-			if (driveTrain.driveInFeet(8, -60, 0.5))
-				microCounter++;
-		case 3:
-			return true;
-		}
-		return false;
-
-	}
+//	public boolean traverseLowBar() {
+//		intake.extendIntake();
+//		return driveTrain.setDistance(7, 0, 0.5,true);
+//	}
+//
+//	public boolean traverseUnevenTerrain() {
+//		// follows the same principle as traverse low bar but allows for greater
+//		// output for pid
+//		// intake.setArmAttachmentUp();
+//		return driveTrain.setDistance(5, 0, 0.7,true);
+//	}
+//
+//	public boolean traverseFunBridges() {// this is for future autons
+//		return false;
+//	}
+//
+//	public boolean traversePortCullis() {// future auton
+//		return false;
+//	}
+//
+//	public boolean traverseGate() {// future auton
+//		return false;
+//	}
+//
+//	// this method won't work becase it's not using a state machine
+//	// public boolean defenseOneToShootingSpot() {
+//	// if (driveTrain.setDistance(12.4, 0, 0.5)) {
+//	// if (driveTrain.setDistance(8, 60, 0.5))
+//	// return true;
+//	// }
+//	//
+//	// return false;
+//	// }
+//
+//	public boolean defenseTwoToLeftShootingSpot() {
+//		switch (microCounter) {
+//		case 0:
+//			if (driveTrain.setDistance(14, 0, 0.5))
+//				microCounter++;
+//		case 1:
+//			if (driveTrain.setDistance(4, 45, 0.5))
+//				microCounter++;
+//		case 2:
+//			return true;
+//
+//		}
+//		return false;
+//	}
+//
+//	public boolean defenseTwoToCenterShootingSpot() {
+//		switch (microCounter) {
+//		case 0:
+//			if (driveTrain.setDistance(12.4, 0, 0.5))
+//				microCounter++;
+//		case 1:
+//			if (driveTrain.setDistance(4.2, 90, 0.5))
+//				microCounter++;
+//		case 2:
+//			if (driveTrain.setDistance(2, -90, 0.5))
+//				microCounter++;
+//		case 3:
+//			return true;
+//		}
+//		return false;
+//	}
+//
+//	public boolean defenseThreeToShootingSpot() {
+//		return driveTrain.setDistance(12, 0, 0.5);
+//
+//	}
+//
+//	public boolean defenseFourToCenterShootingSpot() {
+//		switch (microCounter) {
+//		case 0:
+//			if (driveTrain.setDistance(10, 0, 0.5))
+//				microCounter++;
+//		case 1:
+//			if (driveTrain.setDistance(4.2, -90, 0.5))
+//				microCounter++;
+//		case 2:
+//			if (driveTrain.setDistance(2, 90, 0.5))
+//				microCounter++;
+//		case 3:
+//			return true;
+//		}
+//		return false;
+//
+//	}
+//
+//	public boolean defenseFourToRightShootingSpot() {
+//		switch (microCounter) {
+//		case 0:
+//			if (driveTrain.setDistance(14, 0, 0.5))
+//				microCounter++;
+//		case 1:
+//			if (driveTrain.setDistance(4, -45, 0.5))
+//				microCounter++;
+//		case 3:
+//			return true;
+//		}
+//		return false;
+//	}
+//
+//	public boolean defenseFiveToShootingSpot() {
+//		switch (microCounter) {
+//		case 0:
+//			if (driveTrain.setDistance(12.4, 0, 0.5))
+//				microCounter++;
+//		case 1:
+//			if (driveTrain.setDistance(8, -60, 0.5))
+//				microCounter++;
+//		case 3:
+//			return true;
+//		}
+//		return false;
+//
+//	}
 
 	public void resetAutonStepCounter() {
 		counter = 0;

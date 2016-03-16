@@ -1,13 +1,11 @@
 package org.usfirst.frc.team2791.helpers.autonModes;
 
-import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
-//import org.usfirst.frc.team2791.
-import static org.usfirst.frc.team2791.robot.Robot.intake;
-import static org.usfirst.frc.team2791.robot.Robot.shooter;
-
+import edu.wpi.first.wpilibj.Timer;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake.IntakeState;
 
-import edu.wpi.first.wpilibj.Timer;
+import static org.usfirst.frc.team2791.robot.Robot.*;
+
+//import org.usfirst.frc.team2791.
 
 /**
  * Created by team2791 on 3/15/2016.
@@ -45,8 +43,8 @@ public class BasicCloseAuton extends AutonMode {
                 }
                 break;
             case 3:
-                if (driveTrain.driveInFeet(firstDistance, 0, 0.6)) {
-                	System.out.println("Finished driving, now time to raise the shooter.");
+                if (driveTrain.setDistance(firstDistance, 0, 0.4, true)) {
+                    System.out.println("Finished driving, now time to raise the shooter.");
                     // if reached the distance then reset the encoders 
                     driveTrain.resetEncoders();
                     
@@ -70,7 +68,7 @@ public class BasicCloseAuton extends AutonMode {
                 }
                 break;
             case 6:
-                if (driveTrain.driveInFeet(secondDistance, 0, 0.6)) {
+                if (driveTrain.setDistance(secondDistance, 0, 0.6, false)) {
                     //after reaching the final distance fire
                     shooter.autoFire();
                     state++;
