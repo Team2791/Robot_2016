@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
-import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -110,7 +110,7 @@ public class ShakerCamera implements Runnable {
 						reading_particles.release();
 
 						CameraServer.getInstance().setImage(particleBinaryFrame);
-					} else if (SmartDashboard.getBoolean("Debug Image") || AutoLineUpShot.isRunning()) {
+					} else if (SmartDashboard.getBoolean("Debug Image") || BrokenAutoLineUpShot.isRunning()) {
 						SmartDashboard.putNumber("Distance from target", getRange());
 						double processingTime = Timer.getFPGATimestamp();
 						// before we measure the particles aquire the semaphore

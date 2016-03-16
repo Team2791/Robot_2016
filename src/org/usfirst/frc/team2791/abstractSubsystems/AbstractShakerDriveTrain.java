@@ -208,6 +208,13 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         return false;
 
     }
+    
+    public double getStationaryAngleError() {
+    	if(!usingPID)
+    		return 0;
+    	else
+    		return stationaryAnglePID.getError();
+    }
 
 //	/**
 //	 * THIS METHOD IS NOT TESTED!! It's intent is to allow the driver to lock the angle of the drive
