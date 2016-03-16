@@ -3,7 +3,7 @@ package org.usfirst.frc.team2791.robot;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
-import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 import org.usfirst.frc.team2791.competitionSubsystems.ShakerDriveTrain;
 import org.usfirst.frc.team2791.competitionSubsystems.ShakerIntake;
 import org.usfirst.frc.team2791.competitionSubsystems.ShakerShooter;
@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor(Constants.PCM_MODULE);
 
-		SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
+		SmartDashboard.putNumber("shooter offset", BrokenAutoLineUpShot.shootOffset);
 		SmartDashboard.putBoolean("DEBUGGING MODE", debuggingMode);
 	}
 
@@ -139,7 +139,7 @@ public class Robot extends IterativeRobot {
 			autonHelper.resetAutonStepCounter();
 			System.out.println("Done...");
 		}
-		AutoLineUpShot.reset();
+		BrokenAutoLineUpShot.reset();
 	}
 
 	private void alwaysUpdatedSmartDashValues() {
@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
 		// "+driveTrain.getAvgDist()+" Current gyro Angle "+
 		// driveTrain.getAngle() );
 		debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
-		AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
+		BrokenAutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
 		if (debuggingMode) {
 			driveTrain.debug();
 			intake.debug();

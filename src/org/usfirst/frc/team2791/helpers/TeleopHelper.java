@@ -213,8 +213,8 @@ public class TeleopHelper extends ShakerHelper {
 		else
 			compressor.start();
 
-		if ((operatorJoystick.getButtonLB() || driverJoystick.getDpadRight() || AutoLineUpShot
-				.isRunning()) && !cameraLineUp) {
+		if ((operatorJoystick.getButtonLB() || driverJoystick.getDpadRight() || 
+				AutoLineUpShot.isRunning()) && !cameraLineUp) {
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt()) {
 				shooter.reset();

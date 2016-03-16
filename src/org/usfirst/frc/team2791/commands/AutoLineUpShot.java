@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2791.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
 import org.usfirst.frc.team2791.util.ShakerCamera.ParticleReport;
@@ -26,6 +25,26 @@ public class AutoLineUpShot {
 	private static long frameID;
 	private static int timeForErrorCheck;
 	private static ParticleReport currentTarget;
+	
+	private static boolean useMultipleFrames = false;
+	private static boolean shootAfterAligned = false;
+	
+	public static void setUseMultipleFrames(boolean value) {
+    	useMultipleFrames = value;
+    }
+    
+    public static void setShootAfterAligned(boolean value) {
+    	shootAfterAligned = value;
+    }
+    
+    public static boolean setUseMultipleFrames() {
+    	return useMultipleFrames;
+    }
+    
+    public static boolean setShootAfterAligned() {
+    	return shootAfterAligned;
+    }
+    
 
 	public static void run() {
 		// Put dashboard values
@@ -39,11 +58,10 @@ public class AutoLineUpShot {
 			// only run if there is a target available
 			if (currentTarget != null) {
 				driveTrain.resetEncoders();
-				// go to next step after this
-				autoLineUpCounter = 10;
 				// prep the shot, runs the shooter wheels to setpoint
 				// saves time in firing
-				shooter.prepShot();
+				if(shootAfterAligned)
+					shooter.prepShot();
 				// the target angle == current angle + targetAngleDiff + offset
 				target = driveTrain.getAngle() + currentTarget.ThetaDifference + shootOffset;
 				frameID = camera.getCurrentFrameID();
@@ -54,10 +72,28 @@ public class AutoLineUpShot {
 				autoLineUpInProgress = true;
 				// we used one frame so far
 				frames_used = 1;
+				
+
+				// go to next step after this
+				if(useMultipleFrames) {
+					if(shootAfterAligned) {
+						autoLineUpCounter = 40; // this is the double check and shoot case
+					} else {
+						System.out.println("We have no code to line up with multiple frame and not shoot. Shooting anyway.");
+						autoLineUpCounter = 40;
+					}	
+				} else {
+					if(shootAfterAligned) {
+						autoLineUpCounter = 10;	// use 1 frame and shoot
+					} else {
+						autoLineUpCounter = 15; // use 1 frame and don't shoot
+					}
+				}	
 
 			}
 			break;
-		case 10:
+			
+		case 10: // this is the single line up and shoot case
 			// set the drive train to the target angle, will return true when
 			// reached there
 			if (driveTrain.setAngle(target, angleMaxOutput) && shooter.shooterAtSpeed()) {
@@ -70,9 +106,71 @@ public class AutoLineUpShot {
 			//
 			break;
 
+		case 15: // this is the single line up and don't shoot case
+			if (driveTrain.setAngle(target, angleMaxOutput)) {
+				// for debugging
+				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
+						+ "\n    angle-target= " + (driveTrain.getAngle() - target));
+				autoLineUpCounter = 40;
+			}
+			
+			break;
+			
+		case 20:
+            // here we check if our current angele is good enough
+            // if now we reset out target using the latest camera image
+            // and try to drive to it
+            if (driveTrain.setAngle(target, angleMaxOutput)) { // keep the drivetrain
+                // engaged
+                // double check that we are close to the target angle
+                if (!(currentTarget == null)) {
+                    if (!(frameID == camera.getCurrentFrameID())) {
+                    	// if we got a new frame process it
+                    	currentTarget = camera.getTarget();
+                    	
+                        System.out.println("Final* checking with frameID " + frameID);
+                        frameID = camera.getCurrentFrameID();
+                        frames_used++;
+                        
+                        double camera_error = currentTarget.ThetaDifference + shootOffset;
+                        System.out.println("Double check camera error: " + camera_error);
+                        // if error is minimal shoot
+                        if (Math.abs(camera_error) < 0.75 && shooter.shooterAtSpeed()) {
+                            // go to the next step
+                            // shoot whenever ready
+                            System.out.println("I've found a good angle and am going to hold it while the shooter spins up.");
+                            shooter.autoFire();
+                            // we should be firing when the auto fire method is called
+                            // the state we jump to will hold our angle until the auto fire method
+                            // is completed
+                            autoLineUpCounter = 30;
+                        } else {
+                            if (!shooter.shooterAtSpeed())
+                                System.out.println("I am waiting on the shooter wheels");
+
+                            if (!(Math.abs(camera_error) < 0.75))
+                                System.out.println("I am waiting on camera error");
+                            
+                            // too much error so we're going to drive again
+                            // update the target and the setAngle in the if statement in the top of
+                            // this method will move us
+                            target = driveTrain.getAngle() + currentTarget.ThetaDifference + shootOffset;
+                        }
+                    } else {
+                        System.out.println("My check frame is the same as my turn frame. so I'm waiting.");
+                    }
+                } else {
+                    System.out.println("We lost the image and are quitting");
+                    // turn off the shooter
+                    shooter.resetShooterAutoStuff();
+                    autoLineUpCounter = 40;
+                }
+            } // endif driveTrain.setAngle
+            break;
+			
 		case 30:
 			// keep the same angle until we are done shooting
-			if (driveTrain.setAngle(target, angleMaxOutput)&&shooter.shooterAtSpeed()) {
+			if (driveTrain.setAngle(target, angleMaxOutput) && shooter.shooterAtSpeed()) {
 				if (!shooter.getIfAutoFire()) {
 					// only run once the shot is finished
 					System.out.println("done shooting");
@@ -81,27 +179,12 @@ public class AutoLineUpShot {
 				}
 			}
 			break;
-		// if (currentTarget != null) {
-		// // keep the drive train engaged
-		//
-		// // to prevent autofiring multiple times
-		// if (!autoFireOnce) {
-		//
-		// autoFireOnce = true;
-		// } else
-		// }
-		// } else {
-		// // if we lost the target during the process then continue and
-		// // dont fire
-		// System.out.println("I lost the target and am quitting.");
-		// autoLineUpCounter++;
-		// }
-		// break;
-
+			
 		case 40:
 			// reset everything
 			System.out.println("Finished auto line up and resetting.");
-			System.out.println("I took " + frames_used + " frames to shoot");
+			// the fames_used + 1 is to include the check frame
+			System.out.println("I took " + (frames_used + 1) + " frames to shoot");
 			reset();
 			break;
 		}
