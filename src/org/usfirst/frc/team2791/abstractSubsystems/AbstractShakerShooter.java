@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.util.Constants;
 
+
 public abstract class AbstractShakerShooter extends ShakerSubsystem implements Runnable {
     protected static final int updateDelayMs = 1000 / 100; // run at 100 Hz
     // time that the shooter wheels have to be at the proper speed
@@ -21,7 +22,6 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // shooter can talons
     protected CANTalon leftShooterTalon;
     protected CANTalon rightShooterTalon;
-
     // shooter arm positiion pistons
 //	private DoubleSolenoid shortPiston;
 //	private DoubleSolenoid longPiston;
@@ -35,10 +35,10 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     protected double feedForward = 0.31;
     protected boolean cancelShot = false;
     // setpoints to acheicve target depending on the pos of the shooter arm
-//	private double closeShotSetPoint = 560;
+    protected double manualSetPoint;
+    protected boolean useManualSetPoint = false;
     protected double closeShotSetPoint = 635;
     protected double farShotSetpoint = 925;
-    protected double farShotExtraJuice = 90;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
     // manual override boolean for the autofire
@@ -105,7 +105,6 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
 
         leftShooterTalon.configNominalOutputVoltage(0, 0);
         rightShooterTalon.configNominalOutputVoltage(0, 0);
-        SmartDashboard.putNumber("ShooterSpeedExtraJuice", 0);
     }
 
     public void run() {
@@ -127,20 +126,13 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
                 }
 
                 double setPoint = getSetPoint();
-                // if (addExtraPower)
-                // setPoint += farShotExtraJuice;
-                // this to allow the shooters to give sometime to speed up
                 if (prepShot) {
                     prepShot(setPoint);
                 } else if (autoFire) {
-                    autoFire(setPoint);
+                    internalAutoFire(setPoint);
                 }
 
-                // auto fire is done if it reaches here
-                overrideShot = false;
-                autoFire = false;
-                cancelShot = false;
-                addExtraPower = false;
+                resetAutoFireVariables();
                 // slows down the rate at which this method is called(so it
                 // doesn't run too fast)
 
@@ -152,7 +144,17 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
         }
     }
 
-    private void autoFire(double setPoint) {
+    private void resetAutoFireVariables() {
+        // auto fire is done if it reaches here
+        overrideShot = false;
+        autoFire = false;
+        cancelShot = false;
+        addExtraPower = false;
+        manualSetPoint = closeShotSetPoint;
+        useManualSetPoint = false;
+    }
+
+    private void internalAutoFire(double setPoint) {
         System.out.println("Auto Firing starting");
         // set the shooter speeds to the set point
         setShooterSpeeds(setPoint, true);
@@ -216,21 +218,14 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     private double getSetPoint() {
         // if run auto fire (run shooter wheels, and run servo)
         // update the setPoints from the dashboard
-        if (autonShot) {
-            return autonShootSpeed;
+        if (useManualSetPoint) {
+            System.out.print("My shooter wheel setpoint is " + manualSetPoint);
+            return manualSetPoint;
         }
+
         closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
         farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-        // choose the setpoint by getting arm pos
-        // if (getShooterHeight().equals(ShooterHeight.MID) &&
-        // Robot.camera.getTarget()!=null)
-        // if (Robot.camera.getRange() > 165){
-        // System.out.println("IM adding some extra juice because of distance");
-        // return farShotSetpoint +
-        // SmartDashboard.getNumber("ShooterSpeedExtraJuice");}
-        // else
-        // return farShotSetpoint;
-        // else
+        System.out.println(("My shooter wheel setpoint is " + (getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint)));
         return getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
     }
 
@@ -320,7 +315,6 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
         SmartDashboard.putNumber("Left error", leftShooterTalon.getError());
     }
 
-
     public void delayedShooterPosition(ShooterHeight pos) {
         // set the values for delay movement
         // waits a few seconds before bringing the arm down
@@ -370,8 +364,10 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
         autoFire = true;
     }
 
-    public void autoFireWithExtraJuice() {
-        // addExtraPower = true;
+    public void autoFire(double setPoint) {
+        autoFire = true;
+        useManualSetPoint = true;
+        manualSetPoint = setPoint;
     }
 
     public abstract ShooterHeight getShooterHeight();

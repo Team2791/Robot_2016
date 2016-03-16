@@ -39,6 +39,7 @@ public class BasicCloseAuton extends AutonMode {
             case 2:
                 if (timer.get() > 1.5 && intake.getIntakeState().equals(IntakeState.EXTENDED)) {
                 	System.out.println("Intake down, starting my first drive.");
+                    //go to next state
                     state++;
                 }
                 break;
