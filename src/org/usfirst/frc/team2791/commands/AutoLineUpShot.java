@@ -60,8 +60,11 @@ public class AutoLineUpShot {
 				driveTrain.resetEncoders();
 				// prep the shot, runs the shooter wheels to setpoint
 				// saves time in firing
-				if(shootAfterAligned)
+				
+				// the useMultipleFrames is there because we always fire if we're using multiple frames
+				if(shootAfterAligned || useMultipleFrames) 
 					shooter.prepShot();
+				
 				// the target angle == current angle + targetAngleDiff + offset
 				target = driveTrain.getAngle() + currentTarget.ThetaDifference + shootOffset;
 				frameID = camera.getCurrentFrameID();
@@ -96,7 +99,7 @@ public class AutoLineUpShot {
 		case 10: // this is the single line up and shoot case
 			// set the drive train to the target angle, will return true when
 			// reached there
-			if (driveTrain.setAngle(target, angleMaxOutput) && shooter.shooterAtSpeed()) {
+			if (driveTrain.setAngle(target, angleMaxOutput, true) && shooter.shooterAtSpeed()) {
 				// for debugging
 				shooter.autoFire();
 				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
@@ -107,7 +110,7 @@ public class AutoLineUpShot {
 			break;
 
 		case 15: // this is the single line up and don't shoot case
-			if (driveTrain.setAngle(target, angleMaxOutput)) {
+			if (driveTrain.setAngle(target, angleMaxOutput, true)) {
 				// for debugging
 				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
 						+ "\n    angle-target= " + (driveTrain.getAngle() - target));
@@ -120,7 +123,7 @@ public class AutoLineUpShot {
             // here we check if our current angele is good enough
             // if now we reset out target using the latest camera image
             // and try to drive to it
-            if (driveTrain.setAngle(target, angleMaxOutput)) { // keep the drivetrain
+            if (driveTrain.setAngle(target, angleMaxOutput, true)) { // keep the drivetrain
                 // engaged
                 // double check that we are close to the target angle
                 if (!(currentTarget == null)) {

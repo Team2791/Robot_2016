@@ -194,7 +194,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         setLeftRightVoltage(anglePIDOutput, -anglePIDOutput);
 
         if (fastExit) {
-            return (Math.abs(stationaryAnglePID.getError()) < 0.5) && getEncoderAngleRate() < 1.5;
+            return (Math.abs(stationaryAnglePID.getError()) < 0.5) && getEncoderAngleRate() < 0.5;
         }
 
         if (!(Math.abs(stationaryAnglePID.getError()) < 0.5)) {
