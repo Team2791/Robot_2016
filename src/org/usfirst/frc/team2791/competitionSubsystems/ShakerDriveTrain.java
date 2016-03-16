@@ -1,16 +1,33 @@
 package org.usfirst.frc.team2791.competitionSubsystems;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
+
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerDriveTrain extends AbstractShakerDriveTrain {
     private Solenoid shifterSolenoid;
+    private Talon leftTalonA;
+	private Talon leftTalonB;
+	private Talon rightTalonA;
+	private Talon rightTalonB;
 
+	private Encoder leftDriveEncoder;
+	private Encoder rightDriveEncoder;
     public ShakerDriveTrain() {
         super();
         // shifting solenoid
         this.shifterSolenoid = new Solenoid(Constants.PCM_MODULE, Constants.DRIVE_SHIFTING_PISTON);
+        this.leftTalonA = new Talon(Constants.DRIVE_TALON_LEFT_PORT_FRONT);
+		this.leftTalonB = new Talon(Constants.DRIVE_TALON_LEFT_PORT_BACK);
+		this.rightTalonA = new Talon(Constants.DRIVE_TALON_RIGHT_PORT_FRONT);
+		this.rightTalonB = new Talon(Constants.DRIVE_TALON_RIGHT_PORT_BACK);
+		  this.leftDriveEncoder = new Encoder(Constants.LEFT_DRIVE_ENCODER_PORT_A, Constants.LEFT_DRIVE_ENCODER_PORT_B);
+        this.rightDriveEncoder = new Encoder(Constants.RIGHT_DRIVE_ENCOODER_PORT_A,
+                Constants.RIGHT_DRIVE_ENCODER_PORT_B);
+        init();
     }
 
     public GearState getCurrentGear() {

@@ -11,15 +11,14 @@ public class ShakerIntake extends AbstractShakerIntake {
     protected Solenoid intakeSolenoid;
     protected Relay armAttachment;
 
-    private ShakerIntake() {
+    public ShakerIntake() {
         // init
         super();
         leftIntakeMotor = new Talon(Constants.INTAKE_TALON_LEFT_PORT);
         rightIntakeMotor = new Talon(Constants.INTAKE_TALON_RIGHT_PORT);
-        init();
         intakeSolenoid = new Solenoid(Constants.PCM_MODULE, Constants.INTAKE_PISTON);
         armAttachment = new Relay(3);
-
+        init();
     }
 
     public void retractIntake() {

@@ -4,6 +4,9 @@ import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerDriveTrain;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerIntake;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerShooter;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerDriveTrain;
@@ -19,6 +22,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
+	public static final boolean COMPETITION_ROBOT = true;
+
 	public static boolean debuggingMode = false;
 	// Modes
 	public static GamePeriod gamePeriod;
@@ -58,24 +63,25 @@ public class Robot extends IterativeRobot {
 		// Shaker joysticks
 		driverJoystick = Driver.getInstance();
 		operatorJoystick = Operator.getInstance();
-
-		// subsystems
-		driveTrain = new PracticeShakerDriveTrain();
-		driveTrainThread = new Thread(driveTrain);
-		driveTrainThread.start();
-		intake = new PracticeShakerIntake();
-		shooter = new PracticeShakerShooter();
-		// shooter = PracticeShakerShooter.getInstance();
-
-		// competition robot
-		// driveTrain = ShakerDriveTrain.getInstance();
-		// intake = ShakerIntake.getInstance();
-		// shooter = ShakerShooter.getInstance();
-
-		// Camera and shooter are put on their own thread to prevent
+		if (COMPETITION_ROBOT) {
+			// competition robot
+			driveTrain = new ShakerDriveTrain();
+			intake = new ShakerIntake();
+			shooter = new ShakerShooter();
+		} else {
+			// subsystems
+			driveTrain = new PracticeShakerDriveTrain();
+			intake = new PracticeShakerIntake();
+			shooter = new PracticeShakerShooter();
+		}
+		// Camera and shooter and drivetrain are put on their own thread to
+		// prevent
 		// interference with main robot code
 		shooterThread = new Thread(shooter);
 		shooterThread.start();
+
+		driveTrainThread = new Thread(driveTrain);
+		driveTrainThread.start();
 
 		camera = ShakerCamera.getInstance();
 		cameraThread = new Thread(camera);
@@ -123,10 +129,10 @@ public class Robot extends IterativeRobot {
 		autonHelper.disableRun();
 		alwaysUpdatedSmartDashValues();
 
-		if (operatorJoystick.getButtonSt()){
+		if (operatorJoystick.getButtonSt()) {
 			driveTrain.resetEncoders();
-//			driveTrain.calibrateGyro();
-			}
+			// driveTrain.calibrateGyro();
+		}
 
 		if (operatorJoystick.getButtonSel()) {
 			System.out.println("Resetting Auton step counter...");
@@ -139,7 +145,10 @@ public class Robot extends IterativeRobot {
 	private void alwaysUpdatedSmartDashValues() {
 		SmartDashboard.putNumber("Gyro Rate", driveTrain.getEncoderAngleRate());
 		SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
-//		System.out.println("DriveTrain average velocity "+ driveTrain.getAverageVelocity()+" current distance "+driveTrain.getAvgDist()+" Current gyro Angle "+ driveTrain.getAngle() );
+		// System.out.println("DriveTrain average velocity "+
+		// driveTrain.getAverageVelocity()+" current distance
+		// "+driveTrain.getAvgDist()+" Current gyro Angle "+
+		// driveTrain.getAngle() );
 		debuggingMode = SmartDashboard.getBoolean("DEBUGGING MODE");
 		AutoLineUpShot.shootOffset = SmartDashboard.getNumber("shooter offset");
 		if (debuggingMode) {
