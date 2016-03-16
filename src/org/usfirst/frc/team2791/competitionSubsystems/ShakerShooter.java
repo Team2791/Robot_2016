@@ -14,6 +14,7 @@ public class ShakerShooter extends AbstractShakerShooter {
                 Constants.LONG_PISTON_REVERSE);
         shortPiston = new DoubleSolenoid(Constants.PCM_MODULE, Constants.SHORT_PISTON_FORWARD,
                 Constants.SHORT_PISTON_REVERSE);
+        init();
     }
 
 
