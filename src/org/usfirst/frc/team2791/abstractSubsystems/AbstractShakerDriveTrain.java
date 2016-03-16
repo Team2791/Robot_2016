@@ -2,10 +2,7 @@ package org.usfirst.frc.team2791.abstractSubsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team2791.util.BasicPID;
-import org.usfirst.frc.team2791.util.Constants;
-import org.usfirst.frc.team2791.util.ShiftingMath;
-import org.usfirst.frc.team2791.util.Util;
+import org.usfirst.frc.team2791.util.*;
 
 public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
@@ -20,10 +17,10 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
     protected static BasicPID movingAnglePID;
     protected static BasicPID distancePID;
     protected static BasicPID stationaryAnglePID;
-    protected static AnalogGyro gyro;
+    //    protected static AnalogGyro gyro;
     protected double shiftPoint = ShiftingMath.getOptimalShiftPoint();
     protected double lowToHighShiftPoint = ShiftingMath.getLowToHighShiftPoint();
-    // protected ShakerGyro gyro;
+    protected ShakerGyro gyro;
     // protected ADXRS450_Gyro gyro;
     // protected Shakey_ADXRS450_Gyro gyro;
     protected double highToLowShiftPoint = ShiftingMath.getHighToLowShiftPoint();
@@ -76,8 +73,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
         // gyro = new Shakey_ADXRS450_Gyro(SPI.Port.kOnboardCS1);
         // gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
-        // gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
-        // (new Thread(gyro)).start();
+        gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
+        (new Thread(gyro)).start();
         // this.gyro = new AnalogGyro(new AnalogInput(1));
         // gyro.setSensitivity(0.0007);
 
@@ -123,7 +120,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         stationaryAnglePID.changeGains(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
     }
 
-    public boolean driveInFeet(double distance, double angle, double maxOutput) {
+    public boolean setDistance(double distance, double angle, double maxOutput, boolean useGyro) {
         // uncomment this line if we are debugging
 //		updatePIDGains();
         setLowGear();
@@ -136,7 +133,11 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         movingAnglePID.setMinOutput(-maxOutput / 2);
 
         double drivePIDOutput = -distancePID.updateAndGetOutput(getAverageDist());
-        double anglePIDOutput = movingAnglePID.updateAndGetOutput(getAngle());
+        double anglePIDOutput;
+        if (useGyro)
+            anglePIDOutput = movingAnglePID.updateAndGetOutput(getGyroAngle());
+        else
+            anglePIDOutput = movingAnglePID.updateAndGetOutput(getAngleEncoder());
 
         setLeftRightVoltage(drivePIDOutput + anglePIDOutput, drivePIDOutput - anglePIDOutput);
         System.out.println("distError: " + distancePID.getError() + " output: " + drivePIDOutput);
@@ -242,6 +243,10 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
     public double getAngleEncoder() {
         return 45.0 * (getLeftDistance() - getRightDistance()) / 2.0;
 
+    }
+
+    public double getGyroAngle() {
+        return gyro.getAngle();
     }
 
     public double getEncoderAngleRate() {
@@ -424,7 +429,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
     public void calibrateGyro() {
         // recalibrate the gyro
         System.out.println("Gyro calibrating");
-        gyro.calibrate();
+        gyro.recalibrate();
         System.out.println("Done calibrating " + " The current rate is " + gyro.getRate());
     }
 
