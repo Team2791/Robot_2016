@@ -7,6 +7,9 @@ import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerDriveTrain;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerIntake;
+import org.usfirst.frc.team2791.competitionSubsystems.ShakerShooter;
 import org.usfirst.frc.team2791.helpers.AutonHelper;
 import org.usfirst.frc.team2791.helpers.TeleopHelper;
 import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerDriveTrain;
@@ -18,12 +21,14 @@ import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
 public class Robot extends IterativeRobot {
-    public static boolean debuggingMode = false;
-    // Modes
-    public static GamePeriod gamePeriod;
-    // Joysticks
-    public static Driver driverJoystick;
-    public static Operator operatorJoystick;
+	public static final boolean COMPETITION_ROBOT = true;
+
+	public static boolean debuggingMode = false;
+	// Modes
+	public static GamePeriod gamePeriod;
+	// Joysticks
+	public static Driver driverJoystick;
+	public static Operator operatorJoystick;
 
     // Subsystems
     // Competition robot subsystems
@@ -53,32 +58,33 @@ public class Robot extends IterativeRobot {
         System.out.println("Starting to init my systems.");
         gamePeriod = GamePeriod.DISABLED;
 
-        // Singletons - only one instance of them is created
-        // Shaker joysticks
-        driverJoystick = Driver.getInstance();
-        operatorJoystick = Operator.getInstance();
+		// Singletons - only one instance of them is created
+		// Shaker joysticks
+		driverJoystick = Driver.getInstance();
+		operatorJoystick = Operator.getInstance();
+		if (COMPETITION_ROBOT) {
+			// competition robot
+			driveTrain = new ShakerDriveTrain();
+			intake = new ShakerIntake();
+			shooter = new ShakerShooter();
+		} else {
+			// subsystems
+			driveTrain = new PracticeShakerDriveTrain();
+			intake = new PracticeShakerIntake();
+			shooter = new PracticeShakerShooter();
+		}
+		// Camera and shooter and drivetrain are put on their own thread to
+		// prevent
+		// interference with main robot code
+		shooterThread = new Thread(shooter);
+		shooterThread.start();
 
-        // subsystems
-        driveTrain = new PracticeShakerDriveTrain();
-        driveTrainThread = new Thread(driveTrain);
-        driveTrainThread.start();
-        intake = new PracticeShakerIntake();
-        shooter = new PracticeShakerShooter();
-        // shooter = PracticeShakerShooter.getInstance();
+		driveTrainThread = new Thread(driveTrain);
+		driveTrainThread.start();
 
-        // competition robot
-        // driveTrain = ShakerDriveTrain.getInstance();
-        // intake = ShakerIntake.getInstance();
-        // shooter = ShakerShooter.getInstance();
-
-        // Camera and shooter are put on their own thread to prevent
-        // interference with main robot code
-        shooterThread = new Thread(shooter);
-        shooterThread.start();
-
-        camera = ShakerCamera.getInstance();
-        cameraThread = new Thread(camera);
-        cameraThread.start();
+		camera = ShakerCamera.getInstance();
+		cameraThread = new Thread(camera);
+		cameraThread.start();
 
         autonHelper = AutonHelper.getInstance();
         teleopHelper = TeleopHelper.getInstance();

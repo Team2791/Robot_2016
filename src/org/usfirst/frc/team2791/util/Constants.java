@@ -39,7 +39,7 @@ public class Constants {
     public static final int INTAKE_TALON_LEFT_PORT = 6;
     public static final int INTAKE_TALON_RIGHT_PORT = 1;
     public static final int BALL_AID_SERVO_PORT = 9;
-    public static final int CAMERA_SERVO_PORT = 6;
+    public static final int CAMERA_SERVO_PORT = 7;
     // PCM PORTS
     // First Pcm module
     public static final int DRIVE_SHIFTING_PISTON = 6;
