@@ -28,7 +28,7 @@ public class ShakerIntake extends AbstractShakerIntake {
     }
 
     public void extendIntake() {
-        // extends the intake for ball pickup
+        // extends the intake for ball  pickup
         intakeSolenoid.set(true);
 
     }
