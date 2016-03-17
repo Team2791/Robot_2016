@@ -14,8 +14,8 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
 /**
  * Created by Akhil on 2/14/2016.
  */
-public class TeleopHelper extends ShakerHelper {
-    private static TeleopHelper teleop;
+public class TempTeleopHelper extends ShakerHelper {
+    private static TempTeleopHelper teleop;
     private static boolean cameraLineUp = false;
     private static boolean runOnlyOnce = false;
     private static double target;
@@ -23,7 +23,7 @@ public class TeleopHelper extends ShakerHelper {
     private Toggle useArmAttachmentToggle;
 //	private boolean holdIntakeDown = false;
 
-    private TeleopHelper() {
+    private TempTeleopHelper() {
         // init
         // smartdashboard drop down menu
         driveTypeChooser = new SendableChooser();
@@ -40,11 +40,11 @@ public class TeleopHelper extends ShakerHelper {
         camera.setCameraValues(1, 1);
     }
 
-    public static TeleopHelper getInstance() {
-        if (teleop == null)
-            teleop = new TeleopHelper();
-        return teleop;
-    }
+//    public static TeleopHelper getInstance() {
+//        if (teleop == null)
+//            teleop = new TempTeleopHelper();
+//        return teleop;
+//    }
 
     public void run() {
         // just in case something weird happen in auto
@@ -176,8 +176,13 @@ public class TeleopHelper extends ShakerHelper {
             // previous cases apply
             shooter.resetServoAngle();
 
-        if (shooter.getShooterHeight().equals(ShooterHeight.LOW) && (operatorJoystick.getButtonSel() ||
-                useArmAttachmentToggle.get()))
+        if (shooter.getShooterHeight().
+
+                equals(ShooterHeight.LOW)
+
+                && (operatorJoystick.getButtonSel() || useArmAttachmentToggle
+                .get()))
+
         {
             camera.cameraDown();
         } else
@@ -279,7 +284,7 @@ public class TeleopHelper extends ShakerHelper {
 //		}
 //
 //		double driverThrottle = driverJoystick.getAxisRT() - driverJoystick.getAxisLT();
-//		// Exit the autoline up after the 
+//		// Exit the autoline up after the
 //		if (driveTrain.setAngleWithDriving(target, 0.7, driverThrottle) || driverJoystick.getDpadUp()) {
 //			SmartDashboard.putBoolean("Done Lining Up", true);
 //			cameraLineUp = false;
