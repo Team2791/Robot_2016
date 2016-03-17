@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 
-public class PracticeShakerIntake extends AbstractShakerIntake  {
+public class PracticeShakerIntake extends AbstractShakerIntake {
     private DoubleSolenoid intakeSolenoid;
     private DoubleSolenoid armAttachment;
 
@@ -12,7 +12,7 @@ public class PracticeShakerIntake extends AbstractShakerIntake  {
         // init
         leftIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_LEFT_PORT);
         rightIntakeMotor = new Talon(PracticePorts.INTAKE_TALON_RIGHT_PORT);
-        
+
         intakeSolenoid = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.INTAKE_PISTON_CHANNEL_FORWARD,
                 PracticePorts.INTAKE_PISTON_CHANNEL_REVERSE);
 
@@ -37,8 +37,8 @@ public class PracticeShakerIntake extends AbstractShakerIntake  {
         intakeSolenoid.set(PracticeConstants.INTAKE_EXTENDED_VALUE);
 
     }
-	
-	@Override
+
+    @Override
     public IntakeState getIntakeState() {
         // returns state of intake in form of the enum IntakeState
         if (intakeSolenoid.get().equals(PracticeConstants.INTAKE_RECTRACTED_VALUE))
@@ -48,13 +48,13 @@ public class PracticeShakerIntake extends AbstractShakerIntake  {
         else
             return IntakeState.EXTENDED;
     }
-	
-	@Override
+
+    @Override
     public void setArmAttachmentUp() {
         armAttachment.set(PracticeConstants.INTAKE_ARM_UP_VALUE);
     }
 
-	@Override
+    @Override
     public void setArmAttachmentDown() {
         armAttachment.set(PracticeConstants.INTAKE_ARM_DOWN_VALUE);
     }

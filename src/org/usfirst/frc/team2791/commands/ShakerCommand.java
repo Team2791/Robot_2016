@@ -5,17 +5,17 @@ package org.usfirst.frc.team2791.commands;
  */
 public abstract class ShakerCommand {// template class for commands
 
-	static void reset() {
-	}
+    static void reset() {
+    }
 
-	static void run() {
-	}
+    static void run() {
+    }
 
-	abstract public void updateSmartDash();
+    static boolean isRunning() {
+        return false;
+    }
 
-	static boolean isRunning() {
-		return false;
-	}
+    abstract public void updateSmartDash();
 
-	abstract public void debug();
+    abstract public void debug();
 }

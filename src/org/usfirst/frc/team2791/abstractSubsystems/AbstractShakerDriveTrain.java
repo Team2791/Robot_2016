@@ -208,12 +208,12 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         return false;
 
     }
-    
+
     public double getStationaryAngleError() {
-    	if(!usingPID)
-    		return 0;
-    	else
-    		return stationaryAnglePID.getError();
+        if (!usingPID)
+            return 0;
+        else
+            return stationaryAnglePID.getError();
     }
 
 //	/**
