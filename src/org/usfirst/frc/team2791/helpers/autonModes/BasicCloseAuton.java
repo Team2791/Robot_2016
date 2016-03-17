@@ -14,7 +14,7 @@ public class BasicCloseAuton extends AutonMode {
     private double firstDistance;
     private double turnToAngle;
     private double secondDistance;
-    
+
     private Timer timer = new Timer();
 
     public BasicCloseAuton(double firstTravelDistance, double turnAngle, double secondTravelDistance) {
@@ -31,14 +31,14 @@ public class BasicCloseAuton extends AutonMode {
                 timer.reset();
                 break;
             case 1:
-            	System.out.println("Starting basic close auto.");
+                System.out.println("Starting basic close auto.");
                 driveTrain.resetEncoders();
                 intake.extendIntake();
                 timer.reset();
                 timer.start();
             case 2:
                 if (timer.get() > 1.5 && intake.getIntakeState().equals(IntakeState.EXTENDED)) {
-                	System.out.println("Intake down, starting my first drive.");
+                    System.out.println("Intake down, starting my first drive.");
                     //go to next state
                     state++;
                 }
@@ -48,7 +48,7 @@ public class BasicCloseAuton extends AutonMode {
                     System.out.println("Finished driving, now time to raise the shooter.");
                     // if reached the distance then reset the encoders 
                     driveTrain.resetEncoders();
-                    
+
                     // raise the arm and continue to the next case
                     shooter.setShooterHigh();
                     timer.reset();
@@ -57,8 +57,8 @@ public class BasicCloseAuton extends AutonMode {
                 break;
             case 4:
                 // allow 1s for the arm to rise
-                if(timer.get() > 1)
-		            state++;
+                if (timer.get() > 1)
+                    state++;
                 break;
             case 5:
                 if (driveTrain.setAngle(turnToAngle, 0.6)) {
@@ -71,7 +71,7 @@ public class BasicCloseAuton extends AutonMode {
             case 6:
                 if (driveTrain.setDistance(secondDistance, 0, 0.6, false)) {
                     //after reaching the final distance fire
-                    shooter.autoFire();
+                    shooter.autoFire(635);
                     state++;
                 }
                 break;

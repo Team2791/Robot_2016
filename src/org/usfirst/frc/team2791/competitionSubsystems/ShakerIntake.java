@@ -23,13 +23,13 @@ public class ShakerIntake extends AbstractShakerIntake {
 
     public void retractIntake() {
         // bring intake back behind bumpers
-        intakeSolenoid.set(true);
+        intakeSolenoid.set(false);
 
     }
 
     public void extendIntake() {
         // extends the intake for ball pickup
-        intakeSolenoid.set(false);
+        intakeSolenoid.set(true);
 
     }
 

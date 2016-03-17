@@ -2,9 +2,8 @@ package org.usfirst.frc.team2791.helpers;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake.IntakeState;
+import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter.ShooterHeight;
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.util.Toggle;
@@ -18,12 +17,12 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
  */
 public class TeleopHelper extends ShakerHelper {
 	private static TeleopHelper teleop;
-	private SendableChooser driveTypeChooser;
-	private Toggle useArmAttachmentToggle;
-	private double angleSetPointForLineUp;
 	private static boolean cameraLineUp = false;
 	private static boolean runOnlyOnce = false;
 	private static double target;
+	private SendableChooser driveTypeChooser;
+	private Toggle useArmAttachmentToggle;
+	private double angleSetPointForLineUp;
 	private boolean holdIntakeDown = false;
 
 	private TeleopHelper() {
@@ -217,13 +216,17 @@ public class TeleopHelper extends ShakerHelper {
 				AutoLineUpShot.isRunning()) && !cameraLineUp) {
 			// if operator hits start begin
 			if (operatorJoystick.getButtonSt()) {
-				shooter.reset();
+				shooter.resetShooterAutoStuff();
 				AutoLineUpShot.reset();
 			} else {
 				// if (operatorJoystick.getButtonLS())
 				// AutoLineUpShot.shooterWithExtraJucice();
 				AutoLineUpShot.run();
 			}
+		}
+		if (operatorJoystick.getButtonSt()) {
+			shooter.resetShooterAutoStuff();
+			AutoLineUpShot.reset();
 		}
 
 	}
@@ -273,6 +276,13 @@ public class TeleopHelper extends ShakerHelper {
 	public void reset() {
 		shooter.reset();
 		intake.reset();
+	}
+
+	@Override
+	public void debug() {
+		driveTrain.debug();
+		intake.debug();
+		shooter.debug();
 	}
 
 //	// THIS IS UNTESTED!!!!
