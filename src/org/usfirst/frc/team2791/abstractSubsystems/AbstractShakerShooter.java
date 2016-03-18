@@ -129,7 +129,8 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
                 double setPoint = getSetPoint();
                 if (prepShot) {
                     prepShot(setPoint);
-                } else if (autoFire) {
+                } 
+                if (autoFire) {
                     internalAutoFire(setPoint);
                 }
 
