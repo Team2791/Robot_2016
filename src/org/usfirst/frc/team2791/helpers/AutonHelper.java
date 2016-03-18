@@ -50,7 +50,7 @@ public class AutonHelper extends ShakerHelper {
 
 //		overallAuto = new BasicCloseAuton(20.6, 60, 7.9);
 		// overallAuto = new DriveStraightAuton(15);
-		overallAuto = new DriveStraightAutomaticLineup(1);
+		overallAuto = new DriveStraightAutomaticLineup(13,-8);
 		
 		// robot is front of
 		// 1 is all the way left 5 is all the way right

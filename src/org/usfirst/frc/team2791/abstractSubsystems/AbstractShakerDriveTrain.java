@@ -37,6 +37,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
     protected double previousRateTime = 0;
     protected double currentRate = 0;
     protected double currentTime = 0;
+    
+    protected Timer autoShiftTimer = new Timer();
 
     // these vars are for setting angle PID targets in teleop
     // for the drive train to use in it's run method
@@ -91,6 +93,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         movingAnglePID.setIZone(4);
         shiftTimer.reset();
         shiftTimer.start();
+    	autoShiftTimer.start();
+
     }
 
     public abstract GearState getCurrentGear();
@@ -104,6 +108,9 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
             while (true) {
                 // so here if we are using PID update the drive values otherwise
                 // do nothing
+
+                SmartDashboard.putNumber("Left Drive Encoders Rate", leftDriveEncoder.getRate());
+                SmartDashboard.putNumber("Right Drive Encoders Rate", rightDriveEncoder.getRate());
                 if (usingPID) {
                     PIDAtTarget = setAngleInternal(angleTarget, turnPIDMaxOutput, anglePIDQuickExit);
                 }
@@ -272,13 +279,19 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
             shiftOffset = 1;
         
         double minVelocity = Math.min(Math.abs(getLeftVelocity()), Math.abs(getRightVelocity()));
-
-        if (isHighGear() && minVelocity < highToLowShiftPoint + shiftOffset) {
-            setLowGear();
+        
+        // only shift when we've been in gear for more than 0.5s
+        if(autoShiftTimer.get() > 0.5) {
+        	if (isHighGear() && minVelocity < highToLowShiftPoint + shiftOffset) {
+                setLowGear();
+                autoShiftTimer.reset();
+            }
+            if (!isHighGear() && minVelocity > lowToHighShiftPoint + shiftOffset) {
+                setHighGear();
+                autoShiftTimer.reset();
+            }
         }
-        if (!isHighGear() && minVelocity > lowToHighShiftPoint + shiftOffset) {
-            setHighGear();
-        }
+        
     }
 
     public double getAverageAcceleration() {

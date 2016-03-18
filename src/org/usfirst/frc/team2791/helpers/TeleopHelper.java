@@ -22,7 +22,6 @@ public class TeleopHelper extends ShakerHelper {
 	private SendableChooser driveTypeChooser;
 	private Toggle useArmAttachmentToggle;
 	private boolean holdIntakeDown = false;
-	private Toggle visionMode;
 
 	private TeleopHelper() {
 		// init
@@ -38,8 +37,8 @@ public class TeleopHelper extends ShakerHelper {
 		// toggles, to prevent sending a subsystem a value too many times
 		// this is sort of like a light switch
 		useArmAttachmentToggle = new Toggle(false);
-		visionMode = new Toggle(false);
-		camera.setCameraValues(1, 1);
+		// visionMode = new Toggle(false);
+		// camera.setCameraValues(1, 1);
 		// camera.setCameraValuesAutomatic();
 	}
 
@@ -100,11 +99,6 @@ public class TeleopHelper extends ShakerHelper {
 			driveTrain.setLowGear();
 		else
 			driveTrain.autoShift(shooter.equals(ShooterHeight.LOW));
-		visionMode.giveToggleInput(driverJoystick.getButtonSt());
-		if (visionMode.get())
-			camera.setCameraValuesAutomatic();
-		else
-			camera.setCameraValues(1, 1);
 	}
 
 	private void operatorRun() {
@@ -148,25 +142,29 @@ public class TeleopHelper extends ShakerHelper {
 		// before moving the arm
 		// this allows time for the intake to go down to prevent collision
 		// if (holdIntakeDown
-
+		if (operatorJoystick.getButtonLS()) {
+			if(camera.isCameraManual())
+				camera.setCameraValuesAutomatic();
+			else camera.setCameraValuesAutomatic();
+		}
 		if (operatorJoystick.getDpadUp()) {
 			useArmAttachmentToggle.setManual(false);
 			intake.extendIntake();
 			shooter.delayedShooterPosition(ShooterHeight.HIGH);
 			holdIntakeDown = false;
-			// camera.setCameraValues(1, 1);
+			camera.setCameraValues(1, 1);
 		}
 		if (operatorJoystick.getDpadRight()) {
 			intake.extendIntake();
 			useArmAttachmentToggle.setManual(true);
 			shooter.delayedShooterPosition(ShooterHeight.MID);
-			// camera.setCameraValues(1, 1);
+			camera.setCameraValues(1, 1);
 			holdIntakeDown = false;
 		}
 		if (operatorJoystick.getDpadDown()) {
 			intake.extendIntake();
 			useArmAttachmentToggle.setManual(false);
-			// camera.setCameraValuesAutomatic();
+			camera.setCameraValuesAutomatic();
 			shooter.delayedShooterPosition(ShooterHeight.LOW);
 			holdIntakeDown = false;
 		}
@@ -198,18 +196,16 @@ public class TeleopHelper extends ShakerHelper {
 			compressor.start();
 
 		if ((operatorJoystick.getButtonLB() || driverJoystick.getDpadRight() || AutoLineUpShot.isRunning())
-				&& !cameraLineUp)
-
-		{
-			// if operator hits start begin
-			if (operatorJoystick.getButtonSt()) {
-				shooter.resetShooterAutoStuff();
-				AutoLineUpShot.reset();
-			} else {
-				// if (operatorJoystick.getButtonLS())
-				// AutoLineUpShot.shooterWithExtraJucice();
-				AutoLineUpShot.run();
-			}
+				&& !cameraLineUp) {
+			// // if operator hits start begin
+			// if (operatorJoystick.getButtonSt()) {
+			// shooter.resetShooterAutoStuff();
+			// AutoLineUpShot.reset();
+			// } else {
+			// if (operatorJoystick.getButtonLS())
+			// AutoLineUpShot.shooterWithExtraJucice();
+			AutoLineUpShot.run();
+			// }
 		}
 
 		if (operatorJoystick.getButtonSt()) {

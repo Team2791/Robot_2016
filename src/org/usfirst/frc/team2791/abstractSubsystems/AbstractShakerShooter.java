@@ -37,7 +37,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // setpoints to acheicve target depending on the pos of the shooter arm
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
-    protected double closeShotSetPoint = 570;
+    protected double closeShotSetPoint = 565;
     protected double farShotSetpoint = 800;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
@@ -203,6 +203,8 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
             stopMotors();
             overrideShot = false;
             System.out.println("Finishing autofire");
+        } else {
+        	System.out.println("The shot was calceled");
         }
 
     }

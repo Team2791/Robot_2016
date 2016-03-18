@@ -8,9 +8,11 @@ import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 
 public class DriveStraightAutomaticLineup extends AutonMode {
 	private double firstDistance;
+	private double turnToAngle;
 
-	public DriveStraightAutomaticLineup(double distance) {
+	public DriveStraightAutomaticLineup(double distance, double angle) {
 		firstDistance = distance;
+		turnToAngle = angle;
 	}
 
 	public void run() {
@@ -22,31 +24,39 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 		case 1:
 			System.out.println("Starting the drive straight autoLinup ");
 			driveTrain.resetEncoders();
+			intake.extendIntake();
+			shooter.delayedShooterPosition(ShooterHeight.MID);
 			state++;
 			break;
 		case 2:
-			if (driveTrain.setDistance(firstDistance, 0, 0.8, false)) {
-				intake.setArmAttachmentDown();
+			if (driveTrain.setDistance(firstDistance, 0, 0.65, false)) {
+				// intake.setArmAttachmentDown();
 				System.out.println("Drove the first distance");
 				driveTrain.resetEncoders();
-
-				AutoLineUpShot.setShootAfterAligned(true);
-				AutoLineUpShot.setUseMultipleFrames(true);
 				state++;
 			}
 			break;
-			case 5:
+		case 3:
+			if (driveTrain.setAngle(turnToAngle, 0.6)) {
+				driveTrain.resetEncoders();
+				state++;
+			}
+			break;
+
+		case 4:
+			AutoLineUpShot.setShootAfterAligned(true);
+			AutoLineUpShot.setUseMultipleFrames(true);
 			AutoLineUpShot.run();
 			System.out.println("Starting autoLineup");
 			state++;
 			break;
-		case 6:
+		case 5:
 			if (!AutoLineUpShot.isRunning()) {
 				state++;
 			} else
 				AutoLineUpShot.run();
 			break;
-		case 7:
+		case 6:
 			AutoLineUpShot.reset();
 			System.out.println("I am done with the drive striaght auto");
 			driveTrain.resetEncoders();

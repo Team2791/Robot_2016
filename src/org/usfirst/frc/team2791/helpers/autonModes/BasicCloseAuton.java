@@ -49,7 +49,6 @@ public class BasicCloseAuton extends AutonMode {
 			if (driveTrain.setDistance(firstDistance/2, 0, 0.5, false)) {
 				System.out.println("Finished driving, now time to raise the shooter.");
 				// if reached the distance then reset the encoders
-				driveTrain.resetEncoders();
 
 				// raise the arm and continue to the next case
 				
@@ -58,7 +57,7 @@ public class BasicCloseAuton extends AutonMode {
 			}
 			break;
 		case 4:
-			if (driveTrain.setDistance(firstDistance/2, 0, 1, false)) {
+			if (driveTrain.setDistance(firstDistance, 0, 1, false)) {
 				System.out.println("Finished driving, now time to raise the shooter.");
 				// if reached the distance then reset the encoders
 				driveTrain.resetEncoders();
