@@ -6,8 +6,7 @@ import org.usfirst.frc.team2791.util.ShakerCamera.ParticleReport;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 
-public class 
- {
+public class AutoLineUpShot {
 	// to correct any curving of the shot leftward or right ward
 	public static double shootOffset = 0.0;
 	// this is the counter that decides what stop to run in the auto lineup
