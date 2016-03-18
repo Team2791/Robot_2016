@@ -107,9 +107,9 @@ public class BrokenAutoLineUp {
                                 System.out
                                         .println("I've found a good angle and am going to hold it while the shooter spins up.");
 
-                                if (morePowerInShot)
-                                    shooter.autoFireWithExtraJuice();
-                                else
+//                                if (morePowerInShot)
+//                                    shooter.autoFireWithExtraJuice();
+//                                else
                                     shooter.autoFire();
                                 autoLineUpCounter = 30;
                             } else {

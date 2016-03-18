@@ -130,13 +130,7 @@ public class Robot extends IterativeRobot {
 
         if (operatorJoystick.getButtonSt()) {
             driveTrain.resetEncoders();
-            // driveTrain.calibrateGyro();
-        }
-
-        if (operatorJoystick.getButtonSel()) {
-            System.out.println("Resetting Auton step counter...");
-            autonHelper.resetAutonStepCounter();
-            System.out.println("Done...");
+             driveTrain.calibrateGyro();
         }
         BrokenAutoLineUpShot.reset();
     }

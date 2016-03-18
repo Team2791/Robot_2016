@@ -82,6 +82,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         distancePID = new BasicPID(Constants.DRIVE_DISTANCE_P, Constants.DRIVE_DISTANCE_I, Constants.DRIVE_DISTANCE_D);
         stationaryAnglePID = new BasicPID(Constants.STATIONARY_ANGLE_P, Constants.STATIONARY_ANGLE_I, Constants.STATIONARY_ANGLE_D);
         movingAnglePID.setInvertOutput(true);
+        stationaryAnglePID.setInvertOutput(true);
         movingAnglePID.setMaxOutput(0.5);
         movingAnglePID.setMinOutput(-0.5);
 
@@ -143,10 +144,11 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         System.out.println("distError: " + distancePID.getError() + " output: " + drivePIDOutput);
         System.out.println("angleError: " + movingAnglePID.getError() + " output: " + anglePIDOutput);
 
-        if (!(Math.abs(distancePID.getError()) < 0.05) && (Math.abs(movingAnglePID.getError()) < 1.5))
+        // if we are not good on distance or we are not good on angle reset our timer
+        if (!(Math.abs(distancePID.getError()) < 0.05) || !(Math.abs(movingAnglePID.getError()) < 1.5))
             // Makes sure pid is good error is minimal
             driveTimePIDGoodTime = Timer.getFPGATimestamp();
-        else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.5)
+        else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.2)
             // then makes sure that certain time has passed to be absolutely
             // positive
             return true;
@@ -268,11 +270,13 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         double shiftOffset = 0;
         if (!isShooterLow)
             shiftOffset = 1;
+        
+        double minVelocity = Math.min(Math.abs(getLeftVelocity()), Math.abs(getRightVelocity()));
 
-        if (isHighGear() && Math.abs(getAverageVelocity()) < highToLowShiftPoint + shiftOffset) {
+        if (isHighGear() && minVelocity < highToLowShiftPoint + shiftOffset) {
             setLowGear();
         }
-        if (!isHighGear() && Math.abs(getAverageVelocity()) > lowToHighShiftPoint + shiftOffset) {
+        if (!isHighGear() && minVelocity > lowToHighShiftPoint + shiftOffset) {
             setHighGear();
         }
     }

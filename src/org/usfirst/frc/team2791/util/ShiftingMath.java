@@ -15,7 +15,7 @@ public class ShiftingMath {
     // private static final float SHIFT_POINT = (float) (WHEEL_RPM / 60.0 *
     // WHEEL_CIRCUMFERENCE)
     private static final float SHIFT_POINT = (float) 4.94;
-    private static final double SHIFT_THRESH_PERCENTAGE = 0.08;
+    private static final double SHIFT_THRESH_PERCENTAGE = 0.15;
 
     /**
      * This method uses constants to find the optimal shift point

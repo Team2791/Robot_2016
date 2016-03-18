@@ -34,9 +34,9 @@ public class ShakerDriveTrain extends AbstractShakerDriveTrain {
     }
 
     public GearState getCurrentGear() {
-        if (shifterSolenoid.get())
+        if (!shifterSolenoid.get())
             return GearState.HIGH;
-        else if (!shifterSolenoid.get())
+        else if (shifterSolenoid.get())
             return GearState.LOW;
         else
             return GearState.LOW;
@@ -44,11 +44,11 @@ public class ShakerDriveTrain extends AbstractShakerDriveTrain {
 
     public void setHighGear() {
         // put the gear into the high state
-        shifterSolenoid.set(true);
+        shifterSolenoid.set(false);
     }
 
     public void setLowGear() {
         // put gear into the low state
-        shifterSolenoid.set(false);
+        shifterSolenoid.set(true);
     }
 }

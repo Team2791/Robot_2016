@@ -35,9 +35,9 @@ public class ShakerIntake extends AbstractShakerIntake {
 
     public IntakeState getIntakeState() {
         // returns state of intake in form of the enum IntakeState
-        if (intakeSolenoid.get())
+        if (!intakeSolenoid.get())
             return IntakeState.RETRACTED;
-        else if (!intakeSolenoid.get())
+        else if (intakeSolenoid.get())
             return IntakeState.EXTENDED;
         else
             return IntakeState.EXTENDED;

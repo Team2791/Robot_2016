@@ -37,8 +37,8 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // setpoints to acheicve target depending on the pos of the shooter arm
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
-    protected double closeShotSetPoint = 560;
-    protected double farShotSetpoint = 925;
+    protected double closeShotSetPoint = 570;
+    protected double farShotSetpoint = 800;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
     // manual override boolean for the autofire
@@ -116,6 +116,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
                     while (Timer.getFPGATimestamp() - timeWhenShooterArmMoved < 0.9) {
                         setShooterSpeeds(-0.7, false);
                     }
+                    stopMotors();
                     shooterArmMoving = false;
                 }
                 // wait a few seconds before moving the arm
@@ -219,13 +220,13 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
         // if run auto fire (run shooter wheels, and run servo)
         // update the setPoints from the dashboard
         if (useManualSetPoint) {
-            System.out.print("My shooter wheel setpoint is " + manualSetPoint);
+//            System.out.print("My shooter wheel setpoint is " + manualSetPoint);
             return manualSetPoint;
         }
 
         closeShotSetPoint = SmartDashboard.getNumber("closeShotSetpoint");
         farShotSetpoint = SmartDashboard.getNumber("farShotSetpoint");
-        System.out.println(("My shooter wheel setpoint is " + (getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint)));
+//        System.out.println(("My shooter wheel setpoint is " + (getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint)));
         return getShooterHeight().equals(ShooterHeight.MID) ? farShotSetpoint : closeShotSetPoint;
     }
 
@@ -235,7 +236,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
 
     private void delayArmMove() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(600);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -250,6 +251,12 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
             case HIGH:
                 setShooterHigh();
                 break;
+        }
+        try {
+            Thread.sleep(600);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         delayedArmMove = false;
     }

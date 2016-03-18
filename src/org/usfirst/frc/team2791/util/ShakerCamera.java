@@ -58,8 +58,8 @@ public class ShakerCamera implements Runnable {
         // this.cameraAutoSettings = false;
         // cam.setFPS(10);
         // cameraValsOnlyOnce = false;
-        cam.setBrightness(0);
-
+        cam.setBrightness(1);
+        cam.setExposureManual(1);
         cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
         cam.updateSettings();
 
@@ -73,7 +73,7 @@ public class ShakerCamera implements Runnable {
         SmartDashboard.putNumber("H max", 140);
         SmartDashboard.putNumber("S min", 70);
         SmartDashboard.putNumber("S max", 255);
-        SmartDashboard.putNumber("L min", 12);
+        SmartDashboard.putNumber("L min", 26);
         SmartDashboard.putNumber("L max", 184);
         SmartDashboard.putNumber("servo angle", 100);
         // rangeTable.put(DISTANCE, RPM);
@@ -86,7 +86,7 @@ public class ShakerCamera implements Runnable {
 
     public static ShakerCamera getInstance() {
         if (cameraInstance == null)
-            cameraInstance = new ShakerCamera("cam0");
+            cameraInstance = new ShakerCamera("cam2");
         return cameraInstance;
     }
 
@@ -133,22 +133,24 @@ public class ShakerCamera implements Runnable {
                     }
                 }
 
-                if (cameraAutoSettings && !cameraValsOnlyOnce) {
-                    // set the exposure and the brightness for when vision
-                    // targetting
-                    cam.setExposureAuto();
-                    cam.setBrightness(25);
-                    cam.updateSettings();
-                    cameraValsOnlyOnce = true;
-                } else if (!cameraValsOnlyOnce) {
-                    // set the exposure and the brightness for when vision
-                    // targetting
-                    cam.setFPS(20);
-                    cam.setExposureManual(cameraExposure);
-                    cam.setBrightness(cameraBrightness);
-                    cam.updateSettings();
-                    cameraValsOnlyOnce = true;
-                }
+//                if (cameraAutoSettings && !cameraValsOnlyOnce) {
+//                	System.out.println("Changing camera value to be automatic");
+//                    // set the exposure and the brightness for when vision
+//                    // targetting
+//                    cam.setExposureAuto();
+//                    cam.setBrightness(25);
+//                    cam.updateSettings();
+//                    cameraValsOnlyOnce = true;
+//                } else if (!cameraValsOnlyOnce) {
+//                    // set the exposure and the brightness for when vision
+//                    // targetting
+//                	System.out.println("Setting the camera values to be manual");
+//                    cam.setFPS(20);
+//                    cam.setExposureManual(cameraExposure);
+//                    cam.setBrightness(cameraBrightness);
+//                    cam.updateSettings();
+//                    cameraValsOnlyOnce = true;
+//                }
             } catch (VisionException | InterruptedException npe) {
                 System.out.println("Vision ERROR: " + npe.getMessage());
             }
@@ -351,19 +353,21 @@ public class ShakerCamera implements Runnable {
         // 1 is camera up
         // we did this because camera servo is inverted and set
         // angle = SmartDashboard.getNumber("servo angle");
-        cameraServo.set((180 - angle) / 180);
+        cameraServo.set((180-angle) / 180);
     }
 
     public void cameraUp() {
         // // bring servo arm up
-        // cameraServo.set(SmartDashboard.getNumber("servo angle"));
-        servoSetAngle(108);
+//         cameraServo.set(.195);
+//        servoSetAngle(108);
+//    	cameraServo.set(0);
+    	
     }
 
     public void cameraDown() {
         // bring servo arm down
         // servoSetAngle(0);
-        servoSetAngle(108);
+//        cameraServo.set(.9);
     }
 
     public void setCameraValues(int exposure, int brightness) {

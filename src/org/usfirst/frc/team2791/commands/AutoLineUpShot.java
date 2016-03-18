@@ -80,10 +80,10 @@ public class AutoLineUpShot {
                     // go to next step after this
                     if (useMultipleFrames) {
                         if (shootAfterAligned) {
-                            autoLineUpCounter = 40; // this is the double check and shoot case
+                            autoLineUpCounter = 20; // this is the double check and shoot case
                         } else {
                             System.out.println("We have no code to line up with multiple frame and not shoot. Shooting anyway.");
-                            autoLineUpCounter = 40;
+                            autoLineUpCounter = 20;
                         }
                     } else {
                         if (shootAfterAligned) {
@@ -179,6 +179,9 @@ public class AutoLineUpShot {
                         System.out.println("done shooting");
                         // if done running go to the next step
                         autoLineUpCounter = 40;
+                    }else{
+                    	System.out.println("There was something wrong so I am forcing it");
+                    	shooter.overrideAutoShot();
                     }
                 }
                 break;
@@ -204,6 +207,8 @@ public class AutoLineUpShot {
         autoFireOnce = false;
         shooter.resetShooterAutoStuff();
         driveTrain.doneUsingPID();
+        useMultipleFrames = false;
+        shootAfterAligned = false;
     }
 
     public static void addSomeShooterPower() {
