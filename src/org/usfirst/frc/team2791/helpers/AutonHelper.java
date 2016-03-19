@@ -1,16 +1,15 @@
 package org.usfirst.frc.team2791.helpers;
 
-import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
-import static org.usfirst.frc.team2791.robot.Robot.intake;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.helpers.autonModes.AutonMode;
 import org.usfirst.frc.team2791.helpers.autonModes.BasicCloseAuton;
 import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAutomaticLineup;
 import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAuton;
 import org.usfirst.frc.team2791.util.Constants;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
+import static org.usfirst.frc.team2791.robot.Robot.intake;
 
 /**
  * Created by Akhil on 1/28/2016.
@@ -66,7 +65,7 @@ public class AutonHelper extends ShakerHelper {
 		// we used this on Defense 5
 		// overallAuto = new DriveStraightAutomaticLineup(13.75,-15);
 
-		// this is for testing purposes only
+		// this is for testing purposes only..
 		// overallAuto = new DriveStraightAutomaticLineup(.5, 5);
 	}
 
