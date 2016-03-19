@@ -1,11 +1,8 @@
 package org.usfirst.frc.team2791.helpers;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.helpers.autonModes.AutonMode;
-import org.usfirst.frc.team2791.helpers.autonModes.BasicCloseAuton;
 import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAutomaticLineup;
-import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAuton;
 import org.usfirst.frc.team2791.util.Constants;
 
 import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
@@ -17,15 +14,9 @@ import static org.usfirst.frc.team2791.robot.Robot.intake;
 public class AutonHelper extends ShakerHelper {
 	private static AutonHelper auton;
 	private int counter = 0;
-	// private int microCounter = 0;
 	private double setPoint = 0;
-	// private double timeSinceShooterHigh = 0;
-	// private int previousCase = 0;
-	private SendableChooser autonType;
-	// private SendableChooser defenseToCross;
 
 	private AutonMode overallAuto;
-
 	private AutonHelper() {
 		SmartDashboard.putNumber("Stat Angle P", Constants.STATIONARY_ANGLE_P);
 		SmartDashboard.putNumber("Stat Angle I", Constants.STATIONARY_ANGLE_I);
@@ -38,15 +29,9 @@ public class AutonHelper extends ShakerHelper {
 		SmartDashboard.putNumber("Distance D", Constants.DRIVE_DISTANCE_D);
 		SmartDashboard.putNumber("Angle setpoint", setPoint);
 		SmartDashboard.putBoolean("Use Gyro", false);
-
 		SmartDashboard.putNumber("max speed", 0.5);
 		SmartDashboard.putNumber("pid distance travel", 1.0);
 		SmartDashboard.putNumber("Auton step counter", counter);
-		autonType = new SendableChooser();// choose what number defense
-		autonType.addObject("DriveStraight auto", "DriveStraight");
-		autonType.addObject("Basic Close Auto", "BasicClose");
-		SmartDashboard.putData("Auton Selector", autonType);
-
 		// This is a low bar auton
 		// overallAuto = new BasicCloseAuton(20.6, 60, 7.9);
 
@@ -104,21 +89,6 @@ public class AutonHelper extends ShakerHelper {
 		case 2:
 			//we are done with auton...so do nothing
 			break;
-		}
-	}
-
-	public void getAutonSelection() {
-		String selection = (String) autonType.getSelected();
-		switch (selection) {
-		case "DriveStraight":
-			overallAuto = new DriveStraightAuton(15);
-			break;
-		case "BasicClose":
-			overallAuto = new BasicCloseAuton(20.6, 60, 7.9);
-			break;
-		default:
-			System.out.println("No auton selected so doing nothing");
-			counter = 2;
 		}
 	}
 
