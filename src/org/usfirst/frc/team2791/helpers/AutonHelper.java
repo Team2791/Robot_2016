@@ -50,7 +50,8 @@ public class AutonHelper extends ShakerHelper {
 
 //		overallAuto = new BasicCloseAuton(20.6, 60, 7.9);
 		// overallAuto = new DriveStraightAuton(15);
-		overallAuto = new DriveStraightAutomaticLineup(13,-8);
+		overallAuto = new DriveStraightAutomaticLineup(14.5,0);//we used this on the ramparts
+//		overallAuto = new DriveStraightAutomaticLineup(.5, 5);
 		
 		// robot is front of
 		// 1 is all the way left 5 is all the way right
@@ -70,7 +71,7 @@ public class AutonHelper extends ShakerHelper {
 		//
 		// defenseToCross = new SendableChooser();
 		// SmartDashboard.putData("Auton Defnse type to cross", defenseToCross);
-		// defenseToCross.addObject("Low bar", "1");
+		// defenseToCross.addObjec("Low bar", "1");
 		// defenseToCross.addObject("Rough Terrain/Rock Wall/etc.", "2");
 		// defenseToCross.addObject("Cheval de Fries", "3");
 		// defenseToCross.addObject("Port Cullis", "4");

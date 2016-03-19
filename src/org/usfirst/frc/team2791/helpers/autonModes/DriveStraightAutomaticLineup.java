@@ -53,6 +53,7 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 		case 5:
 			if (!AutoLineUpShot.isRunning()) {
 				state++;
+				System.out.println("Auto lineup is no longer running and finishing up");
 			} else
 				AutoLineUpShot.run();
 			break;

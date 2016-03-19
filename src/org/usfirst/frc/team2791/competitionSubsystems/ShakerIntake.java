@@ -53,7 +53,7 @@ public class ShakerIntake extends AbstractShakerIntake {
 
 
     public boolean getArmAttachementUp() {
-        return armAttachment.get().equals(Relay.Value.kReverse);
+        return armAttachment.get().equals(Relay.Value.kForward);
     }
 
     public void run() {

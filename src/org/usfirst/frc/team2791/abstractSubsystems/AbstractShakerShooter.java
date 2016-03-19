@@ -38,7 +38,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
     protected double closeShotSetPoint = 565;
-    protected double farShotSetpoint = 800;
+    protected double farShotSetpoint = 815;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
     // manual override boolean for the autofire
@@ -266,7 +266,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
 
     public boolean shooterAtSpeed() {
         double total_error = Math.abs(leftShooterTalon.getError()) + Math.abs(rightShooterTalon.getError());
-        return total_error < 50;
+        return total_error < 30;
     }
 
     public void resetShooterAutoStuff() {

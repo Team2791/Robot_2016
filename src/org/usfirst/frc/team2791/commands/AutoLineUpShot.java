@@ -24,9 +24,10 @@ public class AutoLineUpShot {
 	// just to count how many frames we used to lineup
 	private static int frames_used = 0;
 	private static long frameID;
+	private static long oldFrameID;
 	private static int timeForErrorCheck;
 	private static ParticleReport currentTarget;
-	private static Timer timeSinceLastPrint= new Timer();
+	private static Timer timeSinceLastPrint = new Timer();
 
 	private static boolean useMultipleFrames = false;
 	private static boolean shootAfterAligned = false;
@@ -59,7 +60,7 @@ public class AutoLineUpShot {
 			// only run if there is a target available
 			if (currentTarget != null) {
 				driveTrain.resetEncoders();
-				
+
 				// prep the shot, runs the shooter wheels to setpoint
 				// saves time in firing
 
@@ -70,11 +71,11 @@ public class AutoLineUpShot {
 
 				// the target angle == current angle + targetAngleDiff + offset
 				target = driveTrain.getAngle() + currentTarget.ThetaDifference + shootOffset;
-				frameID = camera.getCurrentFrameID();
+				oldFrameID = camera.getCurrentFrameID();
 				// Print out the values for debugging
-				System.out.print("Last System Out was "+timeSinceLastPrint.get());
+				System.out.print("Last System Out was " + timeSinceLastPrint.get());
 				System.out.println("my target is " + target + " current angle is " + driveTrain.getAngle()
-						+ "the shooter offset is " + shootOffset +" t:"+timeSinceLastPrint.get());
+						+ "the shooter offset is " + shootOffset + " t:" + timeSinceLastPrint.get());
 				resetAndStartTimer();
 				// tell the other subsystems that we are currently autofiring
 				autoLineUpInProgress = true;
@@ -89,7 +90,8 @@ public class AutoLineUpShot {
 					} else {
 
 						System.out.println(
-								"We have no code to line up with multiple frame and not shoot. Shooting anyway. t:"+timeSinceLastPrint.get());
+								"We have no code to line up with multiple frame and not shoot. Shooting anyway. t:"
+										+ timeSinceLastPrint.get());
 						autoLineUpCounter = 20;
 						resetAndStartTimer();
 					}
@@ -111,7 +113,7 @@ public class AutoLineUpShot {
 				// for debugging
 				shooter.autoFire();
 
-				System.out.print("Last System Out was "+timeSinceLastPrint.get());
+				System.out.print("Last System Out was " + timeSinceLastPrint.get());
 				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
 						+ "\n    angle-target= " + (driveTrain.getAngle() - target));
 				autoLineUpCounter = 30;
@@ -123,7 +125,7 @@ public class AutoLineUpShot {
 			if (driveTrain.setAngle(target, angleMaxOutput, true)) {
 				// for debugging
 
-				System.out.print("Last System Out was "+timeSinceLastPrint.get());
+				System.out.print("Last System Out was " + timeSinceLastPrint.get());
 				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
 						+ "\n    angle-target= " + (driveTrain.getAngle() - target));
 				autoLineUpCounter = 40;
@@ -137,16 +139,19 @@ public class AutoLineUpShot {
 			// and try to drive to it
 			if (driveTrain.setAngle(target, angleMaxOutput, true)) { // keep the
 																		// drivetrain
+				System.out.println("I'm trying to get to " + target + " I got to " + driveTrain.getAngle()
+				+ "\n    angle-target= " + (driveTrain.getAngle() - target));
+				currentTarget = camera.getTarget();
+				frameID = camera.getCurrentFrameID();
+				frames_used++;
 				// engaged
 				// double check that we are close to the target angle
 				if (!(currentTarget == null)) {
-					if (!(frameID == camera.getCurrentFrameID())) {
+					if (!(frameID == oldFrameID)) {
+						oldFrameID = frameID;
 						// if we got a new frame process it
-						currentTarget = camera.getTarget();
-
-						System.out.println("Final* checking with frameID " + frameID + " t:"+timeSinceLastPrint.get());
-						frameID = camera.getCurrentFrameID();
-						frames_used++;
+						System.out.println("Final* checking with frameID " + 
+								frameID + " t:" + timeSinceLastPrint.get());
 
 						double camera_error = currentTarget.ThetaDifference + shootOffset;
 						System.out.println("Double check camera error: " + camera_error);
@@ -155,7 +160,8 @@ public class AutoLineUpShot {
 							// go to the next step
 							// shoot whenever ready
 							System.out.println(
-									"I've found a good angle and am going to hold it while the shooter spins up. t:"+timeSinceLastPrint.get());
+									"I've found a good angle and am going to hold it while the shooter spins up. t:"
+											+ timeSinceLastPrint.get());
 							shooter.autoFire();
 							// we should be firing when the auto fire method is
 							// called
@@ -164,12 +170,12 @@ public class AutoLineUpShot {
 							// is completed
 							autoLineUpCounter = 30;
 						} else {
-							if (!shooter.shooterAtSpeed()){
-								System.out.println("I am waiting on the shooter wheels t:"+timeSinceLastPrint.get());
-								}
-							if (!(Math.abs(camera_error) < 0.75)){
-								System.out.println("I am waiting on camera error t:"+timeSinceLastPrint.get());
-								}
+							if (!shooter.shooterAtSpeed()) {
+								System.out.println("I am waiting on the shooter wheels t:" + timeSinceLastPrint.get());
+							}
+							if (!(Math.abs(camera_error) < 0.75)) {
+								System.out.println("I am waiting on camera error t:" + timeSinceLastPrint.get());
+							}
 							// too much error so we're going to drive again
 							// update the target and the setAngle in the if
 							// statement in the top of
@@ -178,11 +184,12 @@ public class AutoLineUpShot {
 						}
 					} else {
 
-						System.out.println("My check frame is the same as my turn frame. so I'm waiting. t:"+timeSinceLastPrint.get());
+						System.out.println("My check frame is the same as my turn frame. so I'm waiting. t:"
+								+ timeSinceLastPrint.get());
 					}
 				} else {
 
-					System.out.println("We lost the image and are quitting t:"+timeSinceLastPrint.get());
+					System.out.println("We lost the image and are quitting t:" + timeSinceLastPrint.get());
 					// turn off the shooter
 					shooter.resetShooterAutoStuff();
 					autoLineUpCounter = 40;
@@ -196,13 +203,9 @@ public class AutoLineUpShot {
 				if (!shooter.getIfAutoFire()) {
 					// only run once the shot is finished
 
-					System.out.println("done shooting t:"+timeSinceLastPrint.get());
+					System.out.println("done shooting t:" + timeSinceLastPrint.get());
 					// if done running go to the next step
 					autoLineUpCounter = 40;
-				} else {
-
-					System.out.println("There was something wrong so I am forcing it t:"+timeSinceLastPrint.get());
-					shooter.overrideAutoShot();
 				}
 			}
 			break;
@@ -210,7 +213,7 @@ public class AutoLineUpShot {
 		case 40:
 
 			// reset everything
-			System.out.println("Finished auto line up and resetting. t:"+timeSinceLastPrint.get());
+			System.out.println("Finished auto line up and resetting. t:" + timeSinceLastPrint.get());
 			// the fames_used + 1 is to include the check frame
 			System.out.println("I took " + (frames_used + 1) + " frames to shoot");
 			reset();
@@ -225,7 +228,6 @@ public class AutoLineUpShot {
 
 	public static void reset() {
 
-		System.out.println("I am resettingt:"+timeSinceLastPrint.get());
 		resetAndStartTimer();
 		autoLineUpInProgress = false;
 		autoLineUpCounter = 0;
@@ -235,10 +237,12 @@ public class AutoLineUpShot {
 		useMultipleFrames = false;
 		shootAfterAligned = false;
 	}
-	private static void resetAndStartTimer(){
+
+	private static void resetAndStartTimer() {
 		timeSinceLastPrint.reset();
 		timeSinceLastPrint.start();
 	}
+
 	public static void addSomeShooterPower() {
 		addShooterPower = true;
 	}

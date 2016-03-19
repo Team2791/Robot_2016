@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
+
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 
 import java.util.ArrayList;
@@ -70,14 +72,23 @@ public class ShakerCamera implements Runnable {
 				100.0, 0, 0);
 		SmartDashboard.putBoolean("display targetting", false);
 		SmartDashboard.putBoolean("Debug Image", false);
-		SmartDashboard.putNumber("H min", 75 - 15);
-		SmartDashboard.putNumber("H max", 140);
-		SmartDashboard.putNumber("S min", 70);
+		//original hsl values
+		//		SmartDashboard.putNumber("H min", 50);
+//		SmartDashboard.putNumber("H max", 148);
+//		SmartDashboard.putNumber("S min", 127);
+//		SmartDashboard.putNumber("S max", 255);
+//		SmartDashboard.putNumber("L min", 35);
+//		SmartDashboard.putNumber("L max", 188);
+		SmartDashboard.putNumber("H min", 20);
+		SmartDashboard.putNumber("H max", 149);
+		SmartDashboard.putNumber("S min", 91);
 		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("L min", 26);
-		SmartDashboard.putNumber("L max", 184);
+		SmartDashboard.putNumber("V min", 230);
+		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
+		
+		
 		rangeTable = new TreeMap<Double, Double>();
 		rangeTable.put(95.0, 850.0);
 		rangeTable.put(100.0, 850.0);
@@ -111,8 +122,8 @@ public class ShakerCamera implements Runnable {
 						reading_particles.release();
 
 						CameraServer.getInstance().setImage(particleBinaryFrame);
-					} else if (SmartDashboard.getBoolean("Debug Image") || BrokenAutoLineUpShot.isRunning()) {
-						SmartDashboard.putNumber("Distance from target", getRange());
+					} else if (SmartDashboard.getBoolean("Debug Image") || AutoLineUpShot.isRunning()) {
+//						SmartDashboard.putNumber("Distance from target", getRange());
 						double processingTime = Timer.getFPGATimestamp();
 						// before we measure the particles aquire the semaphore
 						reading_particles.acquire();
@@ -156,6 +167,7 @@ public class ShakerCamera implements Runnable {
 				}
 			} catch (VisionException | InterruptedException npe) {
 				System.out.println("Vision ERROR: " + npe.getMessage());
+				run();
 			}
 
 			try {
@@ -191,22 +203,23 @@ public class ShakerCamera implements Runnable {
 	}
 
 	public double getRange() {
-		double range = -10;
-		if (getTarget() != null) {
-			range = (TARGET_HT_INCHES - CAMERA_HT_INCHES) / Math.tan(
-					Math.toRadians((-getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
-							+ CAMERA_PITCH_DEG)));
-			SmartDashboard.putNumber("angle value",
-					(getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
-							+ CAMERA_PITCH_DEG));
-			SmartDashboard.putNumber("Normalized center of mass y",
-					-getNormalizedCenterOfMass(getTarget().CenterOfMassY));
-		}
+//		double range = -10;
+//		if (getTarget() != null) {
+//			range = (TARGET_HT_INCHES - CAMERA_HT_INCHES) / Math.tan(
+//					Math.toRadians((-getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
+//							+ CAMERA_PITCH_DEG)));
+//			SmartDashboard.putNumber("angle value",
+//					(getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
+//							+ CAMERA_PITCH_DEG));
+//			SmartDashboard.putNumber("Normalized center of mass y",
+//					-getNormalizedCenterOfMass(getTarget().CenterOfMassY));
+//		}
 		// Daisy cv's =
 		// (kTopTargetHeightIn-kCameraHeightIn)/Math.tan((y*kVerticalFOVDeg/2.0
 		// + kCameraPitchDeg)*Math.PI/180.0);
 
-		return range + rangeOffset;
+//		return range + rangeOffset;
+		return 0;
 
 	}
 
@@ -236,7 +249,11 @@ public class ShakerCamera implements Runnable {
 				// this shouldn't be happening but it is
 				if (par == null)
 					continue;
-				if (maxPercentArea < par.PercentAreaToImageArea) {
+				double width = Math.abs(par.BoundingRectLeft - par.BoundingRectRight);
+				double height = Math.abs(par.BoundingRectTop - par.BoundingRectBottom);
+				double widthToHeight = width / height;
+				if (maxPercentArea * 1.15 < par.PercentAreaToImageArea && 
+						(widthToHeight  > 0.85 && widthToHeight < 1.3)) {
 					maxPercentArea = par.PercentAreaToImageArea;
 					targetLoc = counter;
 				}
@@ -265,10 +282,10 @@ public class ShakerCamera implements Runnable {
 			// particle information is stored into the arraylist particles
 			particles = new ArrayList<ParticleReport>();
 			// create and apply an hsl threshold on the current fame
-			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSL,
+			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSV,
 					new Range((int) SmartDashboard.getNumber("H min"), (int) SmartDashboard.getNumber("H max")),
 					new Range((int) SmartDashboard.getNumber("S min"), (int) SmartDashboard.getNumber("S max")),
-					new Range((int) SmartDashboard.getNumber("L min"), (int) SmartDashboard.getNumber("L max")));
+					new Range((int) SmartDashboard.getNumber("V min"), (int) SmartDashboard.getNumber("V max")));
 			// set the lower threshold on area in the criteria filter
 			criteria[0].lower = 0.3f;
 			// use particle filter to remove unwanted particles

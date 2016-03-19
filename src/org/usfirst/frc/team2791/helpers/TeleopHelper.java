@@ -107,6 +107,7 @@ public class TeleopHelper extends ShakerHelper {
 			// Run intake inward with assistance of the shooter wheel
 			shooter.setShooterSpeeds(-0.6, false);
 			intake.pullBall();
+			useArmAttachmentToggle.setManual(false);
 			holdIntakeDown = true;
 		} else if (operatorJoystick.getButtonX()) {
 			// Run reverse if button pressed
@@ -159,7 +160,7 @@ public class TeleopHelper extends ShakerHelper {
 			useArmAttachmentToggle.setManual(true);
 			shooter.delayedShooterPosition(ShooterHeight.MID);
 			camera.setCameraValues(1, 1);
-			holdIntakeDown = false;
+			holdIntakeDown = true;
 		}
 		if (operatorJoystick.getDpadDown()) {
 			intake.extendIntake();
