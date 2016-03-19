@@ -44,6 +44,7 @@ public class ShakerCamera implements Runnable {
 	private double rangeOffset = 0.0;
 	private Semaphore reading_particles;
 	private boolean cameraManualMode = false;
+	private boolean saveImage = false;
 
 	private ShakerCamera(String camPort) {
 		cam = new USBCamera(camPort);
@@ -81,9 +82,9 @@ public class ShakerCamera implements Runnable {
 //		SmartDashboard.putNumber("L max", 188);
 		SmartDashboard.putNumber("H min", 20);
 		SmartDashboard.putNumber("H max", 149);
-		SmartDashboard.putNumber("S min", 91);
+		SmartDashboard.putNumber("S min", 78);
 		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("V min", 230);
+		SmartDashboard.putNumber("V min", 90);
 		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
@@ -221,6 +222,10 @@ public class ShakerCamera implements Runnable {
 //		return range + rangeOffset;
 		return 0;
 
+	}	
+	public void setSaveImages(boolean save)
+	{
+		saveImage = save;
 	}
 
 	public ParticleReport getTarget() {
@@ -288,6 +293,7 @@ public class ShakerCamera implements Runnable {
 					new Range((int) SmartDashboard.getNumber("V min"), (int) SmartDashboard.getNumber("V max")));
 			// set the lower threshold on area in the criteria filter
 			criteria[0].lower = 0.3f;
+
 			// use particle filter to remove unwanted particles
 			int imaqError = NIVision.imaqParticleFilter4(particleBinaryFrame, binaryFrame, criteria, filterOptions,
 					null);

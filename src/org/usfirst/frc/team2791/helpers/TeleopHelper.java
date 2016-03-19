@@ -221,9 +221,15 @@ public class TeleopHelper extends ShakerHelper {
 		// holdIntakeDown = false;
 		// intake extension toggle
 		if (!shooter.getIfPreppingShot())
-			if (driverJoystick.getButtonA() || operatorJoystick.getDpadLeft() || operatorJoystick.getButtonB()
+			if(operatorJoystick.getDpadLeft())
+			{
+				intake.extendIntake();
+				useArmAttachmentToggle.setManual(true);
+			}
+		else if (driverJoystick.getButtonA()  || operatorJoystick.getButtonB()
 					|| AbstractShakerShooter.delayedArmMove || operatorJoystick.getButtonSel() || holdIntakeDown) {
 				// this runs if intakeing ball too
+				
 				intake.extendIntake();
 			} else
 				// Retract intake
