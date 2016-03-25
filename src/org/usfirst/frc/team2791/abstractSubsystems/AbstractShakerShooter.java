@@ -13,7 +13,7 @@ import org.usfirst.frc.team2791.util.Constants;
 public abstract class AbstractShakerShooter extends ShakerSubsystem implements Runnable {
     protected static final int updateDelayMs = 1000 / 100; // run at 100 Hz
     // time that the shooter wheels have to be at the proper speed
-    protected static final double delayTimeBeforeShooting = 0.5;
+    protected static final double delayTimeBeforeShooting = 0.2;
     // boolean that decides whether the arm should move in a delay motion
     public static boolean delayedArmMove = false;
     protected final double delayTimeForServo = 0.8;// time for servo to push
@@ -37,7 +37,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // setpoints to acheicve target depending on the pos of the shooter arm
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
-    protected double closeShotSetPoint = 570;
+    protected double closeShotSetPoint = 575;
     protected double farShotSetpoint = 820;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;

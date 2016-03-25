@@ -9,7 +9,7 @@ import org.usfirst.frc.team2791.util.Constants;
 
 public class ShakerIntake extends AbstractShakerIntake {
     protected Solenoid intakeSolenoid;
-    protected Relay armAttachment;
+    protected Solenoid armAttachment;
 
     public ShakerIntake() {
         // init
@@ -17,7 +17,7 @@ public class ShakerIntake extends AbstractShakerIntake {
         leftIntakeMotor = new Talon(Constants.INTAKE_TALON_LEFT_PORT);
         rightIntakeMotor = new Talon(Constants.INTAKE_TALON_RIGHT_PORT);
         intakeSolenoid = new Solenoid(Constants.PCM_MODULE, Constants.INTAKE_PISTON);
-        armAttachment = new Relay(3);
+        armAttachment = new Solenoid(Constants.PCM_MODULE,Constants.FUN_BRIDGE_ARM_PORT);
         init();
     }
 
@@ -44,16 +44,18 @@ public class ShakerIntake extends AbstractShakerIntake {
     }
 
     public void setArmAttachmentUp() {
-        armAttachment.set(Relay.Value.kReverse);
+//    	System.out.println("I moving the little flipper up");
+        armAttachment.set(false);
     }
 
     public void setArmAttachmentDown() {
-        armAttachment.set(Relay.Value.kForward);
+//    	System.out.println("I moving the little flipper down");
+        armAttachment.set(true);
     }
 
 
     public boolean getArmAttachementUp() {
-        return armAttachment.get().equals(Relay.Value.kForward);
+        return !armAttachment.get();
     }
 
     public void run() {

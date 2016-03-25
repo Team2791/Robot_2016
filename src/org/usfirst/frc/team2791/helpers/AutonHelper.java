@@ -39,8 +39,9 @@ public class AutonHelper extends ShakerHelper {
 		// overallAuto = new DriveStraightAuton(15);
 
 		// we used this on Defense 2
-		overallAuto = new DriveStraightAutomaticLineup(13.75, 15);
-
+		
+		SmartDashboard.putNumber("Auton Distance", 13.75);
+		SmartDashboard.putNumber("Auton Angle", 0);
 		// we used this on Defense 3
 		// overallAuto = new DriveStraightAutomaticLineup(13.75,5);
 
@@ -76,6 +77,8 @@ public class AutonHelper extends ShakerHelper {
 		switch (counter) {
 		case 0:
 			//start the auton.. basically run the init method
+			driveTrain.setLowGear();
+			overallAuto = new DriveStraightAutomaticLineup(SmartDashboard.getNumber("Auton Distance"), SmartDashboard.getNumber("Auton Angle"));
 			overallAuto.start();
 			counter++;
 		case 1:

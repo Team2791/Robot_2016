@@ -325,7 +325,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
         Constants.DRIVE_DISTANCE_P = SmartDashboard.getNumber("DISTANCE P");
         Constants.DRIVE_DISTANCE_I = SmartDashboard.getNumber("DISTANCE I");
         Constants.DRIVE_DISTANCE_D = SmartDashboard.getNumber("Distance D");
-
+        debug();
         updatePIDGains();
     }
 
