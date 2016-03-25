@@ -114,6 +114,9 @@ public class ShakerCamera implements Runnable {
 				SmartDashboard.putNumber("Image get Time", imageGetTime = Timer.getFPGATimestamp() - imageGetTime);
 				alreadyMeasuredImage = false;
 				if (frame != null) {
+					GetImageSizeResult imageSize = NIVision.imaqGetImageSize(frame);
+					CAMERA_WIDTH_PIXELS = imageSize.width;
+					CAMERA_HEIGHT_PIXELS = imageSize.height;
 					// if should display the modified image to the
 					// smartdashboard
 					if (SmartDashboard.getBoolean("display targetting")) {
@@ -257,7 +260,7 @@ public class ShakerCamera implements Runnable {
 				double width = Math.abs(par.BoundingRectLeft - par.BoundingRectRight);
 				double height = Math.abs(par.BoundingRectTop - par.BoundingRectBottom);
 				double widthToHeight = width / height;
-				if (maxPercentArea * 1.15 < par.PercentAreaToImageArea && 
+				if (maxPercentArea * 1.20 < par.PercentAreaToImageArea && 
 						(widthToHeight  > 0.85 && widthToHeight < 1.3)) {
 					maxPercentArea = par.PercentAreaToImageArea;
 					targetLoc = counter;
