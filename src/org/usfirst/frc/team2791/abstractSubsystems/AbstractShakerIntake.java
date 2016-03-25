@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class AbstractShakerIntake extends ShakerSubsystem {
-	public final double INTAKE_SPEED = 1.0;
+	public final double INTAKE_SPEED = 1;
 
 	protected Talon rightIntakeMotor;
 	protected Talon leftIntakeMotor;
@@ -69,8 +69,8 @@ public abstract class AbstractShakerIntake extends ShakerSubsystem {
 
 	public void pushBall() {
 		// runs intake outward
-		leftIntakeMotor.set(-INTAKE_SPEED);
-		rightIntakeMotor.set(-INTAKE_SPEED);
+		leftIntakeMotor.set(-.5);
+		rightIntakeMotor.set(-.5);
 
 	}
 

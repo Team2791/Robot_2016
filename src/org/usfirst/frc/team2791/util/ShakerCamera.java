@@ -73,13 +73,13 @@ public class ShakerCamera implements Runnable {
 				100.0, 0, 0);
 		SmartDashboard.putBoolean("display targetting", false);
 		SmartDashboard.putBoolean("Debug Image", false);
-		//original hsl values
-		//		SmartDashboard.putNumber("H min", 50);
-//		SmartDashboard.putNumber("H max", 148);
-//		SmartDashboard.putNumber("S min", 127);
-//		SmartDashboard.putNumber("S max", 255);
-//		SmartDashboard.putNumber("L min", 35);
-//		SmartDashboard.putNumber("L max", 188);
+		// original hsl values
+		// SmartDashboard.putNumber("H min", 50);
+		// SmartDashboard.putNumber("H max", 148);
+		// SmartDashboard.putNumber("S min", 127);
+		// SmartDashboard.putNumber("S max", 255);
+		// SmartDashboard.putNumber("L min", 35);
+		// SmartDashboard.putNumber("L max", 188);
 		SmartDashboard.putNumber("H min", 20);
 		SmartDashboard.putNumber("H max", 149);
 		SmartDashboard.putNumber("S min", 78);
@@ -88,8 +88,7 @@ public class ShakerCamera implements Runnable {
 		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
-		
-		
+
 		rangeTable = new TreeMap<Double, Double>();
 		rangeTable.put(95.0, 850.0);
 		rangeTable.put(100.0, 850.0);
@@ -119,14 +118,7 @@ public class ShakerCamera implements Runnable {
 					CAMERA_HEIGHT_PIXELS = imageSize.height;
 					// if should display the modified image to the
 					// smartdashboard
-					if (SmartDashboard.getBoolean("display targetting")) {
-						// before we measure the particles aquire the semaphore
-						reading_particles.acquire();
-						measureAndGetParticles();
-						reading_particles.release();
-
-						CameraServer.getInstance().setImage(particleBinaryFrame);
-					} else if (SmartDashboard.getBoolean("Debug Image") || AutoLineUpShot.isRunning()) {
+				 if (SmartDashboard.getBoolean("Debug Image") ) {
 //						SmartDashboard.putNumber("Distance from target", getRange());
 						double processingTime = Timer.getFPGATimestamp();
 						// before we measure the particles aquire the semaphore
@@ -142,7 +134,11 @@ public class ShakerCamera implements Runnable {
 						NIVision.imaqDrawLineOnImage(binaryFrame, binaryFrame, NIVision.DrawMode.DRAW_VALUE,
 								new NIVision.Point(0, x.height / 2), new NIVision.Point(x.width, x.height / 2), 100f);
 						CameraServer.getInstance().setImage(binaryFrame);
-					} else {
+					}
+				 else if(AutoLineUpShot.isRunning()){
+					 //if autolineup is running do nothing
+				 }
+				 else {
 						SmartDashboard.putNumber("FPS without processing", (imageGetTime) * 100);
 						CameraServer.getInstance().setImage(frame);
 
@@ -207,27 +203,29 @@ public class ShakerCamera implements Runnable {
 	}
 
 	public double getRange() {
-//		double range = -10;
-//		if (getTarget() != null) {
-//			range = (TARGET_HT_INCHES - CAMERA_HT_INCHES) / Math.tan(
-//					Math.toRadians((-getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
-//							+ CAMERA_PITCH_DEG)));
-//			SmartDashboard.putNumber("angle value",
-//					(getNormalizedCenterOfMass(getTarget().CenterOfMassY) * CAMERA_FOV_VERTICAL / 2.0
-//							+ CAMERA_PITCH_DEG));
-//			SmartDashboard.putNumber("Normalized center of mass y",
-//					-getNormalizedCenterOfMass(getTarget().CenterOfMassY));
-//		}
+		// double range = -10;
+		// if (getTarget() != null) {
+		// range = (TARGET_HT_INCHES - CAMERA_HT_INCHES) / Math.tan(
+		// Math.toRadians((-getNormalizedCenterOfMass(getTarget().CenterOfMassY)
+		// * CAMERA_FOV_VERTICAL / 2.0
+		// + CAMERA_PITCH_DEG)));
+		// SmartDashboard.putNumber("angle value",
+		// (getNormalizedCenterOfMass(getTarget().CenterOfMassY) *
+		// CAMERA_FOV_VERTICAL / 2.0
+		// + CAMERA_PITCH_DEG));
+		// SmartDashboard.putNumber("Normalized center of mass y",
+		// -getNormalizedCenterOfMass(getTarget().CenterOfMassY));
+		// }
 		// Daisy cv's =
 		// (kTopTargetHeightIn-kCameraHeightIn)/Math.tan((y*kVerticalFOVDeg/2.0
 		// + kCameraPitchDeg)*Math.PI/180.0);
 
-//		return range + rangeOffset;
+		// return range + rangeOffset;
 		return 0;
 
-	}	
-	public void setSaveImages(boolean save)
-	{
+	}
+
+	public void setSaveImages(boolean save) {
 		saveImage = save;
 	}
 
@@ -260,8 +258,8 @@ public class ShakerCamera implements Runnable {
 				double width = Math.abs(par.BoundingRectLeft - par.BoundingRectRight);
 				double height = Math.abs(par.BoundingRectTop - par.BoundingRectBottom);
 				double widthToHeight = width / height;
-				if (maxPercentArea * 1.20 < par.PercentAreaToImageArea && 
-						(widthToHeight  > 0.85 && widthToHeight < 1.3)) {
+				if (maxPercentArea * 1.20 < par.PercentAreaToImageArea
+						&& (widthToHeight > 0.85 && widthToHeight < 1.3)) {
 					maxPercentArea = par.PercentAreaToImageArea;
 					targetLoc = counter;
 				}
@@ -398,9 +396,11 @@ public class ShakerCamera implements Runnable {
 		// servoSetAngle(0);
 		// cameraServo.set(.9);
 	}
-	public boolean isCameraManual(){
+
+	public boolean isCameraManual() {
 		return cameraManualMode;
 	}
+
 	public void setCameraValues(int exposure, int brightness) {
 		this.cameraBrightness = brightness;
 		this.cameraExposure = exposure;

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
+import org.usfirst.frc.team2791.commands.AutoLineUpShot;
 import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 import org.usfirst.frc.team2791.competitionSubsystems.ShakerDriveTrain;
 import org.usfirst.frc.team2791.competitionSubsystems.ShakerIntake;
@@ -91,7 +92,7 @@ public class Robot extends IterativeRobot {
 
         compressor = new Compressor(Constants.PCM_MODULE);
 
-        SmartDashboard.putNumber("shooter offset", BrokenAutoLineUpShot.shootOffset);
+        SmartDashboard.putNumber("shooter offset", AutoLineUpShot.shootOffset);
         SmartDashboard.putBoolean("DEBUGGING MODE", debuggingMode);
     }
 
