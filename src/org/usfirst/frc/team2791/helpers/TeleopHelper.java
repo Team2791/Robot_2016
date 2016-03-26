@@ -120,23 +120,23 @@ public class TeleopHelper extends ShakerHelper {
 			if (camera.isCameraManual())
 				camera.setCameraValuesAutomatic();
 			else
-				camera.setCameraValuesAutomatic();
+				camera.setCameraValues(1, 1);
 		}
 		if (operatorJoystick.getDpadUp()) {
 			intake.extendIntake();
 			shooter.delayedShooterPosition(ShooterHeight.HIGH);
 			holdIntakeDown = false;
-			camera.setCameraValues(1, 1);
+//			camera.setCameraValues(1, 1);
 		}
 		if (operatorJoystick.getDpadRight()) {
 			intake.extendIntake();
 			shooter.delayedShooterPosition(ShooterHeight.MID);
-			camera.setCameraValues(1, 1);
+//			camera.setCameraValues(1, 1);
 			holdIntakeDown = true;
 		}
 		if (operatorJoystick.getDpadDown()) {
 			intake.extendIntake();
-			camera.setCameraValuesAutomatic();
+//			camera.setCameraValuesAutomatic();
 			shooter.delayedShooterPosition(ShooterHeight.LOW);
 			holdIntakeDown = false;
 		}

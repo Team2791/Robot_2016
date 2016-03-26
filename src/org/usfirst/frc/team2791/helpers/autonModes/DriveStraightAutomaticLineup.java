@@ -46,6 +46,7 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 		case 4:
 			AutoLineUpShot.setShootAfterAligned(true);
 			AutoLineUpShot.setUseMultipleFrames(true);
+			AutoLineUpShot.inAuton(true);
 			AutoLineUpShot.run();
 			System.out.println("Starting autoLineup");
 			state++;
@@ -61,6 +62,7 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 			AutoLineUpShot.reset();
 			System.out.println("I am done with the drive striaght auto");
 			driveTrain.resetEncoders();
+			AutoLineUpShot.inAuton(false);
 			state = 0;
 			break;
 		}
