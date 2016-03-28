@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2791.util;
 
 public class Util {
+    //A class with a bunch of useful tools(methods)
     public static String newline = System.lineSeparator();
 
     private Util() {
@@ -47,8 +48,8 @@ public class Util {
         return index;
     }
 
-    public static double tickToFeet(double encoderTicks, double wheelDiameter) {
-        return (wheelDiameter * Math.PI / encoderTicks);
+    public static double tickToFeet(double encoderTicks, double wheelDiameter_inFeet) {
+        return (wheelDiameter_inFeet * Math.PI / encoderTicks);
     }
 
     public enum UnitLength {

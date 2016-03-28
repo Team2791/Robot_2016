@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2791.practicebotSubsystems;
+package org.usfirst.frc.team2791.practiceSubsystems;
 
 public class PracticePorts {
     // ANALOG
@@ -21,8 +21,8 @@ public class PracticePorts {
 
     // PCM PORTS
     // First Pcm module
-    public static final int DRIVE_PISTON_FORWARD = 0;
-    public static final int DRIVE_PISTON_REVERSE = 1;
+    public static final int DRIVE_PISTON_FORWARD = 1;
+    public static final int DRIVE_PISTON_REVERSE = 0;
     public static final int INTAKE_PISTON_CHANNEL_FORWARD = 2;
     public static final int INTAKE_PISTON_CHANNEL_REVERSE = 3;
     public static final int LONG_PISTON_FORWARD = 4;
@@ -33,10 +33,6 @@ public class PracticePorts {
     // second pcm module
     public static final int SHORT_PISTON_FORWARD = 0;
     public static final int SHORT_PISTON_REVERSE = 1;
-    public static final int CLAW_FORWARD_CHANNEL = 2;
-    public static final int CLAW_REVERSE_CHANNEL = 3;
-    public static final int CLAW_TWO_FORWARD_CHANNEL = 4;
-    public static final int CLAW_TWO_REVERSE_CHANNEL = 5;
     // CAN PracticePorts
     public static final int PCM_MODULE = 20;
     public static final int SECOND_PCM_MODULE = 21;

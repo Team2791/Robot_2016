@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShakerGyro extends SensorBase implements Runnable {
     private static final double calibrationTime = 5.0;
-    private static final int updateDelayMs = 1000 / 100; // run at 100 Hz
+    private static final int updateDelayMs = 1000 / 50; // run at 100 Hz
     public double initialAngle = 0.0;
     // constants from analog devices code
     @SuppressWarnings("unused")
@@ -31,7 +31,7 @@ public class ShakerGyro extends SensorBase implements Runnable {
 
     public ShakerGyro(SPI.Port port) {
         m_spi = new SPI(port);
-        m_spi.setClockRate(4000000); // set to 4 MHz because that's the rRio's
+        m_spi.setClockRate(3000000); // set to 4 MHz because that's the rRio's
         // max, gyro can do 8 MHz
         m_spi.setMSBFirst();
         m_spi.setSampleDataOnRising();
@@ -85,6 +85,8 @@ public class ShakerGyro extends SensorBase implements Runnable {
         if (calibrated)
             rate -= rateOffset;
 
+//		System.out.print("Raw rate data: " + assemble_sensor_data(data));
+//		System.out.println(" Hex response: " + byteArrayToHex(data));
         return rate;
     }
 
