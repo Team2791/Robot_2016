@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2791.practiceSubsystems;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
@@ -13,7 +12,6 @@ public class PracticeShakerDriveTrain extends AbstractShakerDriveTrain {
     private Talon rightTalonA;
     private Talon rightTalonB;
 
-    private DoubleSolenoid driveSolenoid;
 
     public PracticeShakerDriveTrain() {
         // instanciate the four talons for the drive train
@@ -29,8 +27,6 @@ public class PracticeShakerDriveTrain extends AbstractShakerDriveTrain {
 
 
         // shifting solenoid
-        this.driveSolenoid = new DoubleSolenoid(PracticePorts.PCM_MODULE, PracticePorts.DRIVE_PISTON_FORWARD,
-                PracticePorts.DRIVE_PISTON_REVERSE);
         this.leftDriveEncoder = new Encoder(PracticePorts.LEFT_DRIVE_ENCODER_PORT_A,
                 PracticePorts.LEFT_DRIVE_ENCODER_PORT_B);
         this.rightDriveEncoder = new Encoder(PracticePorts.RIGHT_DRIVE_ENCOODER_PORT_A,
@@ -39,23 +35,5 @@ public class PracticeShakerDriveTrain extends AbstractShakerDriveTrain {
         init();
     }
 
-    public GearState getCurrentGear() {
-        if (driveSolenoid.get().equals(PracticeConstants.DRIVE_HIGH_GEAR))
-            return GearState.HIGH;
-        else if (driveSolenoid.get().equals(PracticeConstants.DRIVE_LOW_GEAR))
-            return GearState.LOW;
-        else
-            return GearState.LOW;
-    }
-
-    public void setHighGear() {
-        // put the gear into the high state
-        driveSolenoid.set(PracticeConstants.DRIVE_HIGH_GEAR);
-    }
-
-    public void setLowGear() {
-        // put gear into the low state
-        driveSolenoid.set(PracticeConstants.DRIVE_LOW_GEAR);
-    }
 
 }

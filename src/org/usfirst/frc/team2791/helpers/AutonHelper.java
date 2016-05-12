@@ -1,15 +1,11 @@
 package org.usfirst.frc.team2791.helpers;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import javafx.scene.Camera;
-
 import org.usfirst.frc.team2791.helpers.autonModes.AutonMode;
 import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAutomaticLineup;
 import org.usfirst.frc.team2791.util.Constants;
 
-import static org.usfirst.frc.team2791.robot.Robot.driveTrain;
-import static org.usfirst.frc.team2791.robot.Robot.intake;
-import static org.usfirst.frc.team2791.robot.Robot.camera;
+import static org.usfirst.frc.team2791.robot.Robot.*;
 /**
  * Created by Akhil on 1/28/2016.
  */
@@ -79,7 +75,6 @@ public class AutonHelper extends ShakerHelper {
 		switch (counter) {
 		case 0:
 			//start the auton.. basically run the init method
-			driveTrain.setLowGear();
 			camera.setCameraValues(1, 1);
 			overallAuto = new DriveStraightAutomaticLineup(SmartDashboard.getNumber("Auton Distance"), SmartDashboard.getNumber("Auton Angle"));
 			overallAuto.start();

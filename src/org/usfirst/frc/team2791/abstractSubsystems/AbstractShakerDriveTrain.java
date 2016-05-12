@@ -100,11 +100,6 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 	}
 
-	public abstract GearState getCurrentGear();
-
-	public abstract void setHighGear();
-
-	public abstract void setLowGear();
 
 	public void run() {
 		try {
@@ -135,7 +130,6 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	public boolean setDistance(double distance, double angle, double maxOutput, boolean useGyro) {
 		// uncomment this line if we are debugging
 		// updatePIDGains();
-		setLowGear();
 		distancePID.setSetPoint(distance);
 		movingAnglePID.setSetPoint(angle);
 
@@ -204,7 +198,6 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	 * @return
 	 */
 	public boolean setAngleInternal(double angle, double maxOutput, boolean fastExit) {
-		setLowGear();
 		stationaryAnglePID.setSetPoint(angle);
 		stationaryAnglePID.setMaxOutput(maxOutput);
 		stationaryAnglePID.setMinOutput(-maxOutput);
@@ -284,29 +277,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 	}
 
-	public void autoShift(boolean isShooterLow) {
-		// set our auto shift point a bit higher if the shooter is up this
-		// isn't the ideal way to slow the robot down when the CG is
-		// higher but it's okay for now
-		double shiftOffset = 0;
-		if (!isShooterLow)
-			shiftOffset = 1;
 
-		double minVelocity = Math.min(Math.abs(getLeftVelocity()), Math.abs(getRightVelocity()));
-
-		// only shift when we've been in gear for more than 0.5s
-		if (autoShiftTimer.get() > 0.5) {
-			if (isHighGear() && minVelocity < highToLowShiftPoint + shiftOffset) {
-				setLowGear();
-				autoShiftTimer.reset();
-			}
-			if (!isHighGear() && minVelocity > lowToHighShiftPoint + shiftOffset) {
-				setHighGear();
-				autoShiftTimer.reset();
-			}
-		}
-
-	}
 
 	public double getAverageAcceleration() {
 		double acceleration = currentRate - previousRate;
@@ -320,14 +291,12 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 	public void reset() {
 		this.disable();
-		this.setLowGear();
 		this.rightDriveEncoder.reset();
 		this.leftDriveEncoder.reset();
 	}
 
 	public void updateSmartDash() {
 		// put values on the smart dashboard
-		SmartDashboard.putNumber("Gear : ", isHighGear() ? 2 : 1);
 		Constants.STATIONARY_ANGLE_P = SmartDashboard.getNumber("Stat Angle P");
 		Constants.STATIONARY_ANGLE_I = SmartDashboard.getNumber("Stat Angle I");
 		Constants.STATIONARY_ANGLE_D = SmartDashboard.getNumber("Stat Angle D");
@@ -385,16 +354,6 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 		robotDrive.arcadeDrive(left, right);
 	}
 
-	public boolean isHighGear() {
-		// check the gear state, whether it is high or low
-		switch (getCurrentGear()) {
-		case HIGH:
-			return true;
-		default:
-		case LOW:
-			return false;
-		}
-	}
 
 	public void resetEncoders() {
 		// zero the encoders
@@ -469,9 +428,5 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 		System.out.println("Gyro calibrating");
 		gyro.recalibrate();
 		System.out.println("Done calibrating " + " The current rate is " + gyro.getRate());
-	}
-
-	protected enum GearState {
-		HIGH, LOW
 	}
 }

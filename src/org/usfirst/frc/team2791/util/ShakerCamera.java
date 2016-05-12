@@ -4,13 +4,10 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.*;
 import com.ni.vision.VisionException;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
-
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -34,7 +31,6 @@ public class ShakerCamera implements Runnable {
 	private Image binaryFrame;
 	private Image particleBinaryFrame;
 	private USBCamera cam;
-	private Servo cameraServo;
 	private int cameraExposure = 1;
 	private int cameraBrightness = 1;
 	private boolean cameraAutoSettings = true;
@@ -49,7 +45,6 @@ public class ShakerCamera implements Runnable {
 	private ShakerCamera(String camPort) {
 		cam = new USBCamera(camPort);
 		cam.startCapture();
-		cameraServo = new Servo(Constants.CAMERA_SERVO_PORT);
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		Image filteredImage = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
@@ -373,28 +368,6 @@ public class ShakerCamera implements Runnable {
 			}
 		}
 		return particles;
-	}
-
-	private void servoSetAngle(double angle) {
-		// 0 is camera down
-		// 1 is camera up
-		// we did this because camera servo is inverted and set
-		// angle = SmartDashboard.getNumber("servo angle");
-		cameraServo.set((180 - angle) / 180);
-	}
-
-	public void cameraUp() {
-		// // bring servo arm up
-		// cameraServo.set(.195);
-		// servoSetAngle(108);
-		// cameraServo.set(0);
-
-	}
-
-	public void cameraDown() {
-		// bring servo arm down
-		// servoSetAngle(0);
-		// cameraServo.set(.9);
 	}
 
 	public boolean isCameraManual() {

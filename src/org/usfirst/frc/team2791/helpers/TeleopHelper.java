@@ -81,14 +81,6 @@ public class TeleopHelper extends ShakerHelper {
 		// TODO: rework this method and the drive train methods to do PID in the
 		// run loop
 
-		// Let the driver hold B to set high gear, hold X to set low gear and
-		// othewise auto shit
-		if (driverJoystick.getButtonB())
-			driveTrain.setHighGear();
-		else if (driverJoystick.getButtonX())
-			driveTrain.setLowGear();
-		else
-			driveTrain.autoShift(shooter.equals(ShooterHeight.LOW));
 	}
 
 	private void operatorRun() {
