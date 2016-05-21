@@ -9,13 +9,14 @@ package org.usfirst.frc.team2791.util;
 import edu.wpi.first.wpilibj.SpeedController;
 
 public class TalonSet implements SpeedController {
-    private SpeedController[] speedControllers;
-    private double sign;//This value sets the output to positive or negative
+    private SpeedController[] speedControllers;// = new SpeedController[3];
+    private double sign = 1;//This value sets the output to positive or negative
 
     public TalonSet(SpeedController A, SpeedController B, SpeedController C) {
-        this.speedControllers[0] = A;
-        this.speedControllers[1] = B;
-        this.speedControllers[3] = C;
+    	speedControllers = new SpeedController[3];
+        speedControllers[0] = A;
+        speedControllers[1] = B;
+        speedControllers[2] = C;
         this.set(0.0);
     }
 
@@ -25,17 +26,17 @@ public class TalonSet implements SpeedController {
     }
 
     public void set(double speed, byte syncGroup) {
-        this.speed = speed;
-
-        for (SpeedController speedController : this.speedControllers) {
-            speedController.set(sign * speed, syncGroup);
-        }
+//    	System.out.println("Being Set with the sync group option with speed "+speed);
+//        for (SpeedController speedController : this.speedControllers) {
+//            speedController.set(sign * speed, syncGroup);
+//        }
+    	set(speed);
     }
 
     public void set(double speed) {
-        this.speed = speed;
-
+//    	System.out.println("Setting Speed to "+ speed);
         for (SpeedController speedController : this.speedControllers) {
+//        	System.out.println("  setting another speed conrtoller");
             speedController.set(sign * speed);
         }
     }

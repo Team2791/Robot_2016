@@ -91,7 +91,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 		movingAnglePID.setMaxOutput(0.5);
 		movingAnglePID.setMinOutput(-0.5);
 
-		stationaryAnglePID.setIZone(4);
+		stationaryAnglePID.setIZone(6);
 		distancePID.setIZone(0.25);
 		movingAnglePID.setIZone(4);
 		shiftTimer.reset();
@@ -155,7 +155,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 			// Makes sure pid is good error is minimal
 			driveTimePIDGoodTime = Timer.getFPGATimestamp();
 		else if (Timer.getFPGATimestamp() - driveTimePIDGoodTime > 0.2)
-			// then makes sure that certain time has passed to be absolutely
+			// then mafkes sure that certain time has passed to be absolutely
 			// positive
 			return true;
 		return false;
@@ -264,7 +264,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	// }
 
 	public double getAngleEncoder() {
-		return (90 / 2.3) * (getLeftDistance() - getRightDistance()) / 2.0;
+		return (360 / 7.9) * (getLeftDistance() - getRightDistance()) / 2.0;
 
 	}
 
@@ -273,7 +273,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public double getEncoderAngleRate() {
-		return (90 / 2.3) * (leftDriveEncoder.getRate() - rightDriveEncoder.getRate()) / 2.0;
+		return (360/7.9) * (leftDriveEncoder.getRate() - rightDriveEncoder.getRate()) / 2.0;
 
 	}
 

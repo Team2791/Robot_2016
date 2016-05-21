@@ -75,9 +75,9 @@ public class ShakerCamera implements Runnable {
 		// SmartDashboard.putNumber("S max", 255);
 		// SmartDashboard.putNumber("L min", 35);
 		// SmartDashboard.putNumber("L max", 188);
-		SmartDashboard.putNumber("H min", 20);
-		SmartDashboard.putNumber("H max", 149);
-		SmartDashboard.putNumber("S min", 78);
+		SmartDashboard.putNumber("H min", 32);
+		SmartDashboard.putNumber("H max", 157);
+		SmartDashboard.putNumber("S min", 41);
 		SmartDashboard.putNumber("S max", 255);
 		SmartDashboard.putNumber("V min", 90);
 		SmartDashboard.putNumber("V max", 255);

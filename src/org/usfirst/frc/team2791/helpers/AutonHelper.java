@@ -70,8 +70,9 @@ public class AutonHelper extends ShakerHelper {
 	}
 
 	public void run() {
-		// retuneDistancePID();
-		// retuneStationaryAnglePID();
+//		 retuneDistancePID();
+//		 retuneStationaryAnglePID();
+		 driveTrain.updateSmartDash();
 		switch (counter) {
 		case 0:
 			//start the auton.. basically run the init method

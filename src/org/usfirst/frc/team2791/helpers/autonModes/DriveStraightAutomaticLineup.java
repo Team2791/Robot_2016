@@ -25,14 +25,21 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 			System.out.println("Starting the drive straight autoLinup ");
 			driveTrain.resetEncoders();
 			intake.extendIntake();
-			shooter.delayedShooterPosition(ShooterHeight.MID);
+//			shooter.delayedShooterPosition(ShooterHeight.MID);
 			state++;
 			break;
 		case 2:
-			if (driveTrain.setDistance(firstDistance, 0, 0.65, false)) {
+			if (driveTrain.setDistance(firstDistance, 0, 0.5, false)) {
 				// intake.setArmAttachmentDown();
 				System.out.println("Drove the first distance");
 				driveTrain.resetEncoders();
+				shooter.setShooterMiddle();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				state++;
 			}
 			break;
@@ -46,7 +53,6 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 		case 4:
 			AutoLineUpShot.setShootAfterAligned(true);
 			AutoLineUpShot.setUseMultipleFrames(true);
-			AutoLineUpShot.inAuton(true);
 			AutoLineUpShot.run();
 			System.out.println("Starting autoLineup");
 			state++;
@@ -62,7 +68,6 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 			AutoLineUpShot.reset();
 			System.out.println("I am done with the drive striaght auto");
 			driveTrain.resetEncoders();
-			AutoLineUpShot.inAuton(false);
 			state = 0;
 			break;
 		}
