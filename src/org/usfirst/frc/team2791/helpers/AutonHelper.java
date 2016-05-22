@@ -38,8 +38,8 @@ public class AutonHelper extends ShakerHelper {
 
 		// we used this on Defense 2
 		
-		SmartDashboard.putNumber("Auton Distance", 13.75);
-		SmartDashboard.putNumber("Auton Angle",0);
+		SmartDashboard.putNumber("Auton Distance", 13.05);
+		SmartDashboard.putNumber("Auton Angle",30);
 		// we used this on Defense 3
 		// overallAuto = new DriveStraightAutomaticLineup(13.75,5);
 

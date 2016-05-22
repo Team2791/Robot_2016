@@ -8,7 +8,7 @@ import static org.usfirst.frc.team2791.robot.Robot.*;
 
 public class AutoLineUpShot {
 	// to correct any curving of the shot leftward or right ward
-	public static double shootOffset = 2.5;
+	public static double shootOffset = 0.5;
 	// this is the counter that decides what stop to run in the auto lineup
 	// process
 	private static int autoLineUpCounter = 0;
@@ -52,6 +52,7 @@ public class AutoLineUpShot {
 		// Put dashboard values
 		driveTrain.usePID();
 		shootOffset = SmartDashboard.getNumber("shooter offset");
+		SmartDashboard.putNumber("Target Angle", target);
 		SmartDashboard.putNumber("Auto Line Up step: ", autoLineUpCounter);
 		currentTarget = camera.getTarget();
 		// SmartDashboard.putBoolean("Has Target", currentTarget != null);
@@ -173,8 +174,6 @@ public class AutoLineUpShot {
 						} else {
 							if (!shooter.shooterAtSpeed()) {
 								System.out.println("I am waiting on the shooter wheels t:" + timeSinceLastPrint.get());
-								shooter.autoFire();
-								autoLineUpCounter = 30;
 							}
 							if (!(Math.abs(camera_error) < 0.75)) {
 								System.out.println("I am waiting on camera error t:" + timeSinceLastPrint.get());

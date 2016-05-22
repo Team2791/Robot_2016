@@ -37,9 +37,9 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // setpoints to acheicve target depending on the pos of the shooter arm
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
-    protected double closeShotSetPoint = 635;
+    protected double closeShotSetPoint = 585;
     //    protected double farShotSetpoint = 820;//original far distance
-    protected double farShotSetpoint = 950;
+    protected double farShotSetpoint = 820;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
     // manual override boolean for the autofire

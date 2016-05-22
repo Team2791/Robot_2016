@@ -57,7 +57,7 @@ public class ShakerCamera implements Runnable {
 		// this.cameraAutoSettings = false;
 		// cam.setFPS(10);
 		// cameraValsOnlyOnce = false;
-		cam.setBrightness(1);
+		cam.setBrightness(0);
 		cam.setExposureManual(1);
 		cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 		cam.updateSettings();
@@ -75,11 +75,21 @@ public class ShakerCamera implements Runnable {
 		// SmartDashboard.putNumber("S max", 255);
 		// SmartDashboard.putNumber("L min", 35);
 		// SmartDashboard.putNumber("L max", 188);
-		SmartDashboard.putNumber("H min", 32);
-		SmartDashboard.putNumber("H max", 157);
-		SmartDashboard.putNumber("S min", 41);
-		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("V min", 90);
+		
+		// HSL values before BattleCry
+//		SmartDashboard.putNumber("H min", 32);
+//		SmartDashboard.putNumber("H max", 157);
+//		SmartDashboard.putNumber("S min", 41);
+//		SmartDashboard.putNumber("S max", 255);
+//		SmartDashboard.putNumber("V min", 90);
+//		SmartDashboard.putNumber("V max", 255);
+		
+		// HSL Values at BattleCry
+		SmartDashboard.putNumber("H min", 0);
+		SmartDashboard.putNumber("H max", 140);
+		SmartDashboard.putNumber("S min", 0);
+		SmartDashboard.putNumber("S max", 93);
+		SmartDashboard.putNumber("V min", 95);
 		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
@@ -140,26 +150,26 @@ public class ShakerCamera implements Runnable {
 					}
 				}
 
-				if (cameraAutoSettings && !cameraValsOnlyOnce && cameraManualMode) {
-					System.out.println("Changing camera value to be automatic");
-					// set the exposure and the brightness for when vision
-					// targetting
-					cam.setExposureAuto();
-					cam.setBrightness(25);
-					cam.updateSettings();
-					cameraValsOnlyOnce = true;
-					cameraManualMode = false;
-				} else if (!cameraValsOnlyOnce && !cameraManualMode) {
-					// set the exposure and the brightness for when vision
-					// targetting
-					System.out.println("Setting the camera values to be manual");
-					cam.setFPS(20);
-					cam.setExposureManual(cameraExposure);
-					cam.setBrightness(cameraBrightness);
-					cam.updateSettings();
-					cameraValsOnlyOnce = true;
-					cameraManualMode = true;
-				}
+//				if (cameraAutoSettings && !cameraValsOnlyOnce && cameraManualMode) {
+//					System.out.println("Changing camera value to be automatic");
+//					// set the exposure and the brightness for when vision
+//					// targetting
+//					cam.setExposureAuto();
+//					cam.setBrightness(25);
+//					cam.updateSettings();
+//					cameraValsOnlyOnce = true;
+//					cameraManualMode = false;
+//				} else if (!cameraValsOnlyOnce && !cameraManualMode) {
+//					// set the exposure and the brightness for when vision
+//					// targetting
+//					System.out.println("Setting the camera values to be manual");
+//					cam.setFPS(20);
+//					cam.setExposureManual(cameraExposure);
+//					cam.setBrightness(cameraBrightness);
+//					cam.updateSettings();
+//					cameraValsOnlyOnce = true;
+//					cameraManualMode = true;
+//				}
 			} catch (VisionException | InterruptedException npe) {
 				System.out.println("Vision ERROR: " + npe.getMessage());
 				run();
