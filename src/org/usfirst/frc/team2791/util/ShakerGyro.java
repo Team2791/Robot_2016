@@ -93,15 +93,16 @@ public class ShakerGyro extends SensorBase implements Runnable {
 
     public void update() {
         double fpgaTime = Timer.getFPGATimestamp();
+        double currentRate = getRate();
         // ignore the first data since we don't have a time diff
         if (last_update_time != -1) {
             // gets the rate of change of angle and add that to the duration of
             // change
             double fpagTimeDiff = fpgaTime - last_update_time;
-            angle += (getRate()-last_update_rate) * fpagTimeDiff * 0.5;//Trapezoidal Approximation to get change of angle
+            angle += (currentRate - last_update_rate) * fpagTimeDiff * 0.5;//Trapezoidal Approximation to get change of angle
         }
         last_update_time = fpgaTime;
-        last_update_rate = getRate();
+        last_update_rate = currentRate;
     }
 
     public double getAngle() {
