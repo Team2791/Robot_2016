@@ -26,12 +26,13 @@ public class ShakerGyro extends SensorBase implements Runnable {
     private double angle = 0;
     private double rateOffset = 0;
     private double last_update_time = -1;
+    private double last_update_rate = 0;
     private boolean recalibrate = false;
     private boolean calibrated = false;
 
     public ShakerGyro(SPI.Port port) {
         m_spi = new SPI(port);
-        m_spi.setClockRate(3000000); // set to 4 MHz because that's the rRio's
+        m_spi.setClockRate(4000000); // set to 4 MHz because that's the rRio's
         // max, gyro can do 8 MHz
         m_spi.setMSBFirst();
         m_spi.setSampleDataOnRising();
@@ -94,12 +95,13 @@ public class ShakerGyro extends SensorBase implements Runnable {
         double fpgaTime = Timer.getFPGATimestamp();
         // ignore the first data since we don't have a time diff
         if (last_update_time != -1) {
-            // get the rate of change of angle and add that to the duration of
+            // gets the rate of change of angle and add that to the duration of
             // change
             double fpagTimeDiff = fpgaTime - last_update_time;
-            angle += getRate() * fpagTimeDiff;
+            angle += (getRate()-last_update_rate) * fpagTimeDiff * 0.5;//Trapezoidal Approximation to get change of angle
         }
         last_update_time = fpgaTime;
+        last_update_rate = getRate();
     }
 
     public double getAngle() {
