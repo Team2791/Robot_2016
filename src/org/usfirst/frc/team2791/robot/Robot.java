@@ -87,7 +87,7 @@ public class Robot extends IterativeRobot {
 
         gyro = new ADXRS453Gyro();
         gyro.startThread();
-
+        //uses new gyro code
         camera = ShakerCamera.getInstance();
         cameraThread = new Thread(camera);
         cameraThread.start();
