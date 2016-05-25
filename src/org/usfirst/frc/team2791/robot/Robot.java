@@ -18,6 +18,7 @@ import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerIntake;
 import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
+import org.usfirst.frc.team2791.util.ADXRS453Gyro;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
 
@@ -44,7 +45,8 @@ public class Robot extends IterativeRobot {
     // camera
     public static ShakerCamera camera;
     // other
-    public static Compressor compressor;
+    public static Compressor compresor;
+    public static ADXRS453Gyro gyro;
     public Thread shooterThread;
     public Thread cameraThread;
     public Thread driveTrainThread;
@@ -82,6 +84,9 @@ public class Robot extends IterativeRobot {
 
         driveTrainThread = new Thread(driveTrain);
         driveTrainThread.start();
+
+        gyro = new ADXRS453Gyro();
+        gyro.startThread();
 
         camera = ShakerCamera.getInstance();
         cameraThread = new Thread(camera);
@@ -139,6 +144,7 @@ public class Robot extends IterativeRobot {
     private void alwaysUpdatedSmartDashValues() {
         SmartDashboard.putNumber("Gyro Rate", driveTrain.getEncoderAngleRate());
         SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
+        SmartDashboard.putNumber("New Gyro Angle", gyro.getAngle());
         // System.out.println("DriveTrain average velocity "+
         // driveTrain.getAverageVelocity()+" current distance
         // "+driveTrain.getAvgDist()+" Current gyro Angle "+
