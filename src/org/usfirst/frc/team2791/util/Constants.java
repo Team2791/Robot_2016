@@ -27,10 +27,10 @@ public class Constants {
 	public static final int BALL_DISTANCE_SENSOR_PORT = 0;
 	public static final int CLAMPING_SERVO_PORT = 1;
 	// DIO
-	public static final int LEFT_DRIVE_ENCODER_PORT_A = 3;
-	public static final int LEFT_DRIVE_ENCODER_PORT_B = 2;
-	public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 5;
-	public static final int RIGHT_DRIVE_ENCODER_PORT_B = 4;
+	public static final int LEFT_DRIVE_ENCODER_PORT_A = 1;
+	public static final int LEFT_DRIVE_ENCODER_PORT_B = 0;
+	public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 9;
+	public static final int RIGHT_DRIVE_ENCODER_PORT_B = 8;
 	// PWM PORTS
 	public static final int DRIVE_TALON_LEFT_PORT_FRONT = 5;
 	public static final int DRIVE_TALON_LEFT_PORT_BACK = 4;
