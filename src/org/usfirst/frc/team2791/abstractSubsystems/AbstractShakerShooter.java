@@ -37,9 +37,9 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     // setpoints to acheicve target depending on the pos of the shooter arm
     protected double manualSetPoint;
     protected boolean useManualSetPoint = false;
-    protected double closeShotSetPoint = 575;
-//    protected double farShotSetpoint = 820;//original far distance
-    protected double farShotSetpoint = 830;
+    protected double closeShotSetPoint = 585;
+    //    protected double farShotSetpoint = 820;//original far distance
+    protected double farShotSetpoint = 820;
     // boolean that decides weahter autofiring should occur
     protected boolean autoFire = false;
     // manual override boolean for the autofire
@@ -55,6 +55,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     protected double timeWhenShooterArmMoved;
     // shooter height setpoint
     protected ShooterHeight delayedShooterPos;
+    protected Servo clampServo;
 
     public AbstractShakerShooter() {
     }
@@ -114,11 +115,13 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
                 // if the shooter arm is moving just run the intake slightly to
                 // pull the ball in
                 if (shooterArmMoving) {
-                    while (Timer.getFPGATimestamp() - timeWhenShooterArmMoved < 0.9) {
+                    while (Timer.getFPGATimestamp() - timeWhenShooterArmMoved < 1) {
                         setShooterSpeeds(-0.7, false);
                     }
                     stopMotors();
                     shooterArmMoving = false;
+                    clampBall();
+//                    prepShot = true;
                 }
                 // wait a few seconds before moving the arm
                 // this is used to allow the intake time before bringing the arm
@@ -130,8 +133,9 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
                 double setPoint = getSetPoint();
                 if (prepShot) {
                     prepShot(setPoint);
-                } 
+                }
                 if (autoFire) {
+                    releaseBall();
                     internalAutoFire(setPoint);
                 }
 
@@ -206,7 +210,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
             overrideShot = false;
             System.out.println("Finishing autofire");
         } else {
-        	System.out.println("The shot was calceled");
+            System.out.println("The shot was calceled");
         }
 
     }
@@ -225,7 +229,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
         // update the setPoints from the dashboard
         if (useManualSetPoint) {
 //            System.out.print("My shooter wheel setpoint is " + manualSetPoint);
-        	useManualSetPoint = false;
+            useManualSetPoint = false;
             return manualSetPoint;
         }
 
@@ -268,7 +272,7 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
 
     public boolean shooterAtSpeed() {
         double total_error = Math.abs(leftShooterTalon.getError()) + Math.abs(rightShooterTalon.getError());
-        return total_error < 30;
+        return total_error < 200;
     }
 
     public void resetShooterAutoStuff() {
@@ -386,10 +390,11 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
 
     public void setShooterLow() {
         // both pistons will be set to true to get max height
-        shooterArmMoving = true;
         timeWhenShooterArmMoved = Timer.getFPGATimestamp();
         // both pistons will be set to true to get low height
         moveShooterPistonsLow();
+        releaseBall();
+
     }
 
     public void setShooterMiddle() {
@@ -442,6 +447,15 @@ public abstract class AbstractShakerShooter extends ShakerSubsystem implements R
     public boolean getIfAutoFire() {
         return autoFire;
 
+    }
+
+    public void releaseBall() {
+        //This method uses a secondary servo to release the ball for firing
+//        clampServo.set(0);
+    }
+
+    public void clampBall() {//this method uses a secondary servo to clamp down on the ball
+//        clampServo.set(0.7);
     }
 
     public enum ShooterHeight {

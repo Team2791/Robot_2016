@@ -4,13 +4,10 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.*;
 import com.ni.vision.VisionException;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.USBCamera;
-
 import org.usfirst.frc.team2791.commands.AutoLineUpShot;
-import org.usfirst.frc.team2791.commands.BrokenAutoLineUpShot;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -34,7 +31,6 @@ public class ShakerCamera implements Runnable {
 	private Image binaryFrame;
 	private Image particleBinaryFrame;
 	private USBCamera cam;
-	private Servo cameraServo;
 	private int cameraExposure = 1;
 	private int cameraBrightness = 1;
 	private boolean cameraAutoSettings = true;
@@ -49,7 +45,6 @@ public class ShakerCamera implements Runnable {
 	private ShakerCamera(String camPort) {
 		cam = new USBCamera(camPort);
 		cam.startCapture();
-		cameraServo = new Servo(Constants.CAMERA_SERVO_PORT);
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		Image filteredImage = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
@@ -62,7 +57,7 @@ public class ShakerCamera implements Runnable {
 		// this.cameraAutoSettings = false;
 		// cam.setFPS(10);
 		// cameraValsOnlyOnce = false;
-		cam.setBrightness(1);
+		cam.setBrightness(0);
 		cam.setExposureManual(1);
 		cam.setSize(CAMERA_WIDTH_PIXELS, CAMERA_HEIGHT_PIXELS);
 		cam.updateSettings();
@@ -80,11 +75,21 @@ public class ShakerCamera implements Runnable {
 		// SmartDashboard.putNumber("S max", 255);
 		// SmartDashboard.putNumber("L min", 35);
 		// SmartDashboard.putNumber("L max", 188);
-		SmartDashboard.putNumber("H min", 20);
-		SmartDashboard.putNumber("H max", 149);
-		SmartDashboard.putNumber("S min", 78);
-		SmartDashboard.putNumber("S max", 255);
-		SmartDashboard.putNumber("V min", 90);
+		
+		// HSL values before BattleCry
+//		SmartDashboard.putNumber("H min", 32);
+//		SmartDashboard.putNumber("H max", 157);
+//		SmartDashboard.putNumber("S min", 41);
+//		SmartDashboard.putNumber("S max", 255);
+//		SmartDashboard.putNumber("V min", 90);
+//		SmartDashboard.putNumber("V max", 255);
+		
+		// HSL Values at BattleCry
+		SmartDashboard.putNumber("H min", 0);
+		SmartDashboard.putNumber("H max", 140);
+		SmartDashboard.putNumber("S min", 0);
+		SmartDashboard.putNumber("S max", 93);
+		SmartDashboard.putNumber("V min", 95);
 		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);
@@ -145,26 +150,26 @@ public class ShakerCamera implements Runnable {
 					}
 				}
 
-				if (cameraAutoSettings && !cameraValsOnlyOnce && cameraManualMode) {
-					System.out.println("Changing camera value to be automatic");
-					// set the exposure and the brightness for when vision
-					// targetting
-					cam.setExposureAuto();
-					cam.setBrightness(25);
-					cam.updateSettings();
-					cameraValsOnlyOnce = true;
-					cameraManualMode = false;
-				} else if (!cameraValsOnlyOnce && !cameraManualMode) {
-					// set the exposure and the brightness for when vision
-					// targetting
-					System.out.println("Setting the camera values to be manual");
-					cam.setFPS(20);
-					cam.setExposureManual(cameraExposure);
-					cam.setBrightness(cameraBrightness);
-					cam.updateSettings();
-					cameraValsOnlyOnce = true;
-					cameraManualMode = true;
-				}
+//				if (cameraAutoSettings && !cameraValsOnlyOnce && cameraManualMode) {
+//					System.out.println("Changing camera value to be automatic");
+//					// set the exposure and the brightness for when vision
+//					// targetting
+//					cam.setExposureAuto();
+//					cam.setBrightness(25);
+//					cam.updateSettings();
+//					cameraValsOnlyOnce = true;
+//					cameraManualMode = false;
+//				} else if (!cameraValsOnlyOnce && !cameraManualMode) {
+//					// set the exposure and the brightness for when vision
+//					// targetting
+//					System.out.println("Setting the camera values to be manual");
+//					cam.setFPS(20);
+//					cam.setExposureManual(cameraExposure);
+//					cam.setBrightness(cameraBrightness);
+//					cam.updateSettings();
+//					cameraValsOnlyOnce = true;
+//					cameraManualMode = true;
+//				}
 			} catch (VisionException | InterruptedException npe) {
 				System.out.println("Vision ERROR: " + npe.getMessage());
 				run();
@@ -373,28 +378,6 @@ public class ShakerCamera implements Runnable {
 			}
 		}
 		return particles;
-	}
-
-	private void servoSetAngle(double angle) {
-		// 0 is camera down
-		// 1 is camera up
-		// we did this because camera servo is inverted and set
-		// angle = SmartDashboard.getNumber("servo angle");
-		cameraServo.set((180 - angle) / 180);
-	}
-
-	public void cameraUp() {
-		// // bring servo arm up
-		// cameraServo.set(.195);
-		// servoSetAngle(108);
-		// cameraServo.set(0);
-
-	}
-
-	public void cameraDown() {
-		// bring servo arm down
-		// servoSetAngle(0);
-		// cameraServo.set(.9);
 	}
 
 	public boolean isCameraManual() {

@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * Created by Akhil on 2/24/2016.
+ * This class holds all important ports and constants that are used throughout the code
+ * This is rarely changed, only when ports are switched or pid's are re-tuned
  */
 public class Constants {
 
@@ -21,35 +23,33 @@ public class Constants {
 	public static final DoubleSolenoid.Value LARGE_PISTON_LOW_STATE = DoubleSolenoid.Value.kForward;
 
 	// INTAKE CONSTANTS
-	public static final double INTAKE_SPEED = 1.0;
 	// ANALOG
 	public static final int BALL_DISTANCE_SENSOR_PORT = 0;
+	public static final int CLAMPING_SERVO_PORT = 1;
 	// DIO
 	public static final int LEFT_DRIVE_ENCODER_PORT_A = 3;
 	public static final int LEFT_DRIVE_ENCODER_PORT_B = 2;
 	public static final int RIGHT_DRIVE_ENCOODER_PORT_A = 5;
 	public static final int RIGHT_DRIVE_ENCODER_PORT_B = 4;
-	public static final int RIGHT_INTAKE_LIMIT_SWITCH = 8;
-	public static final int LEFT_INTAKE_LIMIT_SWITCH = 9;
 	// PWM PORTS
 	public static final int DRIVE_TALON_LEFT_PORT_FRONT = 5;
 	public static final int DRIVE_TALON_LEFT_PORT_BACK = 4;
+	public static final int DRIVE_TALON_LEFT_PORT_C = 7;
 	public static final int DRIVE_TALON_RIGHT_PORT_FRONT = 2;
 	public static final int DRIVE_TALON_RIGHT_PORT_BACK = 3;
+	public static final int DRIVE_TALON_RIGHT_PORT_C = 0;
 	public static final int INTAKE_TALON_LEFT_PORT = 6;
 	public static final int INTAKE_TALON_RIGHT_PORT = 1;
 	public static final int BALL_AID_SERVO_PORT = 9;
-	public static final int CAMERA_SERVO_PORT = 8;
 	// PCM PORTS
 	// First Pcm module
-	public static final int DRIVE_SHIFTING_PISTON = 6;
 	public static final int INTAKE_PISTON = 7;
 	public static final int LONG_PISTON_FORWARD = 2;
 	public static final int LONG_PISTON_REVERSE = 3;
 	public static final int SHORT_PISTON_FORWARD = 4;
 	public static final int SHORT_PISTON_REVERSE = 5;
 	public static final int FUN_BRIDGE_ARM_PORT = 0;
-	// CAN 
+	// CAN
 	public static final int PCM_MODULE = 20;
 	public static final int SHOOTER_TALON_RIGHT_PORT = 10;
 	public static final int SHOOTER_TALON_LEFT_PORT = 11;
@@ -61,11 +61,11 @@ public class Constants {
 	public static double DRIVE_ANGLE_P = 0.05;
 	public static double DRIVE_ANGLE_I = 0;
 	public static double DRIVE_ANGLE_D = 0.000;
-	public static double STATIONARY_ANGLE_P = 0.09;
-	public static double STATIONARY_ANGLE_I = 0.6;
-	public static double STATIONARY_ANGLE_D = 0.001;
-	public static double DRIVE_DISTANCE_P = 1.5;
-	public static double DRIVE_DISTANCE_I = 4;
-	public static double DRIVE_DISTANCE_D = 0;
+	public static double STATIONARY_ANGLE_P = 0.15;
+	public static double STATIONARY_ANGLE_I = 1.2;
+	public static double STATIONARY_ANGLE_D = 0.0;
+	public static double DRIVE_DISTANCE_P = 1.3;
+	public static double DRIVE_DISTANCE_I = 0.01;
+	public static double DRIVE_DISTANCE_D = 0.2;
 
 }
