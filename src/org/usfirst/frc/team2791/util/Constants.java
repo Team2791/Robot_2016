@@ -45,7 +45,7 @@ public class Constants {
 	// First Pcm module
 	public static final int INTAKE_PISTON = 7;
 	public static final int LONG_PISTON_FORWARD = 2;
-	public static final int LONG_PISTON_REVERSE = 3;
+	public static final int LONG_PISTON_REVERSE = 3;//changed to port 1, 3 is plugged
 	public static final int SHORT_PISTON_FORWARD = 4;
 	public static final int SHORT_PISTON_REVERSE = 5;
 	public static final int FUN_BRIDGE_ARM_PORT = 0;

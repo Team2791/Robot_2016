@@ -77,8 +77,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 		// gyro = new Shakey_ADXRS450_Gyro(SPI.Port.kOnboardCS1);
 		// gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
-		gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
-		(new Thread(gyro)).start();
+//		gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
+//		(new Thread(gyro)).start();
 		// this.gyro = new AnalogGyro(new AnalogInput(1));
 		// gyro.setSensitivity(0.0007);
 
@@ -269,7 +269,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public double getGyroAngle() {
-		return gyro.getAngle();
+//		return gyro.getAngle();
+		return 0;
 	}
 
 	public double getEncoderAngleRate() {
@@ -425,8 +426,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 	public void calibrateGyro() {
 		// recalibrate the gyro
-		System.out.println("Gyro calibrating");
-		gyro.recalibrate();
-		System.out.println("Done calibrating " + " The current rate is " + gyro.getRate());
+//		System.out.println("Gyro calibrating");
+//		gyro.recalibrate();
+//		System.out.println("Done calibrating " + " The current rate is " + gyro.getRate());
 	}
 }

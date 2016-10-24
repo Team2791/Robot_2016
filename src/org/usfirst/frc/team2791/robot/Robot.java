@@ -1,7 +1,9 @@
 package org.usfirst.frc.team2791.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerDriveTrain;
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerIntake;
@@ -18,12 +20,13 @@ import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerIntake;
 import org.usfirst.frc.team2791.practiceSubsystems.PracticeShakerShooter;
 import org.usfirst.frc.team2791.shakerJoystick.Driver;
 import org.usfirst.frc.team2791.shakerJoystick.Operator;
+import org.usfirst.frc.team2791.util.ADXRS453Gyro;
 import org.usfirst.frc.team2791.util.Constants;
 import org.usfirst.frc.team2791.util.ShakerCamera;
+import org.usfirst.frc.team2791.util.ShakerGyro;
 
 public class Robot extends IterativeRobot {
     public static final boolean COMPETITION_ROBOT = true;
-
     public static boolean debuggingMode = false;
     // Modes
     public static GamePeriod gamePeriod;
@@ -44,6 +47,7 @@ public class Robot extends IterativeRobot {
     // camera
     public static ShakerCamera camera;
     // other
+    public static ADXRS453Gyro gyro;
     public static Compressor compressor;
     public Thread shooterThread;
     public Thread cameraThread;
@@ -89,6 +93,11 @@ public class Robot extends IterativeRobot {
         camera.setCameraValues(1, 1);
         autonHelper = AutonHelper.getInstance();
         teleopHelper = TeleopHelper.getInstance();
+        
+        gyro = new ADXRS453Gyro();
+        //new Thread(gyro).start();
+        gyro.startThread();
+        
 
         compressor = new Compressor(Constants.PCM_MODULE);
 
@@ -132,13 +141,19 @@ public class Robot extends IterativeRobot {
         if (operatorJoystick.getButtonSt()) {
             driveTrain.resetEncoders();
              driveTrain.calibrateGyro();
+             gyro.calibrate();
         }
         BrokenAutoLineUpShot.reset();
     }
 
     private void alwaysUpdatedSmartDashValues() {
         SmartDashboard.putNumber("Gyro Rate", driveTrain.getEncoderAngleRate());
-        SmartDashboard.putNumber("Gyro angle", driveTrain.getAngle());
+        if(driverJoystick.getButtonSt()){
+        	System.out.println("Starting calibration");
+        	gyro.calibrate();
+        	System.out.println("Calibration complete");
+        }
+        SmartDashboard.putNumber("Gyro angle", gyro.getAngle());
         // System.out.println("DriveTrain average velocity "+
         // driveTrain.getAverageVelocity()+" current distance
         // "+driveTrain.getAvgDist()+" Current gyro Angle "+
