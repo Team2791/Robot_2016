@@ -85,11 +85,11 @@ public class ShakerCamera implements Runnable {
 //		SmartDashboard.putNumber("V max", 255);
 		
 		// HSL Values at BattleCry
-		SmartDashboard.putNumber("H min", 0);
-		SmartDashboard.putNumber("H max", 140);
-		SmartDashboard.putNumber("S min", 0);
-		SmartDashboard.putNumber("S max", 93);
-		SmartDashboard.putNumber("V min", 100);
+		SmartDashboard.putNumber("H min", 97);
+		SmartDashboard.putNumber("H max", 190);
+		SmartDashboard.putNumber("S min", 193);
+		SmartDashboard.putNumber("S max", 255);
+		SmartDashboard.putNumber("V min", 102);
 		SmartDashboard.putNumber("V max", 255);
 		SmartDashboard.putNumber("servo angle", 100);
 		// rangeTable.put(DISTANCE, RPM);

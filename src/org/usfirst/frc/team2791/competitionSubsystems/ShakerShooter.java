@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team2791.abstractSubsystems.AbstractShakerShooter;
 import org.usfirst.frc.team2791.util.Constants;
 
@@ -40,6 +42,8 @@ public class ShakerShooter extends AbstractShakerShooter {
     protected void moveShooterPistonsLow() {
         // both pistons will be set to true to get max height
         // both pistons will be set to true to get low height
+    	
+    	// LOW STATE = both pistons retracted
         shortPiston.set(Constants.SMALL_PISTON_HIGH_STATE); // was reverse
         // //this is short
         // one
@@ -48,12 +52,14 @@ public class ShakerShooter extends AbstractShakerShooter {
 
     protected void moveShooterPistonsMiddle() {
         // set shooter height to middle meaning only one piston will be true
-        shortPiston.set(Constants.SMALL_PISTON_LOW_STATE);
-        longPiston.set(Constants.LARGE_PISTON_HIGH_STATE);
+    	// long piston extended only (But in high state?)
+        shortPiston.set(Constants.SMALL_PISTON_LOW_STATE); //small piston retracted
+        longPiston.set(Constants.LARGE_PISTON_HIGH_STATE); //large piston extended
     }
 
     protected void moveShooterPistonsHigh() {
         // set shooter height to low , set both pistons to false
+    	//both pistons extended
         shortPiston.set(Constants.SMALL_PISTON_LOW_STATE);
         longPiston.set(Constants.LARGE_PISTON_LOW_STATE);
         // short needs to switch

@@ -35,9 +35,11 @@ public class Constants {
 	public static final int DRIVE_TALON_LEFT_PORT_FRONT = 5;
 	public static final int DRIVE_TALON_LEFT_PORT_BACK = 4;
 	public static final int DRIVE_TALON_LEFT_PORT_C = 7;
+	
 	public static final int DRIVE_TALON_RIGHT_PORT_FRONT = 2;
 	public static final int DRIVE_TALON_RIGHT_PORT_BACK = 3;
 	public static final int DRIVE_TALON_RIGHT_PORT_C = 0;
+	
 	public static final int INTAKE_TALON_LEFT_PORT = 6;
 	public static final int INTAKE_TALON_RIGHT_PORT = 1;
 	public static final int BALL_AID_SERVO_PORT = 9;
@@ -45,7 +47,7 @@ public class Constants {
 	// First Pcm module
 	public static final int INTAKE_PISTON = 7;
 	public static final int LONG_PISTON_FORWARD = 2;
-	public static final int LONG_PISTON_REVERSE = 3;//changed to port 1, 3 is plugged
+	public static final int LONG_PISTON_REVERSE = 1;
 	public static final int SHORT_PISTON_FORWARD = 4;
 	public static final int SHORT_PISTON_REVERSE = 5;
 	public static final int FUN_BRIDGE_ARM_PORT = 0;
@@ -65,7 +67,7 @@ public class Constants {
 	public static double STATIONARY_ANGLE_I = 1.2;
 	public static double STATIONARY_ANGLE_D = 0.0;
 	public static double DRIVE_DISTANCE_P = 1.3;
-	public static double DRIVE_DISTANCE_I = 0.01;
+	public static double DRIVE_DISTANCE_I = 0.0175;//changed from 0.01 for robot rumble
 	public static double DRIVE_DISTANCE_D = 0.2;
 
 }

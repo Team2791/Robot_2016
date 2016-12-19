@@ -29,7 +29,7 @@ public class DriveStraightAutomaticLineup extends AutonMode {
 			state++;
 			break;
 		case 2:
-			if (driveTrain.setDistance(firstDistance, 0, 0.5, false)) {
+			if (driveTrain.setDistance(firstDistance, 0, 0.675, false)) {
 				// intake.setArmAttachmentDown();
 				System.out.println("Drove the first distance");
 				driveTrain.resetEncoders();

@@ -370,6 +370,7 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 	public double getAngle() {
 		return getAngleEncoder();
+//		return getGyroAngle();
 
 	}
 
