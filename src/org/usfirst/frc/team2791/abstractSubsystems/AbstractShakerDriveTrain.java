@@ -77,9 +77,9 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 
 		// gyro = new Shakey_ADXRS450_Gyro(SPI.Port.kOnboardCS1);
 		// gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS1);
-//		gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
-//		(new Thread(gyro)).start();
-		// this.gyro = new AnalogGyro(new AnalogInput(1));
+		gyro = new ShakerGyro(SPI.Port.kOnboardCS1);
+		(new Thread(gyro)).start();
+//		 this.gyro = new AnalogGyro(new AnalogInput(1));
 		// gyro.setSensitivity(0.0007);
 
 		movingAnglePID = new BasicPID(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
@@ -264,13 +264,14 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	// }
 
 	public double getAngleEncoder() {
-		return (360 / 7.9) * (getLeftDistance() - getRightDistance()) / 2.0;
+		return getAngle();
+//		return (360 / 7.9) * (getLeftDistance() - getRightDistance()) / 2.0;
 
 	}
 
 	public double getGyroAngle() {
-//		return gyro.getAngle();
-		return 0;
+		return gyro.getAngle();
+//		return 0;
 	}
 
 	public double getEncoderAngleRate() {
@@ -369,8 +370,8 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 	}
 
 	public double getAngle() {
-		return getAngleEncoder();
-//		return getGyroAngle();
+//		return getAngleEncoder();
+		return getGyroAngle();
 
 	}
 
@@ -391,21 +392,16 @@ public abstract class AbstractShakerDriveTrain extends ShakerSubsystem {
 		usingPID = false;
 	}
 
-	// public void resetGyro() {
+	 public void resetGyro() {
 	// // zero the gyro
-	// gyro.reset();
-	// }
+	 gyro.reset();
+	 }
 	//
-	// public double getGyroRate() {
+	 public double getGyroRate() {
 	// // recalibrate the gyro for
-	// return gyro.getRate();
-	// }
+	 return gyro.getRate();
+	 }
 	//
-	// public double getAngle() {
-	// // Get the current gyro angle
-	// // return gyro.getAngle();
-	// return getAngleEncoder();
-	// }
 
 	public double getLeftVelocity() {
 		return leftDriveEncoder.getRate();

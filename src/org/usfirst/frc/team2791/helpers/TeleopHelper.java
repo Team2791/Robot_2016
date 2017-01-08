@@ -209,6 +209,8 @@ public class TeleopHelper extends ShakerHelper {
 	public void disableRun() {
 		// runs disable methods of subsystems that fall under the driver
 		driveTrain.disable();
+		if(driverJoystick.getButtonSel())
+			driveTrain.resetGyro();
 		shooter.disable();
 		intake.disable();
 		AutoLineUpShot.reset();

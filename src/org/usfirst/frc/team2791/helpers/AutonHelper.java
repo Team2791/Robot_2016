@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team2791.helpers.autonModes.AutonMode;
 import org.usfirst.frc.team2791.helpers.autonModes.DriveStraightAutomaticLineup;
 import org.usfirst.frc.team2791.util.Constants;
+import org.usfirst.frc.team2791.util.ShakerCamera.ParticleReport;
 
 import static org.usfirst.frc.team2791.robot.Robot.*;
 /**
@@ -13,6 +14,7 @@ public class AutonHelper extends ShakerHelper {
 	private static AutonHelper auton;
 	private int counter = 0;
 	private double setPoint = 0;
+	private double target =0;
 
 	private AutonMode overallAuto;
 	private AutonHelper() {
@@ -82,11 +84,15 @@ public class AutonHelper extends ShakerHelper {
 			counter++;
 		case 1:
 			//run the auton...
-			overallAuto.run();
-			if (overallAuto.getCompleted()) {
-				//if completed go to the next case...
-				counter++;
-			}
+			ParticleReport currentTarget = camera.getTarget();
+			if(currentTarget!= null)
+			 target = driveTrain.getAngle() + currentTarget.ThetaDifference;
+			driveTrain.setAngle(target, 0.5, true);
+//			overallAuto.run();
+//			if (overallAuto.getCompleted()) {
+//				//if completed go to the next case...
+//				counter++;
+//			}
 			break;
 		case 2:
 			//we are done with auton...so do nothing
