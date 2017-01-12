@@ -51,7 +51,8 @@ public class AutoLineUpShot {
 	public static void run() {
 		// Put dashboard values
 		driveTrain.usePID();
-//		SmartDashboard.getNumber("shooter offset");
+		shootOffset = SmartDashboard.getNumber("shooter offset");
+		SmartDashboard.putNumber("Target Angle", target);
 		SmartDashboard.putNumber("Auto Line Up step: ", autoLineUpCounter);
 		currentTarget = camera.getTarget();
 		// SmartDashboard.putBoolean("Has Target", currentTarget != null);

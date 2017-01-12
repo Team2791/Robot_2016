@@ -2,8 +2,8 @@
 <dashboard>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.WebcamViewerExtensionCompat">
 		<location x="0" y="0"/>
-		<width>670</width>
-		<height>307</height>
+		<width>658</width>
+		<height>543</height>
 	</static-widget>
 </dashboard>
 <live-window>
@@ -15,7 +15,6 @@
 	<hidden field="Right Encoder Distance"/>
 	<hidden field="Use Gyro"/>
 	<hidden field="Angle PID Output"/>
-	<hidden field="Gear : "/>
 	<hidden field="H max"/>
 	<hidden field="DISTANCE P"/>
 	<hidden field="max speed"/>
@@ -64,7 +63,6 @@
 	<hidden field="farShotSetpoint"/>
 	<hidden field="Gyro Rate"/>
 	<hidden field="FeedForward"/>
-	<hidden field="Gyro rate offset"/>
 	<hidden field="H min"/>
 	<hidden field="servo angle"/>
 </xml>
