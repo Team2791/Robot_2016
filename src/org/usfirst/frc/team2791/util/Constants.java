@@ -46,11 +46,13 @@ public class Constants {
 	// PCM PORTS
 	// First Pcm module
 	public static final int INTAKE_PISTON = 7;
+	public static final int INTAKE_PISTON_REVERSE = 3;
 	public static final int LONG_PISTON_FORWARD = 2;
 	public static final int LONG_PISTON_REVERSE = 1;
 	public static final int SHORT_PISTON_FORWARD = 4;
 	public static final int SHORT_PISTON_REVERSE = 5;
 	public static final int FUN_BRIDGE_ARM_PORT = 0;
+	public static final int FUN_BRIDGE_ARM_PORT_REVERSE = 6;//replaced fun bridge solenoid w double and plugged...and then the pcm lights stopped working
 	// CAN
 	public static final int PCM_MODULE = 20;
 	public static final int SHOOTER_TALON_RIGHT_PORT = 10;
