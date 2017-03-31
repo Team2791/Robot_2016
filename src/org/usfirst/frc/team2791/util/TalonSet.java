@@ -61,4 +61,11 @@ public class TalonSet implements SpeedController {
     public void pidWrite(double output) {
         this.set(output);
     }
+
+
+	@Override
+	public void stopMotor() {
+		this.set(0.0);
+		
+	}
 }
